@@ -3,8 +3,11 @@ import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ArrowRight, Shield, Users, FileText } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const Index = () => {
+  const navigate = useNavigate();
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-white to-gray-50">
       <div className="container mx-auto px-4 py-16 max-w-7xl">
@@ -15,7 +18,11 @@ const Index = () => {
           <p className="text-lg md:text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
             AI支援による効率的な手続きサポートで、あなたのビジネスをサポートします。
           </p>
-          <Button size="lg" className="hover-lift">
+          <Button 
+            size="lg" 
+            className="hover-lift"
+            onClick={() => navigate('/register')}
+          >
             無料で始める <ArrowRight className="ml-2 h-5 w-5" />
           </Button>
         </div>
