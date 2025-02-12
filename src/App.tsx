@@ -9,6 +9,9 @@ import Register from "./pages/Register";
 import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
 import ProfileSetup from "./pages/ProfileSetup";
+import ApplicantDashboard from "./pages/dashboard/ApplicantDashboard";
+import ProviderDashboard from "./pages/dashboard/ProviderDashboard";
+import ExpertDashboard from "./pages/dashboard/ExpertDashboard";
 
 const queryClient = new QueryClient();
 
@@ -23,6 +26,9 @@ const App = () => (
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
           <Route path="/profile-setup" element={<ProfileSetup />} />
+          <Route path="/dashboard/applicant" element={<ApplicantDashboard />} />
+          <Route path="/dashboard/provider" element={<ProviderDashboard />} />
+          <Route path="/dashboard/expert" element={<ExpertDashboard />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
