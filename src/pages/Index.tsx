@@ -10,7 +10,22 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-white to-gray-50">
-      <div className="container mx-auto px-4 py-16 max-w-7xl">
+      <div className="container mx-auto px-4 py-8 max-w-7xl">
+        <div className="flex justify-end space-x-4 mb-8">
+          <Button
+            variant="ghost"
+            onClick={() => navigate('/login')}
+          >
+            ログイン
+          </Button>
+          <Button
+            variant="outline"
+            onClick={() => navigate('/register')}
+          >
+            新規登録
+          </Button>
+        </div>
+
         <div className="text-center mb-16 animate-fadeIn">
           <h1 className="text-4xl md:text-6xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/80">
             補助金・助成金マッチング
