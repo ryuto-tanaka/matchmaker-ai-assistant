@@ -8,6 +8,7 @@ import Index from "./pages/Index";
 import Register from "./pages/Register";
 import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
+import ProfileSetup from "./pages/ProfileSetup";
 
 const queryClient = new QueryClient();
 
@@ -21,6 +22,7 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/profile-setup" element={<ProfileSetup />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

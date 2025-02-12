@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -7,6 +6,10 @@ import { useNavigate } from 'react-router-dom';
 
 const Index = () => {
   const navigate = useNavigate();
+
+  const handlePlanSelect = () => {
+    navigate('/register');
+  };
 
   return (
     <div className="min-h-screen bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-primary/20 via-background to-background">
@@ -108,7 +111,11 @@ const Index = () => {
                     </li>
                   ))}
                 </ul>
-                <Button className="w-full" variant={index === 1 ? "default" : "outline"}>
+                <Button 
+                  className="w-full" 
+                  variant={index === 1 ? "default" : "outline"}
+                  onClick={handlePlanSelect}
+                >
                   プランを選択
                 </Button>
               </Card>
