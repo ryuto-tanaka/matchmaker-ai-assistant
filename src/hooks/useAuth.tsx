@@ -7,12 +7,54 @@ import { toast } from '@/components/ui/use-toast';
 import { translateError } from '@/utils/authErrorMessages';
 import { useProfile } from '@/hooks/useProfile';
 
+// デモ用の自動ログイン情報
+const DEMO_EMAIL = 'demo@example.com';
+const DEMO_PASSWORD = 'demo123456';
+
 export const useAuth = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [signUpCooldown, setSignUpCooldown] = useState(false);
   const { profile, setProfile, fetchProfile, handleProfileNavigation } = useProfile();
+
+  // デモ用の自動ログイン関数
+  const autoLogin = async () => {
+    try {
+      // まず新規登録を試みる（既に存在する場合はエラーになる）
+      await supabase.auth.signUp({
+        email: DEMO_EMAIL,
+        password: DEMO_PASSWORD,
+      });
+      
+      // 少し待ってからログインを試みる
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: DEMO_EMAIL,
+        password: DEMO_PASSWORD,
+      });
+
+      if (error) throw error;
+
+      console.log('Auto login successful');
+      return data;
+    } catch (error: any) {
+      if (error.message.includes('User already registered')) {
+        // ユーザーが既に存在する場合は直接ログインを試みる
+        const { data, error: loginError } = await supabase.auth.signInWithPassword({
+          email: DEMO_EMAIL,
+          password: DEMO_PASSWORD,
+        });
+        
+        if (loginError) throw loginError;
+        
+        console.log('Auto login successful (existing user)');
+        return data;
+      }
+      throw error;
+    }
+  };
 
   const handleAuthStateChange = useCallback(async (session: any) => {
     setUser(session?.user ?? null);
@@ -36,13 +78,26 @@ export const useAuth = () => {
   }, [navigate, fetchProfile, handleProfileNavigation, setProfile]);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      handleAuthStateChange(session);
-    });
+    const initAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session) {
+        // セッションがない場合は自動ログインを試みる
+        try {
+          await autoLogin();
+        } catch (error) {
+          console.error('Auto login failed:', error);
+        }
+      } else {
+        handleAuthStateChange(session);
+      }
+    };
+
+    initAuth();
 
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (_event, session) => {
+    } = supabase.auth.onAuthStateChange((_event, session) => {
       handleAuthStateChange(session);
     });
 
