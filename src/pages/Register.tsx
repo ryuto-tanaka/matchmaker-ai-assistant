@@ -3,7 +3,7 @@ import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { Shield, User, Briefcase } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuthContext } from '@/contexts/AuthContext';
 
 const Register = () => {
@@ -63,6 +63,15 @@ const Register = () => {
               </CardContent>
             </Card>
           ))}
+        </div>
+
+        <div className="text-center mt-8">
+          <p className="text-gray-600">
+            アカウントをお持ちの方は{" "}
+            <Link to="/login" className="text-primary hover:underline font-medium">
+              こちら
+            </Link>
+          </p>
         </div>
       </div>
     </div>
