@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -129,11 +128,9 @@ const DashboardLayout = ({
               variant="ghost"
               className="w-full justify-start"
               onClick={() => navigate('/dashboard/settings')}
-              disabled
             >
               <Settings className="mr-2 h-4 w-4" />
               設定
-              <span className="ml-2 text-xs text-gray-400">(準備中)</span>
             </Button>
             <Button
               variant="ghost"

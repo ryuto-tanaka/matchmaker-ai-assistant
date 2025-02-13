@@ -14,6 +14,7 @@ import ApplicantDashboard from "./pages/dashboard/ApplicantDashboard";
 import ProviderDashboard from "./pages/dashboard/ProviderDashboard";
 import ExpertDashboard from "./pages/dashboard/ExpertDashboard";
 import RegisterDetails from "./pages/RegisterDetails";
+import Settings from "./pages/dashboard/settings/Settings";
 
 const queryClient = new QueryClient();
 
@@ -33,6 +34,7 @@ const App = () => (
             <Route path="/dashboard/applicant" element={<ApplicantDashboard />} />
             <Route path="/dashboard/provider" element={<ProviderDashboard />} />
             <Route path="/dashboard/expert" element={<ExpertDashboard />} />
+            <Route path="/dashboard/settings" element={<Settings />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>
