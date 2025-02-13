@@ -1,20 +1,75 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useAuthContext } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from '@/components/ui/use-toast';
 
 const ProfileSetup = () => {
   const navigate = useNavigate();
+  const { user, profile } = useAuthContext();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formData, setFormData] = useState({
+    company_name: profile?.company_name || '',
+    contact_name: profile?.contact_name || '',
+    phone: profile?.phone || '',
+    address: profile?.address || '',
+  });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { id, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [id]: value
+    }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // プロフィール設定のロジックは後ほど実装
-    console.log('Profile setup submitted');
-    navigate('/');
+    if (!user) {
+      toast({
+        title: "エラー",
+        description: "ユーザー情報が見つかりません。再度ログインしてください。",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .update({
+          ...formData,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', user.id);
+
+      if (error) throw error;
+
+      toast({
+        title: "保存完了",
+        description: "プロフィール情報を保存しました",
+      });
+
+      // プロフィールのタイプに基づいてダッシュボードにリダイレクト
+      if (profile?.primary_type) {
+        navigate(`/dashboard/${profile.primary_type}`);
+      }
+    } catch (error: any) {
+      toast({
+        title: "エラー",
+        description: error.message || "プロフィールの保存に失敗しました",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -23,7 +78,7 @@ const ProfileSetup = () => {
         <Button
           variant="ghost"
           className="mb-8"
-          onClick={() => navigate('/register')}
+          onClick={() => navigate(-1)}
         >
           <ArrowLeft className="mr-2 h-4 w-4" />
           戻る
@@ -40,19 +95,23 @@ const ProfileSetup = () => {
 
             <div className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="company">会社名</Label>
+                <Label htmlFor="company_name">会社名</Label>
                 <Input
-                  id="company"
+                  id="company_name"
                   placeholder="株式会社〇〇"
+                  value={formData.company_name}
+                  onChange={handleChange}
                   required
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="name">担当者名</Label>
+                <Label htmlFor="contact_name">担当者名</Label>
                 <Input
-                  id="name"
+                  id="contact_name"
                   placeholder="山田 太郎"
+                  value={formData.contact_name}
+                  onChange={handleChange}
                   required
                 />
               </div>
@@ -63,6 +122,8 @@ const ProfileSetup = () => {
                   id="phone"
                   type="tel"
                   placeholder="03-xxxx-xxxx"
+                  value={formData.phone}
+                  onChange={handleChange}
                   required
                 />
               </div>
@@ -72,13 +133,19 @@ const ProfileSetup = () => {
                 <Input
                   id="address"
                   placeholder="東京都〇〇区..."
+                  value={formData.address}
+                  onChange={handleChange}
                   required
                 />
               </div>
             </div>
 
-            <Button type="submit" className="w-full">
-              登録を完了する
+            <Button 
+              type="submit" 
+              className="w-full"
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? '保存中...' : '登録を完了する'}
             </Button>
           </form>
         </Card>
