@@ -38,6 +38,18 @@ export const useAuth = () => {
       setUser(session?.user ?? null);
       if (session?.user) {
         await fetchProfile(session.user.id);
+        // セッションが存在する場合、適切なページにリダイレクト
+        const { data: profileData } = await supabase
+          .from('profiles')
+          .select('primary_type')
+          .eq('id', session.user.id)
+          .single();
+
+        if (profileData) {
+          navigate(`/dashboard/${profileData.primary_type}`);
+        } else {
+          navigate('/profile-setup');
+        }
       } else {
         setProfile(null);
         setLoading(false);
@@ -45,7 +57,7 @@ export const useAuth = () => {
     });
 
     return () => subscription.unsubscribe();
-  }, []);
+  }, [navigate]);
 
   const fetchProfile = async (userId: string) => {
     try {
@@ -78,22 +90,12 @@ export const useAuth = () => {
 
       if (error) throw error;
 
-      const { data: profileData } = await supabase
-        .from('profiles')
-        .select('primary_type')
-        .eq('id', data.user.id)
-        .single();
-
-      if (profileData) {
-        navigate(`/dashboard/${profileData.primary_type}`);
-      } else {
-        navigate('/profile-setup');
-      }
-
       toast({
         title: "ログイン成功",
         description: "ログインに成功しました",
       });
+
+      // onAuthStateChangeイベントが適切なリダイレクトを処理します
 
     } catch (error: any) {
       toast({
@@ -101,6 +103,7 @@ export const useAuth = () => {
         description: error.message || "ログインに失敗しました",
         variant: "destructive",
       });
+      throw error;
     }
   };
 
