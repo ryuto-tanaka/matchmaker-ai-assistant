@@ -1,5 +1,4 @@
-
-import React from 'react';
+import React, { useState } from 'react';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -7,9 +6,14 @@ import { Calendar } from "@/components/ui/calendar";
 import { Button } from "@/components/ui/button";
 import { FileText, Users, Clock, CheckCircle, Calendar as CalendarIcon, File, MessageCircle } from 'lucide-react';
 import { useAuthContext } from '@/contexts/AuthContext';
+import BusinessPlanSurveyModal from '@/components/modals/BusinessPlanSurveyModal';
+import { useToast } from "@/components/ui/use-toast";
 
 const ApplicantDashboard = () => {
   const { user } = useAuthContext();
+  const { toast } = useToast();
+  const [isBusinessPlanModalOpen, setIsBusinessPlanModalOpen] = useState(false);
+
   const stats = [
     { icon: FileText, label: '申請中の補助金', value: '3件' },
     { icon: Users, label: '相談中の専門家', value: '2名' },
@@ -18,12 +22,27 @@ const ApplicantDashboard = () => {
   ];
 
   const handleAIBusinessPlanClick = () => {
-    // TODO: AIビジネスプランアンケートモーダルの表示
-    console.log('AI Business Plan button clicked');
+    setIsBusinessPlanModalOpen(true);
+  };
+
+  const handleSurveySubmit = async (data: any) => {
+    console.log('Survey data:', data);
+    // TODO: AIによる事業計画書生成の処理を実装
+    toast({
+      title: "アンケート送信完了",
+      description: "AI事業計画書の生成を開始します。完了までしばらくお待ちください。",
+    });
+    setIsBusinessPlanModalOpen(false);
   };
 
   return (
     <DashboardLayout userType="applicant" userName="山田太郎" secondaryTypes={['provider']}>
+      <BusinessPlanSurveyModal
+        isOpen={isBusinessPlanModalOpen}
+        onClose={() => setIsBusinessPlanModalOpen(false)}
+        onSubmit={handleSurveySubmit}
+      />
+      
       <Tabs defaultValue="dashboard" className="w-full space-y-6">
         <TabsList className="grid w-full grid-cols-4 lg:w-[600px]">
           <TabsTrigger value="dashboard">ダッシュボード</TabsTrigger>
