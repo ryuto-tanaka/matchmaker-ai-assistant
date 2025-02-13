@@ -5,13 +5,14 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ArrowLeft } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuthContext } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/components/ui/use-toast';
 
 const ProfileSetup = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { user, profile } = useAuthContext();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
@@ -22,10 +23,21 @@ const ProfileSetup = () => {
   });
 
   useEffect(() => {
-    if (!user) {
-      navigate('/login');
-    }
-  }, [user, navigate]);
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        navigate('/login');
+        return;
+      }
+      
+      // プロフィールが既に設定済みの場合は適切なダッシュボードへリダイレクト
+      if (profile?.company_name && profile?.primary_type) {
+        navigate(`/dashboard/${profile.primary_type}`);
+      }
+    };
+
+    checkAuth();
+  }, [user, profile, navigate]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
@@ -53,6 +65,7 @@ const ProfileSetup = () => {
         .from('profiles')
         .update({
           ...formData,
+          primary_type: location.state?.userType || profile?.primary_type,
           updated_at: new Date().toISOString(),
         })
         .eq('id', user.id);
@@ -64,8 +77,9 @@ const ProfileSetup = () => {
         description: "プロフィール情報を保存しました",
       });
 
-      if (profile?.primary_type) {
-        navigate(`/dashboard/${profile.primary_type}`);
+      const userType = location.state?.userType || profile?.primary_type;
+      if (userType) {
+        navigate(`/dashboard/${userType}`);
       }
     } catch (error: any) {
       console.error('Profile update error:', error);
@@ -78,10 +92,6 @@ const ProfileSetup = () => {
       setIsSubmitting(false);
     }
   };
-
-  if (!user) {
-    return null;
-  }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-white to-gray-50 py-16">
