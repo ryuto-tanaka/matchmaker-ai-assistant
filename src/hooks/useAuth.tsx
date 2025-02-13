@@ -42,6 +42,9 @@ export const useAuth = () => {
         password: DEMO_PASSWORD,
         options: {
           emailRedirectTo: window.location.origin,
+          data: {
+            email_confirmed_at: new Date().toISOString(), // メール確認をスキップ
+          }
         }
       });
 
