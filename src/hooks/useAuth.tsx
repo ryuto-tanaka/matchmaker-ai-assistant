@@ -1,4 +1,3 @@
-
 import { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { User } from '@supabase/supabase-js';
@@ -22,6 +21,8 @@ const translateError = (error: string): string => {
     'User already registered': 'このメールアドレスは既に登録されています',
     'Password should be at least 6 characters': 'パスワードは6文字以上で入力してください',
     'Email format is invalid': 'メールアドレスの形式が正しくありません',
+    'For security purposes, you can only request this after 14 seconds': 'セキュリティのため、14秒後に再度お試しください',
+    'over_email_send_rate_limit': 'メール送信の制限に達しました。しばらく待ってから再度お試しください',
   };
   return errorMessages[error] || error;
 };
@@ -30,6 +31,7 @@ export const useAuth = () => {
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
+  const [signUpCooldown, setSignUpCooldown] = useState(false);
   const navigate = useNavigate();
 
   const handleAuthStateChange = useCallback(async (session: any) => {
@@ -121,6 +123,15 @@ export const useAuth = () => {
   };
 
   const signUp = async (email: string, password: string) => {
+    if (signUpCooldown) {
+      toast({
+        title: "送信制限",
+        description: "セキュリティのため、しばらく待ってから再度お試しください",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setLoading(true);
     try {
       const { data, error } = await supabase.auth.signUp({
@@ -128,7 +139,13 @@ export const useAuth = () => {
         password,
       });
 
-      if (error) throw error;
+      if (error) {
+        if (error.message.includes('14 seconds') || error.message.includes('rate_limit')) {
+          setSignUpCooldown(true);
+          setTimeout(() => setSignUpCooldown(false), 15000); // 15秒後にクールダウンを解除
+        }
+        throw error;
+      }
 
       toast({
         title: "登録完了",
@@ -137,9 +154,10 @@ export const useAuth = () => {
 
       return data;
     } catch (error: any) {
+      const errorMessage = error.message || error.error_description || "登録に失敗しました";
       toast({
         title: "登録エラー",
-        description: translateError(error.message) || "登録に失敗しました",
+        description: translateError(errorMessage),
         variant: "destructive",
       });
       throw error;
