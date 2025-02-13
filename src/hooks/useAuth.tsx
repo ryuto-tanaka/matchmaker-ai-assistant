@@ -20,68 +20,62 @@ export const useAuth = () => {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
+  const handleAuthStateChange = async (session: any) => {
+    setUser(session?.user ?? null);
+    if (session?.user) {
+      try {
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', session.user.id)
+          .single();
+
+        if (error) throw error;
+
+        setProfile(data);
+
+        // プロフィールの状態に応じてリダイレクト
+        if (window.location.pathname === '/') {
+          if (data) {
+            navigate(`/dashboard/${data.primary_type}`);
+          } else {
+            navigate('/profile-setup');
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching profile:', error);
+        toast({
+          title: "エラー",
+          description: "プロフィールの取得に失敗しました",
+          variant: "destructive",
+        });
+        // エラー時はログインページへリダイレクト
+        navigate('/login');
+      }
+    } else {
+      setProfile(null);
+    }
+    setLoading(false);
+  };
+
   useEffect(() => {
     // 現在のセッションを取得
     supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null);
-      if (session?.user) {
-        fetchProfile(session.user.id);
-      } else {
-        setLoading(false);
-      }
+      handleAuthStateChange(session);
     });
 
     // 認証状態の変更を監視
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (event, session) => {
-      setUser(session?.user ?? null);
-      if (session?.user) {
-        await fetchProfile(session.user.id);
-        // セッションが存在する場合、適切なページにリダイレクト
-        const { data: profileData } = await supabase
-          .from('profiles')
-          .select('primary_type')
-          .eq('id', session.user.id)
-          .single();
-
-        if (profileData) {
-          navigate(`/dashboard/${profileData.primary_type}`);
-        } else {
-          navigate('/profile-setup');
-        }
-      } else {
-        setProfile(null);
-        setLoading(false);
-      }
+    } = supabase.auth.onAuthStateChange(async (_event, session) => {
+      handleAuthStateChange(session);
     });
 
     return () => subscription.unsubscribe();
-  }, [navigate]);
-
-  const fetchProfile = async (userId: string) => {
-    try {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', userId)
-        .single();
-
-      if (error) throw error;
-      setProfile(data);
-    } catch (error) {
-      console.error('Error fetching profile:', error);
-      toast({
-        title: "エラー",
-        description: "プロフィールの取得に失敗しました",
-        variant: "destructive",
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
+  }, []);
 
   const signIn = async (email: string, password: string) => {
+    setLoading(true);
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
@@ -95,8 +89,6 @@ export const useAuth = () => {
         description: "ログインに成功しました",
       });
 
-      // onAuthStateChangeイベントが適切なリダイレクトを処理します
-
     } catch (error: any) {
       toast({
         title: "ログインエラー",
@@ -104,10 +96,13 @@ export const useAuth = () => {
         variant: "destructive",
       });
       throw error;
+    } finally {
+      setLoading(false);
     }
   };
 
   const signUp = async (email: string, password: string) => {
+    setLoading(true);
     try {
       const { data, error } = await supabase.auth.signUp({
         email,
@@ -129,10 +124,13 @@ export const useAuth = () => {
         variant: "destructive",
       });
       throw error;
+    } finally {
+      setLoading(false);
     }
   };
 
   const signOut = async () => {
+    setLoading(true);
     try {
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
@@ -143,6 +141,8 @@ export const useAuth = () => {
         description: "ログアウトに失敗しました",
         variant: "destructive",
       });
+    } finally {
+      setLoading(false);
     }
   };
 
