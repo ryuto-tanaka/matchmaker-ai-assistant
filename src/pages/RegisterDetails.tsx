@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
@@ -36,7 +35,6 @@ const RegisterDetails = () => {
     e.preventDefault();
     setError(null);
 
-    // パスワードのバリデーション
     const passwordError = validatePassword(password);
     if (passwordError) {
       setError(passwordError);

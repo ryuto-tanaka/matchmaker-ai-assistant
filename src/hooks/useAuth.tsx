@@ -78,13 +78,23 @@ export const useAuth = () => {
 
       if (error) throw error;
 
-      if (data.user) {
-        if (!profile) {
-          navigate('/profile-setup');
-        } else {
-          navigate(`/dashboard/${profile.primary_type}`);
-        }
+      const { data: profileData } = await supabase
+        .from('profiles')
+        .select('primary_type')
+        .eq('id', data.user.id)
+        .single();
+
+      if (profileData) {
+        navigate(`/dashboard/${profileData.primary_type}`);
+      } else {
+        navigate('/profile-setup');
       }
+
+      toast({
+        title: "ログイン成功",
+        description: "ログインに成功しました",
+      });
+
     } catch (error: any) {
       toast({
         title: "ログインエラー",
