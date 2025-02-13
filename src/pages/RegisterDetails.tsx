@@ -1,5 +1,6 @@
+
 import React, { useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, Link } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -116,6 +117,15 @@ const RegisterDetails = () => {
                 {loading ? '登録中...' : '次へ'}
               </Button>
             </form>
+
+            <div className="text-center mt-6">
+              <p className="text-gray-600">
+                アカウントをお持ちの方は{" "}
+                <Link to="/login" className="text-primary hover:underline font-medium">
+                  こちら
+                </Link>
+              </p>
+            </div>
           </CardContent>
         </Card>
       </div>
