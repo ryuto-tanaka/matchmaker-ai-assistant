@@ -18,45 +18,26 @@ export const useAuth = () => {
     const currentUser = session?.user ?? null;
     setUser(currentUser);
 
-    try {
-      if (currentUser) {
-        const profileData = await fetchProfile(currentUser.id);
-        const currentPath = window.location.pathname;
-        
-        // protectedRoutesでない場合は、ナビゲーションをスキップ
-        const publicRoutes = ['/', '/login', '/register'];
-        if (!publicRoutes.includes(currentPath)) {
-          handleProfileNavigation(profileData, currentPath);
-        }
-      } else {
-        setProfile(null);
-        const protectedRoutes = ['/dashboard', '/profile-setup'];
-        if (protectedRoutes.some(route => window.location.pathname.startsWith(route))) {
-          navigate('/login');
-        }
+    if (currentUser) {
+      const profileData = await fetchProfile(currentUser.id);
+      handleProfileNavigation(profileData, window.location.pathname);
+    } else {
+      setProfile(null);
+      const protectedRoutes = ['/dashboard', '/profile-setup'];
+      if (protectedRoutes.some(route => window.location.pathname.startsWith(route))) {
+        navigate('/login');
       }
-    } catch (error) {
-      console.error('Auth state change error:', error);
-    } finally {
-      setLoading(false);
     }
+    setLoading(false);
   }, [navigate, fetchProfile, handleProfileNavigation, setProfile]);
 
   useEffect(() => {
     let isSubscribed = true;
 
     const initializeAuth = async () => {
-      try {
-        const { data: { session } } = await supabase.auth.getSession();
-        if (isSubscribed) {
-          await handleAuthStateChange(session);
-        }
-      } catch (error) {
-        console.error('Initialize auth error:', error);
-        if (isSubscribed) {
-          setLoading(false);
-        }
-      }
+      if (!isSubscribed) return;
+      const { data: { session } } = await supabase.auth.getSession();
+      await handleAuthStateChange(session);
     };
 
     initializeAuth();
@@ -76,6 +57,7 @@ export const useAuth = () => {
   }, [handleAuthStateChange]);
 
   const signIn = async (email: string, password: string) => {
+    setLoading(true);
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
@@ -99,6 +81,8 @@ export const useAuth = () => {
         variant: "destructive",
       });
       throw error;
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -112,6 +96,7 @@ export const useAuth = () => {
       return;
     }
 
+    setLoading(true);
     try {
       const { data, error } = await supabase.auth.signUp({
         email,
@@ -144,10 +129,13 @@ export const useAuth = () => {
         variant: "destructive",
       });
       throw error;
+    } finally {
+      setLoading(false);
     }
   };
 
   const signOut = async () => {
+    setLoading(true);
     try {
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
@@ -164,6 +152,8 @@ export const useAuth = () => {
         description: translateError(error.message) || "ログアウトに失敗しました",
         variant: "destructive",
       });
+    } finally {
+      setLoading(false);
     }
   };
 
