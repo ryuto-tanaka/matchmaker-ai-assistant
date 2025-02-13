@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -21,6 +21,12 @@ const ProfileSetup = () => {
     address: profile?.address || '',
   });
 
+  useEffect(() => {
+    if (!user) {
+      navigate('/login');
+    }
+  }, [user, navigate]);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
     setFormData(prev => ({
@@ -37,6 +43,7 @@ const ProfileSetup = () => {
         description: "ユーザー情報が見つかりません。再度ログインしてください。",
         variant: "destructive",
       });
+      navigate('/login');
       return;
     }
 
@@ -57,11 +64,11 @@ const ProfileSetup = () => {
         description: "プロフィール情報を保存しました",
       });
 
-      // プロフィールのタイプに基づいてダッシュボードにリダイレクト
       if (profile?.primary_type) {
         navigate(`/dashboard/${profile.primary_type}`);
       }
     } catch (error: any) {
+      console.error('Profile update error:', error);
       toast({
         title: "エラー",
         description: error.message || "プロフィールの保存に失敗しました",
@@ -71,6 +78,10 @@ const ProfileSetup = () => {
       setIsSubmitting(false);
     }
   };
+
+  if (!user) {
+    return null;
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-white to-gray-50 py-16">

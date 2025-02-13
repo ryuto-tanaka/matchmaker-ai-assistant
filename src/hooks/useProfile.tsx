@@ -15,9 +15,14 @@ export const useProfile = () => {
         .from('profiles')
         .select('*')
         .eq('id', userId)
-        .single();
+        .maybeSingle();
 
       if (error) throw error;
+
+      if (!data) {
+        console.log('No profile found for user:', userId);
+        return null;
+      }
 
       setProfile(data);
       return data;
