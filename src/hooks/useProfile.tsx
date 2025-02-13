@@ -18,7 +18,6 @@ export const useProfile = () => {
         .maybeSingle();
 
       if (error) throw error;
-
       setProfile(data);
       return data;
     } catch (error: any) {
@@ -32,11 +31,21 @@ export const useProfile = () => {
     }
   };
 
-  const handleProfileNavigation = (profileData: UserProfile | null) => {
-    if (profileData?.company_name && profileData?.primary_type) {
-      navigate(`/dashboard/${profileData.primary_type}`);
-    } else {
+  const handleProfileNavigation = (profileData: UserProfile | null, currentPath: string) => {
+    if (!profileData) {
       navigate('/profile-setup');
+      return;
+    }
+
+    if (!profileData.company_name || !profileData.primary_type) {
+      if (currentPath !== '/profile-setup') {
+        navigate('/profile-setup');
+      }
+      return;
+    }
+
+    if (currentPath === '/login' || currentPath === '/profile-setup') {
+      navigate(`/dashboard/${profileData.primary_type}`);
     }
   };
 

@@ -20,13 +20,7 @@ export const useAuth = () => {
 
     if (currentUser) {
       const profileData = await fetchProfile(currentUser.id);
-      if (window.location.pathname === '/login') {
-        if (profileData?.company_name) {
-          navigate(`/dashboard/${profileData.primary_type}`);
-        } else {
-          navigate('/profile-setup');
-        }
-      }
+      handleProfileNavigation(profileData, window.location.pathname);
     } else {
       setProfile(null);
       const protectedRoutes = ['/dashboard', '/profile-setup'];
@@ -35,10 +29,13 @@ export const useAuth = () => {
       }
     }
     setLoading(false);
-  }, [navigate, fetchProfile, setProfile]);
+  }, [navigate, fetchProfile, handleProfileNavigation, setProfile]);
 
   useEffect(() => {
+    let isSubscribed = true;
+
     const initializeAuth = async () => {
+      if (!isSubscribed) return;
       const { data: { session } } = await supabase.auth.getSession();
       await handleAuthStateChange(session);
     };
@@ -48,10 +45,15 @@ export const useAuth = () => {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (_event, session) => {
-      await handleAuthStateChange(session);
+      if (isSubscribed) {
+        await handleAuthStateChange(session);
+      }
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      isSubscribed = false;
+      subscription.unsubscribe();
+    };
   }, [handleAuthStateChange]);
 
   const signIn = async (email: string, password: string) => {
@@ -71,11 +73,7 @@ export const useAuth = () => {
         description: "ログインに成功しました",
       });
 
-      if (profileData?.company_name) {
-        navigate(`/dashboard/${profileData.primary_type}`);
-      } else {
-        navigate('/profile-setup');
-      }
+      handleProfileNavigation(profileData, '/login');
     } catch (error: any) {
       toast({
         title: "ログインエラー",
