@@ -4,9 +4,11 @@ import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { Shield, User, Briefcase } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useAuthContext } from '@/contexts/AuthContext';
 
 const Register = () => {
   const navigate = useNavigate();
+  const { signUp } = useAuthContext();
 
   const userTypes = [
     {
@@ -30,9 +32,7 @@ const Register = () => {
   ];
 
   const handleUserTypeSelect = (type: string) => {
-    // We'll implement the actual registration logic later with Supabase
-    console.log('Selected user type:', type);
-    navigate('/profile-setup');
+    navigate('/register/details', { state: { userType: type } });
   };
 
   return (

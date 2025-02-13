@@ -1,25 +1,34 @@
 
 import React, { useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardHeader, CardContent, CardFooter } from "@/components/ui/card";
+import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { ArrowLeft } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
 import { useAuthContext } from '@/contexts/AuthContext';
 
-const Login = () => {
+const RegisterDetails = () => {
   const navigate = useNavigate();
-  const { signIn } = useAuthContext();
+  const location = useLocation();
+  const { signUp } = useAuthContext();
+  const userType = location.state?.userType;
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+
+  if (!userType) {
+    navigate('/register');
+    return null;
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     try {
-      await signIn(email, password);
+      await signUp(email, password);
+      navigate('/profile-setup', { state: { userType } });
     } finally {
       setLoading(false);
     }
@@ -31,17 +40,17 @@ const Login = () => {
         <Button
           variant="ghost"
           className="mb-8"
-          onClick={() => navigate('/')}
+          onClick={() => navigate('/register')}
         >
           <ArrowLeft className="mr-2 h-4 w-4" />
-          トップページに戻る
+          戻る
         </Button>
 
         <Card className="w-full">
           <CardHeader className="text-center">
-            <h1 className="text-2xl font-bold">ログイン</h1>
+            <h1 className="text-2xl font-bold">アカウント作成</h1>
             <p className="text-sm text-gray-600">
-              アカウントにログインして、サービスをご利用ください
+              必要な情報を入力してください
             </p>
           </CardHeader>
           <CardContent>
@@ -69,26 +78,14 @@ const Login = () => {
                 />
               </div>
               <Button type="submit" className="w-full" disabled={loading}>
-                {loading ? 'ログイン中...' : 'ログイン'}
+                {loading ? '登録中...' : '次へ'}
               </Button>
             </form>
           </CardContent>
-          <CardFooter className="flex flex-col space-y-4">
-            <div className="text-sm text-center text-gray-600">
-              アカウントをお持ちでない方は
-              <Button
-                variant="link"
-                className="p-0 ml-1"
-                onClick={() => navigate('/register')}
-              >
-                新規登録
-              </Button>
-            </div>
-          </CardFooter>
         </Card>
       </div>
     </div>
   );
 };
 
-export default Login;
+export default RegisterDetails;
