@@ -19,11 +19,6 @@ export const useProfile = () => {
 
       if (error) throw error;
 
-      if (!data) {
-        console.log('No profile found for user:', userId);
-        return null;
-      }
-
       setProfile(data);
       return data;
     } catch (error: any) {
@@ -38,12 +33,10 @@ export const useProfile = () => {
   };
 
   const handleProfileNavigation = (profileData: UserProfile | null) => {
-    if (window.location.pathname === '/login') {
-      if (!profileData?.company_name) {
-        navigate('/profile-setup');
-      } else {
-        navigate(`/dashboard/${profileData.primary_type}`);
-      }
+    if (profileData?.company_name && profileData?.primary_type) {
+      navigate(`/dashboard/${profileData.primary_type}`);
+    } else {
+      navigate('/profile-setup');
     }
   };
 

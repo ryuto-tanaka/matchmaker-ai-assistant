@@ -19,15 +19,13 @@ export const useAuth = () => {
     setUser(currentUser);
 
     if (currentUser) {
-      try {
-        const profileData = await fetchProfile(currentUser.id);
-        if (!profileData?.company_name && window.location.pathname !== '/profile-setup') {
+      const profileData = await fetchProfile(currentUser.id);
+      if (window.location.pathname === '/login') {
+        if (profileData?.company_name) {
+          navigate(`/dashboard/${profileData.primary_type}`);
+        } else {
           navigate('/profile-setup');
-        } else if (profileData?.company_name && profileData?.primary_type) {
-          handleProfileNavigation(profileData);
         }
-      } catch (error) {
-        console.error('Profile fetch error:', error);
       }
     } else {
       setProfile(null);
@@ -37,7 +35,7 @@ export const useAuth = () => {
       }
     }
     setLoading(false);
-  }, [navigate, fetchProfile, handleProfileNavigation, setProfile]);
+  }, [navigate, fetchProfile, setProfile]);
 
   useEffect(() => {
     const initializeAuth = async () => {
@@ -73,10 +71,10 @@ export const useAuth = () => {
         description: "ログインに成功しました",
       });
 
-      if (!profileData?.company_name) {
-        navigate('/profile-setup');
+      if (profileData?.company_name) {
+        navigate(`/dashboard/${profileData.primary_type}`);
       } else {
-        handleProfileNavigation(profileData);
+        navigate('/profile-setup');
       }
     } catch (error: any) {
       toast({
