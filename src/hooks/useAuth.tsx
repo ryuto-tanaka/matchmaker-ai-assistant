@@ -7,71 +7,12 @@ import { toast } from '@/components/ui/use-toast';
 import { translateError } from '@/utils/authErrorMessages';
 import { useProfile } from '@/hooks/useProfile';
 
-// デモ用の自動ログイン情報
-const DEMO_EMAIL = 'demo@gmail.com';
-const DEMO_PASSWORD = 'Demo123456!';
-
 export const useAuth = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [signUpCooldown, setSignUpCooldown] = useState(false);
   const { profile, setProfile, fetchProfile, handleProfileNavigation } = useProfile();
-
-  // デモ用の自動ログイン関数
-  const autoLogin = async () => {
-    try {
-      console.log('Attempting auto login...');
-      
-      // まず既存のアカウントでログインを試みる
-      const { data: loginData, error: loginError } = await supabase.auth.signInWithPassword({
-        email: DEMO_EMAIL,
-        password: DEMO_PASSWORD,
-      });
-
-      if (!loginError && loginData.user) {
-        console.log('Auto login successful with existing account');
-        return loginData;
-      }
-
-      console.log('Login failed, attempting to create account...');
-
-      // ログインに失敗した場合は新規登録を試みる
-      const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
-        email: DEMO_EMAIL,
-        password: DEMO_PASSWORD,
-        options: {
-          emailRedirectTo: window.location.origin,
-          data: {
-            email_confirmed_at: new Date().toISOString(), // メール確認をスキップ
-          }
-        }
-      });
-
-      if (signUpError) {
-        console.error('Sign up failed:', signUpError);
-        throw signUpError;
-      }
-
-      console.log('Account created successfully, attempting login...');
-      
-      // 登録後、少し待ってからログインを試みる
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      const { data: finalLoginData, error: finalLoginError } = await supabase.auth.signInWithPassword({
-        email: DEMO_EMAIL,
-        password: DEMO_PASSWORD,
-      });
-
-      if (finalLoginError) throw finalLoginError;
-
-      console.log('Auto login successful after account creation');
-      return finalLoginData;
-    } catch (error: any) {
-      console.error('Auto login process failed:', error);
-      throw error;
-    }
-  };
 
   const handleAuthStateChange = useCallback(async (session: any) => {
     setUser(session?.user ?? null);
@@ -95,30 +36,13 @@ export const useAuth = () => {
   }, [navigate, fetchProfile, handleProfileNavigation, setProfile]);
 
   useEffect(() => {
-    const initAuth = async () => {
-      console.log('Initializing auth...');
-      const { data: { session } } = await supabase.auth.getSession();
-      
-      if (!session) {
-        console.log('No session found, attempting auto login...');
-        try {
-          const data = await autoLogin();
-          handleAuthStateChange(data?.session);
-        } catch (error) {
-          console.error('Auto login failed:', error);
-          setLoading(false);
-        }
-      } else {
-        console.log('Existing session found');
-        handleAuthStateChange(session);
-      }
-    };
-
-    initAuth();
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      handleAuthStateChange(session);
+    });
 
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
+    } = supabase.auth.onAuthStateChange(async (_event, session) => {
       handleAuthStateChange(session);
     });
 
