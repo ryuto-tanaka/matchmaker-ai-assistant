@@ -1,5 +1,5 @@
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { User } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
@@ -14,13 +14,25 @@ interface UserProfile {
   primary_type: 'applicant' | 'provider' | 'expert';
 }
 
+// Supabaseエラーメッセージの日本語化
+const translateError = (error: string): string => {
+  const errorMessages: { [key: string]: string } = {
+    'Invalid login credentials': 'メールアドレスまたはパスワードが正しくありません',
+    'Email not confirmed': 'メールアドレスが確認されていません',
+    'User already registered': 'このメールアドレスは既に登録されています',
+    'Password should be at least 6 characters': 'パスワードは6文字以上で入力してください',
+    'Email format is invalid': 'メールアドレスの形式が正しくありません',
+  };
+  return errorMessages[error] || error;
+};
+
 export const useAuth = () => {
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
-  const handleAuthStateChange = async (session: any) => {
+  const handleAuthStateChange = useCallback(async (session: any) => {
     setUser(session?.user ?? null);
     if (session?.user) {
       try {
@@ -50,13 +62,20 @@ export const useAuth = () => {
           variant: "destructive",
         });
         // エラー時はログインページへリダイレクト
-        navigate('/login');
+        if (window.location.pathname !== '/login') {
+          navigate('/login');
+        }
       }
     } else {
       setProfile(null);
+      // 未認証状態でprotectedルートにアクセスした場合、ログインページへリダイレクト
+      const protectedRoutes = ['/dashboard', '/profile-setup'];
+      if (protectedRoutes.some(route => window.location.pathname.startsWith(route))) {
+        navigate('/login');
+      }
     }
     setLoading(false);
-  };
+  }, [navigate]);
 
   useEffect(() => {
     // 現在のセッションを取得
@@ -72,7 +91,7 @@ export const useAuth = () => {
     });
 
     return () => subscription.unsubscribe();
-  }, []);
+  }, [handleAuthStateChange]);
 
   const signIn = async (email: string, password: string) => {
     setLoading(true);
@@ -92,7 +111,7 @@ export const useAuth = () => {
     } catch (error: any) {
       toast({
         title: "ログインエラー",
-        description: error.message || "ログインに失敗しました",
+        description: translateError(error.message) || "ログインに失敗しました",
         variant: "destructive",
       });
       throw error;
@@ -113,14 +132,14 @@ export const useAuth = () => {
 
       toast({
         title: "登録完了",
-        description: "確認メールを送信しました。メールをご確認ください。",
+        description: "メールアドレスの確認メールを送信しました。メールの内容に従って登録を完了してください。",
       });
 
       return data;
     } catch (error: any) {
       toast({
         title: "登録エラー",
-        description: error.message || "登録に失敗しました",
+        description: translateError(error.message) || "登録に失敗しました",
         variant: "destructive",
       });
       throw error;
@@ -134,11 +153,17 @@ export const useAuth = () => {
     try {
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
+      
+      toast({
+        title: "ログアウト完了",
+        description: "ログアウトしました",
+      });
+      
       navigate('/login');
     } catch (error: any) {
       toast({
         title: "エラー",
-        description: "ログアウトに失敗しました",
+        description: translateError(error.message) || "ログアウトに失敗しました",
         variant: "destructive",
       });
     } finally {
