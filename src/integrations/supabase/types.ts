@@ -129,6 +129,92 @@ export type Database = {
         }
         Relationships: []
       }
+      grant_applications: {
+        Row: {
+          created_at: string
+          grant_id: string
+          id: string
+          status: string
+          submitted_at: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          grant_id: string
+          id?: string
+          status?: string
+          submitted_at?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          grant_id?: string
+          id?: string
+          status?: string
+          submitted_at?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "grant_applications_grant_id_fkey"
+            columns: ["grant_id"]
+            isOneToOne: false
+            referencedRelation: "grants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      grants: {
+        Row: {
+          application_end_date: string | null
+          application_start_date: string | null
+          created_at: string
+          description: string
+          id: string
+          max_amount: number
+          name: string
+          official_link: string | null
+          status: string
+          subsidy_rate: number
+          target_industries: string[] | null
+          target_regions: string[] | null
+          updated_at: string
+        }
+        Insert: {
+          application_end_date?: string | null
+          application_start_date?: string | null
+          created_at?: string
+          description: string
+          id?: string
+          max_amount: number
+          name: string
+          official_link?: string | null
+          status?: string
+          subsidy_rate: number
+          target_industries?: string[] | null
+          target_regions?: string[] | null
+          updated_at?: string
+        }
+        Update: {
+          application_end_date?: string | null
+          application_start_date?: string | null
+          created_at?: string
+          description?: string
+          id?: string
+          max_amount?: number
+          name?: string
+          official_link?: string | null
+          status?: string
+          subsidy_rate?: number
+          target_industries?: string[] | null
+          target_regions?: string[] | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           address: string | null
