@@ -33,16 +33,16 @@ export const useProfile = () => {
         description: "プロフィールの取得に失敗しました",
         variant: "destructive",
       });
-      throw error;
+      return null;
     }
   };
 
   const handleProfileNavigation = (profileData: UserProfile | null) => {
     if (window.location.pathname === '/login') {
-      if (profileData?.company_name) {
-        navigate(`/dashboard/${profileData.primary_type}`);
-      } else {
+      if (!profileData?.company_name) {
         navigate('/profile-setup');
+      } else {
+        navigate(`/dashboard/${profileData.primary_type}`);
       }
     }
   };

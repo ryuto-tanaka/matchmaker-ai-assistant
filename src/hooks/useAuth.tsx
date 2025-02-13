@@ -15,15 +15,19 @@ export const useAuth = () => {
   const { profile, setProfile, fetchProfile, handleProfileNavigation } = useProfile();
 
   const handleAuthStateChange = useCallback(async (session: any) => {
-    setUser(session?.user ?? null);
-    if (session?.user) {
+    const currentUser = session?.user ?? null;
+    setUser(currentUser);
+
+    if (currentUser) {
       try {
-        const profileData = await fetchProfile(session.user.id);
-        handleProfileNavigation(profileData);
-      } catch (error) {
-        if (window.location.pathname !== '/login') {
-          navigate('/login');
+        const profileData = await fetchProfile(currentUser.id);
+        if (!profileData?.company_name && window.location.pathname !== '/profile-setup') {
+          navigate('/profile-setup');
+        } else if (profileData?.company_name && profileData?.primary_type) {
+          handleProfileNavigation(profileData);
         }
+      } catch (error) {
+        console.error('Profile fetch error:', error);
       }
     } else {
       setProfile(null);
@@ -36,14 +40,17 @@ export const useAuth = () => {
   }, [navigate, fetchProfile, handleProfileNavigation, setProfile]);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      handleAuthStateChange(session);
-    });
+    const initializeAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      await handleAuthStateChange(session);
+    };
+
+    initializeAuth();
 
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (_event, session) => {
-      handleAuthStateChange(session);
+      await handleAuthStateChange(session);
     });
 
     return () => subscription.unsubscribe();
@@ -66,7 +73,11 @@ export const useAuth = () => {
         description: "ログインに成功しました",
       });
 
-      handleProfileNavigation(profileData);
+      if (!profileData?.company_name) {
+        navigate('/profile-setup');
+      } else {
+        handleProfileNavigation(profileData);
+      }
     } catch (error: any) {
       toast({
         title: "ログインエラー",
@@ -102,6 +113,10 @@ export const useAuth = () => {
           setTimeout(() => setSignUpCooldown(false), 15000);
         }
         throw error;
+      }
+
+      if (data.user) {
+        navigate('/profile-setup');
       }
 
       toast({
