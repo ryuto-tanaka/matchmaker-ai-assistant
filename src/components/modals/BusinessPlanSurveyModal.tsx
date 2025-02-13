@@ -202,6 +202,7 @@ const BusinessPlanSurveyModal: React.FC<BusinessPlanSurveyModalProps> = ({
           { id: 'advertising', label: '広告費（SNS広告、チラシ制作費など）' },
           { id: 'development', label: '開発費（商品/サービスの試作やリニューアル）' },
           { id: 'it', label: 'IT導入費（ウェブサイト作成、ITツール導入）' },
+          { id: 'other', label: 'その他' },
         ].map((expense) => (
           <div key={expense.id} className="flex items-center space-x-2">
             <Checkbox
@@ -217,6 +218,18 @@ const BusinessPlanSurveyModal: React.FC<BusinessPlanSurveyModalProps> = ({
           </div>
         ))}
       </div>
+
+      {formData.expenseTypes.includes('other') && (
+        <div className="space-y-2 pl-6">
+          <Label>その他の経費の詳細</Label>
+          <Textarea
+            value={formData.otherExpense}
+            onChange={(e) => handleChange('otherExpense', e.target.value)}
+            placeholder="その他の経費の詳細を記入してください"
+            rows={2}
+          />
+        </div>
+      )}
 
       <div className="space-y-2">
         <Label>事業スケジュール</Label>
