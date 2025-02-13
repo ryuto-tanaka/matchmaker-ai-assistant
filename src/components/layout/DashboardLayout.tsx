@@ -18,6 +18,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
+import { useAuthContext } from '@/contexts/AuthContext';
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -33,22 +34,24 @@ const DashboardLayout = ({
   userName = 'ユーザー'
 }: DashboardLayoutProps) => {
   const navigate = useNavigate();
+  const { signOut } = useAuthContext();
 
   const menuItems = {
     applicant: [
-      { icon: LayoutGrid, label: 'ダッシュボード', path: '/dashboard/applicant' },
-      { icon: FileText, label: '補助金申請', path: '/dashboard/applicant/applications' },
-      { icon: Users, label: '専門家に相談', path: '/dashboard/applicant/experts' },
+      { icon: LayoutGrid, label: 'ダッシュボード', path: '/dashboard/applicant', implemented: true },
+      // 未実装ページは一時的にdisabled: trueを設定
+      { icon: FileText, label: '補助金申請', path: '/dashboard/applicant/applications', disabled: true },
+      { icon: Users, label: '専門家に相談', path: '/dashboard/applicant/experts', disabled: true },
     ],
     provider: [
-      { icon: LayoutGrid, label: 'ダッシュボード', path: '/dashboard/provider' },
-      { icon: FileText, label: '案件一覧', path: '/dashboard/provider/cases' },
-      { icon: Users, label: 'クライアント管理', path: '/dashboard/provider/clients' },
+      { icon: LayoutGrid, label: 'ダッシュボード', path: '/dashboard/provider', implemented: true },
+      { icon: FileText, label: '案件一覧', path: '/dashboard/provider/cases', disabled: true },
+      { icon: Users, label: 'クライアント管理', path: '/dashboard/provider/clients', disabled: true },
     ],
     expert: [
-      { icon: LayoutGrid, label: 'ダッシュボード', path: '/dashboard/expert' },
-      { icon: FileText, label: '相談案件', path: '/dashboard/expert/consultations' },
-      { icon: Users, label: 'クライアント一覧', path: '/dashboard/expert/clients' },
+      { icon: LayoutGrid, label: 'ダッシュボード', path: '/dashboard/expert', implemented: true },
+      { icon: FileText, label: '相談案件', path: '/dashboard/expert/consultations', disabled: true },
+      { icon: Users, label: 'クライアント一覧', path: '/dashboard/expert/clients', disabled: true },
     ],
   };
 
@@ -58,14 +61,16 @@ const DashboardLayout = ({
     navigate(`/dashboard/${type}`);
   };
 
-  const handleLogout = () => {
-    // TODO: ログアウト処理の実装
-    navigate('/login');
+  const handleLogout = async () => {
+    try {
+      await signOut();
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
   };
 
   return (
     <div className="min-h-screen flex">
-      {/* サイドバー */}
       <div className="w-64 bg-white border-r flex flex-col">
         <div className="p-4 border-b">
           <h1 className="text-xl font-bold text-primary">補助金プラットフォーム</h1>
@@ -78,10 +83,12 @@ const DashboardLayout = ({
                 key={index}
                 variant="ghost"
                 className="w-full justify-start"
-                onClick={() => navigate(item.path)}
+                onClick={() => !item.disabled && navigate(item.path)}
+                disabled={item.disabled}
               >
                 <item.icon className="mr-2 h-4 w-4" />
                 {item.label}
+                {item.disabled && <span className="ml-2 text-xs text-gray-400">(準備中)</span>}
               </Button>
             ))}
           </nav>
@@ -122,9 +129,11 @@ const DashboardLayout = ({
               variant="ghost"
               className="w-full justify-start"
               onClick={() => navigate('/dashboard/settings')}
+              disabled
             >
               <Settings className="mr-2 h-4 w-4" />
               設定
+              <span className="ml-2 text-xs text-gray-400">(準備中)</span>
             </Button>
             <Button
               variant="ghost"
@@ -138,7 +147,6 @@ const DashboardLayout = ({
         </div>
       </div>
 
-      {/* メインコンテンツ */}
       <div className="flex-1 bg-gray-50">
         <main className="p-6">
           {children}

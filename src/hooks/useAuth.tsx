@@ -1,3 +1,4 @@
+
 import { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { User } from '@supabase/supabase-js';
@@ -49,10 +50,12 @@ export const useAuth = () => {
         setProfile(data);
 
         // プロフィールの状態に応じてリダイレクト
-        if (window.location.pathname === '/') {
-          if (data) {
+        if (window.location.pathname === '/login') {
+          if (data.company_name) {
+            // プロフィールが完全な場合、ダッシュボードへ
             navigate(`/dashboard/${data.primary_type}`);
           } else {
+            // プロフィールが不完全な場合、プロフィール設定へ
             navigate('/profile-setup');
           }
         }
@@ -105,10 +108,26 @@ export const useAuth = () => {
 
       if (error) throw error;
 
+      // プロフィール情報を取得
+      const { data: profileData, error: profileError } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', data.user.id)
+        .single();
+
+      if (profileError) throw profileError;
+
       toast({
         title: "ログイン成功",
         description: "ログインに成功しました",
       });
+
+      // プロフィールの状態に応じて画面遷移
+      if (profileData.company_name) {
+        navigate(`/dashboard/${profileData.primary_type}`);
+      } else {
+        navigate('/profile-setup');
+      }
 
     } catch (error: any) {
       toast({
