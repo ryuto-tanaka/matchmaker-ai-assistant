@@ -20,6 +20,14 @@ import NotificationSettings from "./pages/dashboard/settings/notifications/Notif
 import SecuritySettings from "./pages/dashboard/settings/security/SecuritySettings";
 import LocaleSettings from "./pages/dashboard/settings/locale/LocaleSettings";
 
+// 新規追加ページのインポート
+import ApplicationsPage from "./pages/dashboard/applicant/ApplicationsPage";
+import ExpertsPage from "./pages/dashboard/applicant/ExpertsPage";
+import CasesPage from "./pages/dashboard/provider/CasesPage";
+import ProviderClientsPage from "./pages/dashboard/provider/ClientsPage";
+import ConsultationsPage from "./pages/dashboard/expert/ConsultationsPage";
+import ExpertClientsPage from "./pages/dashboard/expert/ClientsPage";
+
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -35,14 +43,29 @@ const App = () => (
             <Route path="/register/details" element={<RegisterDetails />} />
             <Route path="/login" element={<Login />} />
             <Route path="/profile-setup" element={<ProfileSetup />} />
+            
+            {/* 申請者関連のルート */}
             <Route path="/dashboard/applicant" element={<ApplicantDashboard />} />
+            <Route path="/dashboard/applicant/applications" element={<ApplicationsPage />} />
+            <Route path="/dashboard/applicant/experts" element={<ExpertsPage />} />
+            
+            {/* サービス提供者関連のルート */}
             <Route path="/dashboard/provider" element={<ProviderDashboard />} />
+            <Route path="/dashboard/provider/cases" element={<CasesPage />} />
+            <Route path="/dashboard/provider/clients" element={<ProviderClientsPage />} />
+            
+            {/* 専門家関連のルート */}
             <Route path="/dashboard/expert" element={<ExpertDashboard />} />
+            <Route path="/dashboard/expert/consultations" element={<ConsultationsPage />} />
+            <Route path="/dashboard/expert/clients" element={<ExpertClientsPage />} />
+            
+            {/* 設定関連のルート */}
             <Route path="/dashboard/settings" element={<Settings />} />
             <Route path="/dashboard/settings/profile" element={<ProfileSettings />} />
             <Route path="/dashboard/settings/notifications" element={<NotificationSettings />} />
             <Route path="/dashboard/settings/security" element={<SecuritySettings />} />
             <Route path="/dashboard/settings/locale" element={<LocaleSettings />} />
+            
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>
