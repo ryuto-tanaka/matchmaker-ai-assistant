@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { useAuthContext } from "@/contexts/AuthContext";
 import { UserRole } from "@/types/user";
-import { ArrowRight, CheckCircle2, Shield, Briefcase, Users } from "lucide-react";
+import { ArrowRight, CheckCircle2, Shield, Briefcase, Users, LogIn } from "lucide-react";
 
 const Index = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -182,9 +182,10 @@ const Index = () => {
                   <Button
                     variant="outline"
                     size="lg"
-                    className="text-xl px-12 py-8 hover:bg-gray-50 transition-all duration-300 border-2"
+                    className="text-xl px-12 py-8 bg-white border-primary border-2 text-primary hover:bg-primary hover:text-white transition-all duration-300 transform hover:-translate-y-1 shadow-lg hover:shadow-xl"
                     onClick={() => navigate("/login")}
                   >
+                    <LogIn className="mr-3 h-6 w-6" />
                     ログインはこちら
                   </Button>
                 </div>
