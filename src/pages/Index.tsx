@@ -92,50 +92,13 @@ const Index = () => {
     }
   ];
 
-  const trustFactors = [
-    {
-      title: "無料登録",
-      description: "初期費用0円で始められます。申請完了後の成功報酬型なので、安心してご利用いただけます",
-      points: [
-        "会員登録完全無料",
-        "初期費用・月額費用なし",
-        "成功報酬型の料金体系"
-      ]
-    },
-    {
-      title: "専門家監修",
-      description: "業界経験豊富な専門家が、申請書類を徹底的にチェック。確実な申請をサポートします",
-      points: [
-        "経験15年以上の専門家が対応",
-        "24時間以内の迅速レビュー",
-        "申請戦略の個別アドバイス"
-      ]
-    },
-    {
-      title: "安心サポート",
-      description: "申請から採択後まで、包括的なサポート体制で不安を解消します",
-      points: [
-        "24時間365日サポート体制",
-        "採択後のフォローアップ対応",
-        "専門家への無料相談"
-      ]
-    }
-  ];
-
   const targetIndustries = [
-    // 製造業
     "機械製造", "食品加工", "電機電子", "金属加工", "化学", "繊維",
-    // IT・サービス業
     "ソフトウェア", "クラウドサービス", "デジタルコンテンツ", "システム開発", "データ分析", "AI開発",
-    // 小売・飲食業
     "小売店", "レストラン", "カフェ", "食品スーパー", "アパレル", "ドラッグストア",
-    // 建設・不動産
     "建設会社", "不動産", "建築設計", "リフォーム", "インテリア",
-    // 医療・福祉
     "病院", "クリニック", "介護施設", "保育所", "リハビリ施設",
-    // サービス業
     "美容院", "エステ", "ホテル", "旅館", "フィットネス", "学習塾",
-    // その他
     "運輸", "倉庫", "農業", "水産", "林業", "環境"
   ];
 
@@ -259,21 +222,13 @@ const Index = () => {
                   </Button>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 bg-white p-6 rounded-xl shadow-lg">
-                  {trustFactors.map((factor, index) => (
+                  {features.map((feature, index) => (
                     <div key={index} className="text-center p-4">
                       <div className="flex items-center justify-center mb-3">
                         <CheckCircle2 className="text-primary w-6 h-6" />
-                        <span className="ml-2 font-semibold">{factor.title}</span>
+                        <span className="ml-2 font-semibold">{feature.title}</span>
                       </div>
-                      <p className="text-sm text-gray-600 mb-2">{factor.description}</p>
-                      <ul className="text-xs text-left space-y-1">
-                        {factor.points.map((point, i) => (
-                          <li key={i} className="flex items-start">
-                            <span className="text-primary mr-1">•</span>
-                            <span>{point}</span>
-                          </li>
-                        ))}
-                      </ul>
+                      <p className="text-sm text-gray-600 mb-2">{feature.description}</p>
                     </div>
                   ))}
                 </div>
@@ -294,103 +249,6 @@ const Index = () => {
                   </div>
                 </div>
               </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* 対象業種セクション */}
-      <div className="py-20 bg-white">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <span className="inline-block px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-semibold mb-4">
-              幅広い業種に対応
-            </span>
-            <h2 className="text-4xl font-bold mb-6">
-              あらゆる業種の企業様を
-              <span className="text-primary block mt-2">強力にサポート</span>
-            </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              業種や規模を問わず、さまざまな企業様の補助金・助成金申請をサポートしています。
-              <span className="block mt-2 font-medium">
-                豊富な実績と専門知識で、最適な補助金・助成金を見つけ出します。
-              </span>
-            </p>
-          </div>
-          <div className="bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 border-2 border-gray-100 hover:border-primary/20">
-            <h3 className="text-2xl font-bold text-gray-900 mb-6">
-              対応業種一覧
-            </h3>
-            <div className="flex flex-wrap gap-3">
-              {targetIndustries.map((industry, i) => (
-                <span
-                  key={i}
-                  className="inline-flex items-center px-4 py-2 bg-gray-50 text-gray-700 rounded-full text-sm font-medium border border-gray-200 hover:border-primary/30 hover:bg-primary/5 transition-colors duration-200"
-                >
-                  {industry}
-                </span>
-              ))}
-            </div>
-            <p className="text-gray-500 text-sm mt-6">
-              ※上記以外の業種もサポート可能です。お気軽にご相談ください。
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* Before & After セクション */}
-      <div className="py-20 bg-gray-50">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold mb-4">
-              申請プロセスの革新的な変化
-            </h2>
-            <p className="text-gray-600 max-w-2xl mx-auto">
-              従来の複雑な申請プロセスを、シンプルで効率的なものに変革します
-            </p>
-          </div>
-          <div className="grid md:grid-cols-2 gap-8 items-center">
-            <div className="bg-white p-8 rounded-lg shadow-lg">
-              <div className="text-2xl font-bold text-gray-400 mb-4">Before</div>
-              <ul className="space-y-4">
-                <li className="flex items-start">
-                  <span className="text-red-500 mr-2">×</span>
-                  <span>複雑な申請書類の作成に時間がかかる</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="text-red-500 mr-2">×</span>
-                  <span>事業計画書の作成に苦労する</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="text-red-500 mr-2">×</span>
-                  <span>必要な情報収集に時間を要する</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="text-red-500 mr-2">×</span>
-                  <span>専門家への相談が困難</span>
-                </li>
-              </ul>
-            </div>
-            <div className="bg-primary/5 p-8 rounded-lg shadow-lg border-2 border-primary">
-              <div className="text-2xl font-bold text-primary mb-4">After</div>
-              <ul className="space-y-4">
-                <li className="flex items-start">
-                  <span className="text-primary mr-2">✓</span>
-                  <span>AIによる申請書類の自動生成</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="text-primary mr-2">✓</span>
-                  <span>事業計画書がほぼ自動で完成</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="text-primary mr-2">✓</span>
-                  <span>必要情報の効率的な収集と整理</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="text-primary mr-2">✓</span>
-                  <span>専門家に気軽に相談可能</span>
-                </li>
-              </ul>
             </div>
           </div>
         </div>
@@ -498,59 +356,41 @@ const Index = () => {
         </div>
       </div>
 
-      {/* 対象ジャンルセクション */}
+      {/* 対象業種セクション */}
       <div className="py-20 bg-white">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <span className="inline-block px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-semibold mb-4">
-              90ジャンル以上に対応
+              幅広い業種に対応
             </span>
             <h2 className="text-4xl font-bold mb-6">
-              あらゆる分野の専門家を
+              あらゆる業種の企業様を
               <span className="text-primary block mt-2">強力にサポート</span>
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              経験や実績を活かして、あなたの専門分野で収益を上げるためのサポートをご提供します。
+              業種や規模を問わず、さまざまな企業様の補助金・助成金申請をサポートしています。
               <span className="block mt-2 font-medium">
-                個人事業主から企業まで、幅広い分野でご活用いただけます。
+                豊富な実績と専門知識で、最適な補助金・助成金を見つけ出します。
               </span>
             </p>
           </div>
-          <div className="grid lg:grid-cols-2 gap-8">
-            {serviceCategories.map((category, index) => (
-              <div
-                key={index}
-                className="bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 border-2 border-gray-100 hover:border-primary/20"
-              >
-                <h3 className="text-2xl font-bold text-gray-900 mb-6">
-                  {category.title}
-                </h3>
-                <div className="flex flex-wrap gap-3">
-                  {category.services.map((service, i) => (
-                    <span
-                      key={i}
-                      className="inline-flex items-center px-4 py-2 bg-gray-50 text-gray-700 rounded-full text-sm font-medium border border-gray-200 hover:border-primary/30 hover:bg-primary/5 transition-colors duration-200"
-                    >
-                      {service}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
-          <div className="mt-12 text-center">
-            <p className="text-gray-600 mb-6">
-              ※上記以外にも多数の分野に対応しております。お気軽にご相談ください。
+          <div className="bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 border-2 border-gray-100 hover:border-primary/20">
+            <h3 className="text-2xl font-bold text-gray-900 mb-6">
+              対応業種一覧
+            </h3>
+            <div className="flex flex-wrap gap-3">
+              {targetIndustries.map((industry, i) => (
+                <span
+                  key={i}
+                  className="inline-flex items-center px-4 py-2 bg-gray-50 text-gray-700 rounded-full text-sm font-medium border border-gray-200 hover:border-primary/30 hover:bg-primary/5 transition-colors duration-200"
+                >
+                  {industry}
+                </span>
+              ))}
+            </div>
+            <p className="text-gray-500 text-sm mt-6">
+              ※上記以外の業種もサポート可能です。お気軽にご相談ください。
             </p>
-            <Button
-              variant="outline"
-              size="lg"
-              className="text-lg px-8 py-4 border-primary text-primary hover:bg-primary hover:text-white transition-all duration-300"
-              onClick={() => navigate("/register")}
-            >
-              すべてのジャンルを見る
-              <ArrowRight className="ml-2 h-5 w-5" />
-            </Button>
           </div>
         </div>
       </div>
