@@ -24,21 +24,21 @@ const Settings = () => {
       title: "通知設定",
       description: "メールやアプリ内の通知設定を管理します",
       path: "/dashboard/settings/notifications",
-      implemented: false
+      implemented: true
     },
     {
       icon: Shield,
       title: "セキュリティ設定",
       description: "パスワードやログイン履歴の管理を行います",
       path: "/dashboard/settings/security",
-      implemented: false
+      implemented: true
     },
     {
       icon: Globe,
       title: "言語・地域設定",
       description: "表示言語や地域に関する設定を変更します",
       path: "/dashboard/settings/locale",
-      implemented: false
+      implemented: true
     }
   ];
 

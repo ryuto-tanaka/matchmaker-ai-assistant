@@ -16,6 +16,9 @@ import ExpertDashboard from "./pages/dashboard/ExpertDashboard";
 import RegisterDetails from "./pages/RegisterDetails";
 import Settings from "./pages/dashboard/settings/Settings";
 import ProfileSettings from "./pages/dashboard/settings/profile/ProfileSettings";
+import NotificationSettings from "./pages/dashboard/settings/notifications/NotificationSettings";
+import SecuritySettings from "./pages/dashboard/settings/security/SecuritySettings";
+import LocaleSettings from "./pages/dashboard/settings/locale/LocaleSettings";
 
 const queryClient = new QueryClient();
 
@@ -37,6 +40,9 @@ const App = () => (
             <Route path="/dashboard/expert" element={<ExpertDashboard />} />
             <Route path="/dashboard/settings" element={<Settings />} />
             <Route path="/dashboard/settings/profile" element={<ProfileSettings />} />
+            <Route path="/dashboard/settings/notifications" element={<NotificationSettings />} />
+            <Route path="/dashboard/settings/security" element={<SecuritySettings />} />
+            <Route path="/dashboard/settings/locale" element={<LocaleSettings />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>
