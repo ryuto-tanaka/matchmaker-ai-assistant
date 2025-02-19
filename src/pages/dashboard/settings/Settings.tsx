@@ -17,7 +17,7 @@ const Settings = () => {
       title: "プロフィール設定",
       description: "会社情報や連絡先などの基本情報を管理します",
       path: "/dashboard/settings/profile",
-      implemented: false
+      implemented: true
     },
     {
       icon: Bell,
