@@ -122,58 +122,21 @@ const Index = () => {
     }
   ];
 
-  const targetCategories = [
-    {
-      title: "製造業",
-      examples: ["工場の自動化", "生産設備の導入", "研究開発支援"],
-      industries: ["機械製造", "食品加工", "電機電子"]
-    },
-    {
-      title: "IT・サービス業",
-      examples: ["システム開発", "デジタル化支援", "クラウド導入"],
-      industries: ["ソフトウェア", "クラウドサービス", "デジタルコンテンツ"]
-    },
-    {
-      title: "小売・飲食業",
-      examples: ["店舗改装", "デジタル化", "衛生設備導入"],
-      industries: ["小売店", "レストラン", "カフェ"]
-    },
-    {
-      title: "建設・不動産",
-      examples: ["設備投資", "環境対策", "安全対策"],
-      industries: ["建設会社", "不動産", "建築設計"]
-    }
-  ];
-
-  const serviceCategories = [
-    {
-      title: "美容・健康",
-      services: [
-        "エステサロン支援", "ネイルサロン支援", "ボディメイク", "美容鍼灸", 
-        "ダイエット", "整体技術指導", "セルフケア", "ヨガ", "パーソナルトレーニング"
-      ]
-    },
-    {
-      title: "教育・スキル",
-      services: [
-        "プログラミング", "WEBデザイン", "Canvaデザイン", "動画編集",
-        "英語コーチ", "フランス語", "教員支援", "料理教室", "ピアノ教室支援"
-      ]
-    },
-    {
-      title: "ビジネス支援",
-      services: [
-        "女性起業家支援", "コーチング", "キャリアコーチング", "転職支援",
-        "ネットショップ支援", "SNSマーケティング", "物販", "FX投資"
-      ]
-    },
-    {
-      title: "ライフスタイル",
-      services: [
-        "子育て支援", "夫婦仲改善", "心理セラピスト", "性格診断",
-        "占い", "手相鑑定", "開運術", "マインドフルネス"
-      ]
-    }
+  const targetIndustries = [
+    // 製造業
+    "機械製造", "食品加工", "電機電子", "金属加工", "化学", "繊維",
+    // IT・サービス業
+    "ソフトウェア", "クラウドサービス", "デジタルコンテンツ", "システム開発", "データ分析", "AI開発",
+    // 小売・飲食業
+    "小売店", "レストラン", "カフェ", "食品スーパー", "アパレル", "ドラッグストア",
+    // 建設・不動産
+    "建設会社", "不動産", "建築設計", "リフォーム", "インテリア",
+    // 医療・福祉
+    "病院", "クリニック", "介護施設", "保育所", "リハビリ施設",
+    // サービス業
+    "美容院", "エステ", "ホテル", "旅館", "フィットネス", "学習塾",
+    // その他
+    "運輸", "倉庫", "農業", "水産", "林業", "環境"
   ];
 
   return (
@@ -261,7 +224,7 @@ const Index = () => {
         </div>
       </div>
 
-      {/* 対象企業・カテゴリーセクション */}
+      {/* 対象業種セクション */}
       <div className="py-20 bg-white">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
@@ -279,47 +242,23 @@ const Index = () => {
               </span>
             </p>
           </div>
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {targetCategories.map((category, index) => (
-              <div
-                key={index}
-                className="bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 border-2 border-gray-100 hover:border-primary/20"
-              >
-                <h3 className="text-2xl font-bold text-gray-900 mb-4">
-                  {category.title}
-                </h3>
-                <div className="space-y-6">
-                  <div>
-                    <h4 className="text-lg font-semibold text-primary mb-2">
-                      主な補助対象
-                    </h4>
-                    <ul className="space-y-2">
-                      {category.examples.map((example, i) => (
-                        <li key={i} className="flex items-start">
-                          <CheckCircle2 className="w-5 h-5 text-primary mt-0.5 mr-2 flex-shrink-0" />
-                          <span className="text-gray-700">{example}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                  <div>
-                    <h4 className="text-lg font-semibold text-primary mb-2">
-                      対象業種例
-                    </h4>
-                    <div className="flex flex-wrap gap-2">
-                      {category.industries.map((industry, i) => (
-                        <span
-                          key={i}
-                          className="inline-block px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm"
-                        >
-                          {industry}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ))}
+          <div className="bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 border-2 border-gray-100 hover:border-primary/20">
+            <h3 className="text-2xl font-bold text-gray-900 mb-6">
+              対応業種一覧
+            </h3>
+            <div className="flex flex-wrap gap-3">
+              {targetIndustries.map((industry, i) => (
+                <span
+                  key={i}
+                  className="inline-flex items-center px-4 py-2 bg-gray-50 text-gray-700 rounded-full text-sm font-medium border border-gray-200 hover:border-primary/30 hover:bg-primary/5 transition-colors duration-200"
+                >
+                  {industry}
+                </span>
+              ))}
+            </div>
+            <p className="text-gray-500 text-sm mt-6">
+              ※上記以外の業種もサポート可能です。お気軽にご相談ください。
+            </p>
           </div>
         </div>
       </div>
