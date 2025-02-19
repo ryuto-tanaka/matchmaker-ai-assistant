@@ -147,22 +147,22 @@ const Index = () => {
                     </span>
                   </p>
                 </div>
-                <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+                <div className="flex flex-col sm:flex-row gap-6 justify-center lg:justify-start">
                   <Button
                     size="lg"
-                    className="text-lg px-8 py-6 bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary shadow-lg hover:shadow-xl transition-all duration-300"
+                    className="text-xl px-12 py-8 bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1"
                     onClick={() => navigate("/register")}
                   >
-                    無料で始める
-                    <ArrowRight className="ml-2 h-5 w-5" />
+                    今すぐ無料で始める
+                    <ArrowRight className="ml-3 h-6 w-6" />
                   </Button>
                   <Button
                     variant="outline"
                     size="lg"
-                    className="text-lg px-8 py-6 hover:bg-gray-50 transition-all duration-300"
+                    className="text-xl px-12 py-8 hover:bg-gray-50 transition-all duration-300 border-2"
                     onClick={() => navigate("/login")}
                   >
-                    ログイン
+                    ログインはこちら
                   </Button>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 bg-white p-6 rounded-xl shadow-lg">
