@@ -1,4 +1,3 @@
-
 import { LoadingTimeoutAlert } from "@/components/ui/loading-timeout-alert";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
@@ -75,6 +74,24 @@ const Index = () => {
     },
   ];
 
+  const metrics = [
+    {
+      title: "補助金申請時間",
+      reduction: "70",
+      description: "AI活用による効率化で、申請時間を大幅カット"
+    },
+    {
+      title: "助成金申請時間",
+      reduction: "65",
+      description: "専門家サポートで、手続き時間を削減"
+    },
+    {
+      title: "事業計画書作成",
+      reduction: "90",
+      description: "AIと専門家の連携で、ほぼ自動作成"
+    }
+  ];
+
   return (
     <div className="min-h-screen">
       {/* ヒーローセクション */}
@@ -138,6 +155,96 @@ const Index = () => {
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Before & After セクション */}
+      <div className="py-20 bg-gray-50">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl font-bold mb-4">
+              申請プロセスの革新的な変化
+            </h2>
+            <p className="text-gray-600 max-w-2xl mx-auto">
+              従来の複雑な申請プロセスを、シンプルで効率的なものに変革します
+            </p>
+          </div>
+          <div className="grid md:grid-cols-2 gap-8 items-center">
+            <div className="bg-white p-8 rounded-lg shadow-lg">
+              <div className="text-2xl font-bold text-gray-400 mb-4">Before</div>
+              <ul className="space-y-4">
+                <li className="flex items-start">
+                  <span className="text-red-500 mr-2">×</span>
+                  <span>複雑な申請書類の作成に時間がかかる</span>
+                </li>
+                <li className="flex items-start">
+                  <span className="text-red-500 mr-2">×</span>
+                  <span>事業計画書の作成に苦労する</span>
+                </li>
+                <li className="flex items-start">
+                  <span className="text-red-500 mr-2">×</span>
+                  <span>必要な情報収集に時間を要する</span>
+                </li>
+                <li className="flex items-start">
+                  <span className="text-red-500 mr-2">×</span>
+                  <span>専門家への相談が困難</span>
+                </li>
+              </ul>
+            </div>
+            <div className="bg-primary/5 p-8 rounded-lg shadow-lg border-2 border-primary">
+              <div className="text-2xl font-bold text-primary mb-4">After</div>
+              <ul className="space-y-4">
+                <li className="flex items-start">
+                  <span className="text-primary mr-2">✓</span>
+                  <span>AIによる申請書類の自動生成</span>
+                </li>
+                <li className="flex items-start">
+                  <span className="text-primary mr-2">✓</span>
+                  <span>事業計画書がほぼ自動で完成</span>
+                </li>
+                <li className="flex items-start">
+                  <span className="text-primary mr-2">✓</span>
+                  <span>必要情報の効率的な収集と整理</span>
+                </li>
+                <li className="flex items-start">
+                  <span className="text-primary mr-2">✓</span>
+                  <span>専門家に気軽に相談可能</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* メトリクスセクション */}
+      <div className="py-20 bg-white">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl font-bold mb-4">
+              圧倒的な効率化を実現
+            </h2>
+            <p className="text-gray-600 max-w-2xl mx-auto">
+              AIと専門家の力で、申請プロセスを大幅に効率化
+            </p>
+          </div>
+          <div className="grid md:grid-cols-3 gap-8">
+            {metrics.map((metric, index) => (
+              <div
+                key={index}
+                className="relative bg-white p-8 rounded-lg shadow-sm hover:shadow-lg transition-shadow duration-300 overflow-hidden"
+              >
+                <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -mr-16 -mt-16" />
+                <div className="relative">
+                  <h3 className="text-xl font-semibold mb-4">{metric.title}</h3>
+                  <div className="text-5xl font-bold text-primary mb-2">
+                    {metric.reduction}
+                    <span className="text-2xl">%</span>
+                  </div>
+                  <p className="text-gray-600">{metric.description}</p>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </div>
