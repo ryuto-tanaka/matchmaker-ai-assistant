@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -7,11 +8,14 @@ import {
   Settings,
   LogOut,
   ChevronDown,
+  UserPlus,
+  UserCog,
 } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
@@ -38,7 +42,6 @@ const DashboardLayout = ({
   const menuItems = {
     applicant: [
       { icon: LayoutGrid, label: 'ダッシュボード', path: '/dashboard/applicant', implemented: true },
-      // 未実装ページは一時的にdisabled: trueを設定
       { icon: FileText, label: '補助金申請', path: '/dashboard/applicant/applications', disabled: true },
       { icon: Users, label: '専門家に相談', path: '/dashboard/applicant/experts', disabled: true },
     ],
@@ -94,53 +97,59 @@ const DashboardLayout = ({
         </ScrollArea>
 
         <div className="p-4 border-t">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center">
-              <div className="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center">
-                {userName[0]}
-              </div>
-              <span className="ml-2 text-sm font-medium">{userName}</span>
-            </div>
-            {secondaryTypes.length > 0 && (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="sm">
-                    <ChevronDown className="h-4 w-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  {secondaryTypes.map((type) => (
-                    <DropdownMenuItem key={type} onClick={() => handleTypeSwitch(type)}>
-                      {type === 'applicant' && '申請者として表示'}
-                      {type === 'provider' && 'サービス提供者として表示'}
-                      {type === 'expert' && '専門家として表示'}
-                    </DropdownMenuItem>
-                  ))}
-                </DropdownMenuContent>
-              </DropdownMenu>
-            )}
-          </div>
-          
-          <Separator className="my-4" />
-          
-          <div className="space-y-2">
-            <Button
-              variant="ghost"
-              className="w-full justify-start"
-              onClick={() => navigate('/dashboard/settings')}
-            >
-              <Settings className="mr-2 h-4 w-4" />
-              設定
-            </Button>
-            <Button
-              variant="ghost"
-              className="w-full justify-start text-red-500 hover:text-red-600 hover:bg-red-50"
-              onClick={handleLogout}
-            >
-              <LogOut className="mr-2 h-4 w-4" />
-              ログアウト
-            </Button>
-          </div>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="w-full flex items-center justify-between p-2">
+                <div className="flex items-center">
+                  <div className="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center">
+                    {userName[0]}
+                  </div>
+                  <span className="ml-2 text-sm font-medium">{userName}</span>
+                </div>
+                <ChevronDown className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-56">
+              {/* アカウントタイプの切り替え */}
+              {secondaryTypes.map((type) => (
+                <DropdownMenuItem key={type} onClick={() => handleTypeSwitch(type)}>
+                  <UserCog className="mr-2 h-4 w-4" />
+                  {type === 'applicant' && '申請者として表示'}
+                  {type === 'provider' && 'サービス提供者として表示'}
+                  {type === 'expert' && '専門家として表示'}
+                </DropdownMenuItem>
+              ))}
+
+              {/* 新規登録オプション */}
+              {!secondaryTypes.includes('provider') && (
+                <DropdownMenuItem onClick={() => navigate('/register/provider')}>
+                  <UserPlus className="mr-2 h-4 w-4" />
+                  サービス提供者として登録
+                </DropdownMenuItem>
+              )}
+              {!secondaryTypes.includes('expert') && (
+                <DropdownMenuItem onClick={() => navigate('/register/expert')}>
+                  <UserPlus className="mr-2 h-4 w-4" />
+                  専門家として登録
+                </DropdownMenuItem>
+              )}
+
+              <DropdownMenuSeparator />
+              
+              {/* 設定とログアウト */}
+              <DropdownMenuItem onClick={() => navigate('/dashboard/settings')}>
+                <Settings className="mr-2 h-4 w-4" />
+                設定
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={handleLogout}
+                className="text-red-500 focus:text-red-500 focus:bg-red-50"
+              >
+                <LogOut className="mr-2 h-4 w-4" />
+                ログアウト
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
 
