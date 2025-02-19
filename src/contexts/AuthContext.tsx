@@ -3,12 +3,13 @@ import React, { createContext, useContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from '@/components/ui/use-toast';
 import { UserProfile } from '@/types/auth';
+import { UserRole } from '@/types/user';
 
 // モック用のUUID
 const MOCK_USER_ID = 'f47ac10b-58cc-4372-a567-0e02b2c3d479';
 
 type AuthContextType = {
-  user: { id: string; email: string } | null;
+  user: { id: string; email: string; role?: UserRole } | null;
   profile: UserProfile | null;
   loading: boolean;
   signIn: (email: string, password: string) => Promise<void>;
@@ -21,14 +22,14 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-  const [user, setUser] = useState<{ id: string; email: string } | null>(null);
+  const [user, setUser] = useState<{ id: string; email: string; role?: UserRole } | null>(null);
   const [profile, setProfile] = useState<UserProfile | null>(null);
 
   const signIn = async (email: string, password: string) => {
     setLoading(true);
     try {
       if (email && password) {
-        const mockUser = { id: MOCK_USER_ID, email };
+        const mockUser = { id: MOCK_USER_ID, email, role: UserRole.APPLICANT };
         setUser(mockUser);
         setProfile({
           id: mockUser.id,
@@ -62,7 +63,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setLoading(true);
     try {
       if (email && password) {
-        const mockUser = { id: MOCK_USER_ID, email };
+        const mockUser = { id: MOCK_USER_ID, email, role: UserRole.APPLICANT };
         setUser(mockUser);
         setProfile({
           id: mockUser.id,
