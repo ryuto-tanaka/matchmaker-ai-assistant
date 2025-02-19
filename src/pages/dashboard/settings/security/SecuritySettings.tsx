@@ -26,16 +26,30 @@ interface SecurityFormValues {
   security_alerts: boolean;
 }
 
+interface PasswordFormValues {
+  currentPassword: string;
+  newPassword: string;
+  confirmPassword: string;
+}
+
 const SecuritySettings = () => {
   const navigate = useNavigate();
   const { user, profile } = useAuthContext();
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [isChangingPassword, setIsChangingPassword] = React.useState(false);
 
-  const form = useForm<SecurityFormValues>({
+  const securityForm = useForm<SecurityFormValues>({
     defaultValues: {
       two_factor_auth: false,
       security_alerts: true,
+    }
+  });
+
+  const passwordForm = useForm<PasswordFormValues>({
+    defaultValues: {
+      currentPassword: '',
+      newPassword: '',
+      confirmPassword: '',
     }
   });
 
@@ -45,12 +59,13 @@ const SecuritySettings = () => {
     setIsSubmitting(true);
     try {
       const { error } = await supabase
-        .from('security_settings')
-        .upsert({
-          user_id: user.id,
-          ...data,
+        .from('profiles')
+        .update({
+          two_factor_auth: data.two_factor_auth,
+          security_alerts: data.security_alerts,
           updated_at: new Date().toISOString(),
-        });
+        })
+        .eq('id', user.id);
 
       if (error) throw error;
 
@@ -70,25 +85,17 @@ const SecuritySettings = () => {
     }
   };
 
-  const handlePasswordChange = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    setIsChangingPassword(true);
-    
-    const formData = new FormData(event.currentTarget);
-    const currentPassword = formData.get('currentPassword') as string;
-    const newPassword = formData.get('newPassword') as string;
-    const confirmPassword = formData.get('confirmPassword') as string;
-
-    if (newPassword !== confirmPassword) {
+  const handlePasswordChange = async (data: PasswordFormValues) => {
+    if (data.newPassword !== data.confirmPassword) {
       toast({
         title: "エラー",
         description: "新しいパスワードと確認用パスワードが一致しません",
         variant: "destructive",
       });
-      setIsChangingPassword(false);
       return;
     }
 
+    setIsChangingPassword(true);
     try {
       // Note: This is a placeholder for actual password change logic
       toast({
@@ -134,50 +141,76 @@ const SecuritySettings = () => {
               <CardTitle>パスワード変更</CardTitle>
             </CardHeader>
             <CardContent>
-              <form onSubmit={handlePasswordChange} className="space-y-4">
-                <div className="space-y-2">
-                  <FormLabel>現在のパスワード</FormLabel>
-                  <Input
+              <Form {...passwordForm}>
+                <form onSubmit={passwordForm.handleSubmit(handlePasswordChange)} className="space-y-4">
+                  <FormField
+                    control={passwordForm.control}
                     name="currentPassword"
-                    type="password"
-                    required
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>現在のパスワード</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="password"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
                   />
-                </div>
-                <div className="space-y-2">
-                  <FormLabel>新しいパスワード</FormLabel>
-                  <Input
+                  <FormField
+                    control={passwordForm.control}
                     name="newPassword"
-                    type="password"
-                    required
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>新しいパスワード</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="password"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
                   />
-                </div>
-                <div className="space-y-2">
-                  <FormLabel>新しいパスワード（確認）</FormLabel>
-                  <Input
+                  <FormField
+                    control={passwordForm.control}
                     name="confirmPassword"
-                    type="password"
-                    required
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>新しいパスワード（確認）</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="password"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
                   />
-                </div>
-                <Button
-                  type="submit"
-                  disabled={isChangingPassword}
-                >
-                  {isChangingPassword ? 'パスワード変更中...' : 'パスワードを変更'}
-                </Button>
-              </form>
+                  <Button
+                    type="submit"
+                    disabled={isChangingPassword}
+                  >
+                    {isChangingPassword ? 'パスワード変更中...' : 'パスワードを変更'}
+                  </Button>
+                </form>
+              </Form>
             </CardContent>
           </Card>
 
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+          <Form {...securityForm}>
+            <form onSubmit={securityForm.handleSubmit(onSubmit)} className="space-y-8">
               <Card>
                 <CardHeader>
                   <CardTitle>セキュリティオプション</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <FormField
-                    control={form.control}
+                    control={securityForm.control}
                     name="two_factor_auth"
                     render={({ field }) => (
                       <FormItem className="flex items-center justify-between rounded-lg border p-4">
@@ -197,7 +230,7 @@ const SecuritySettings = () => {
                     )}
                   />
                   <FormField
-                    control={form.control}
+                    control={securityForm.control}
                     name="security_alerts"
                     render={({ field }) => (
                       <FormItem className="flex items-center justify-between rounded-lg border p-4">
