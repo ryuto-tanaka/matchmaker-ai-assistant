@@ -1,14 +1,15 @@
+
 import { LoadingTimeoutAlert } from "@/components/ui/loading-timeout-alert";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuthContext } from "@/contexts/AuthContext";
 import { UserRole } from "@/types/user";
 
 const Index = () => {
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user } = useAuthContext();
   
   useEffect(() => {
     const fetchData = async () => {
