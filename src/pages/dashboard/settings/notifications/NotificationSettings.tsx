@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Mail, Bell } from 'lucide-react';
@@ -20,10 +19,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { supabase } from '@/integrations/supabase/client';
 
 interface NotificationFormValues {
-  email_notifications: boolean;
-  app_notifications: boolean;
-  marketing_emails: boolean;
-  deadline_reminders: boolean;
+  email_enabled: boolean;
+  app_notifications_enabled: boolean;
+  marketing_emails_enabled: boolean;
+  deadline_reminders_enabled: boolean;
 }
 
 const NotificationSettings = () => {
@@ -33,10 +32,10 @@ const NotificationSettings = () => {
 
   const form = useForm<NotificationFormValues>({
     defaultValues: {
-      email_notifications: true,
-      app_notifications: true,
-      marketing_emails: false,
-      deadline_reminders: true,
+      email_enabled: true,
+      app_notifications_enabled: true,
+      marketing_emails_enabled: false,
+      deadline_reminders_enabled: true,
     }
   });
 
@@ -46,12 +45,15 @@ const NotificationSettings = () => {
     setIsSubmitting(true);
     try {
       const { error } = await supabase
-        .from('notification_settings')
-        .upsert({
-          user_id: user.id,
-          ...data,
+        .from('profiles')
+        .update({
+          email_enabled: data.email_enabled,
+          app_notifications_enabled: data.app_notifications_enabled,
+          marketing_emails_enabled: data.marketing_emails_enabled,
+          deadline_reminders_enabled: data.deadline_reminders_enabled,
           updated_at: new Date().toISOString(),
-        });
+        })
+        .eq('id', user.id);
 
       if (error) throw error;
 
@@ -102,7 +104,7 @@ const NotificationSettings = () => {
               <CardContent className="space-y-4">
                 <FormField
                   control={form.control}
-                  name="email_notifications"
+                  name="email_enabled"
                   render={({ field }) => (
                     <FormItem className="flex items-center justify-between rounded-lg border p-4">
                       <div className="space-y-0.5">
@@ -122,7 +124,7 @@ const NotificationSettings = () => {
                 />
                 <FormField
                   control={form.control}
-                  name="marketing_emails"
+                  name="marketing_emails_enabled"
                   render={({ field }) => (
                     <FormItem className="flex items-center justify-between rounded-lg border p-4">
                       <div className="space-y-0.5">
@@ -150,7 +152,7 @@ const NotificationSettings = () => {
               <CardContent className="space-y-4">
                 <FormField
                   control={form.control}
-                  name="app_notifications"
+                  name="app_notifications_enabled"
                   render={({ field }) => (
                     <FormItem className="flex items-center justify-between rounded-lg border p-4">
                       <div className="space-y-0.5">
@@ -170,7 +172,7 @@ const NotificationSettings = () => {
                 />
                 <FormField
                   control={form.control}
-                  name="deadline_reminders"
+                  name="deadline_reminders_enabled"
                   render={({ field }) => (
                     <FormItem className="flex items-center justify-between rounded-lg border p-4">
                       <div className="space-y-0.5">

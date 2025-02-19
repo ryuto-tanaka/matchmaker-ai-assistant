@@ -51,12 +51,14 @@ const LocaleSettings = () => {
     setIsSubmitting(true);
     try {
       const { error } = await supabase
-        .from('locale_settings')
-        .upsert({
-          user_id: user.id,
-          ...data,
+        .from('profiles')
+        .update({
+          language: data.language,
+          timezone: data.timezone,
+          date_format: data.date_format,
           updated_at: new Date().toISOString(),
-        });
+        })
+        .eq('id', user.id);
 
       if (error) throw error;
 
