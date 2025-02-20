@@ -41,19 +41,19 @@ const DashboardLayout = ({
 
   const menuItems = {
     applicant: [
-      { icon: LayoutGrid, label: 'ダッシュボード', path: '/dashboard/applicant', implemented: true },
-      { icon: FileText, label: '補助金申請', path: '/dashboard/applicant/applications', disabled: true },
-      { icon: Users, label: '専門家に相談', path: '/dashboard/applicant/experts', disabled: true },
+      { icon: LayoutGrid, label: 'ダッシュボード', path: '/dashboard/applicant' },
+      { icon: FileText, label: '補助金申請', path: '/dashboard/applicant/applications' },
+      { icon: Users, label: '専門家に相談', path: '/dashboard/applicant/experts' },
     ],
     provider: [
-      { icon: LayoutGrid, label: 'ダッシュボード', path: '/dashboard/provider', implemented: true },
-      { icon: FileText, label: '案件一覧', path: '/dashboard/provider/cases', disabled: true },
-      { icon: Users, label: 'クライアント管理', path: '/dashboard/provider/clients', disabled: true },
+      { icon: LayoutGrid, label: 'ダッシュボード', path: '/dashboard/provider' },
+      { icon: FileText, label: '案件一覧', path: '/dashboard/provider/cases' },
+      { icon: Users, label: 'クライアント管理', path: '/dashboard/provider/clients' },
     ],
     expert: [
-      { icon: LayoutGrid, label: 'ダッシュボード', path: '/dashboard/expert', implemented: true },
-      { icon: FileText, label: '相談案件', path: '/dashboard/expert/consultations', disabled: true },
-      { icon: Users, label: 'クライアント一覧', path: '/dashboard/expert/clients', disabled: true },
+      { icon: LayoutGrid, label: 'ダッシュボード', path: '/dashboard/expert' },
+      { icon: FileText, label: '相談案件', path: '/dashboard/expert/consultations' },
+      { icon: Users, label: 'クライアント一覧', path: '/dashboard/expert/clients' },
     ],
   };
 
@@ -85,12 +85,10 @@ const DashboardLayout = ({
                 key={index}
                 variant="ghost"
                 className="w-full justify-start"
-                onClick={() => !item.disabled && navigate(item.path)}
-                disabled={item.disabled}
+                onClick={() => navigate(item.path)}
               >
                 <item.icon className="mr-2 h-4 w-4" />
                 {item.label}
-                {item.disabled && <span className="ml-2 text-xs text-gray-400">(準備中)</span>}
               </Button>
             ))}
           </nav>
