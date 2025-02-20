@@ -93,13 +93,50 @@ const Index = () => {
   ];
 
   const targetIndustries = [
-    "機械製造", "食品加工", "電機電子", "金属加工", "化学", "繊維",
+    // 製造業
+    "機械製造", "食品加工", "電機電子", "金属加工", "化学", "繊維", "自動車部品", "医療機器", "半導体", "印刷",
+    "プラスチック", "航空宇宙", "工作機械", "産業用ロボット", "光学機器", "セラミックス",
+    
+    // IT・デジタル
     "ソフトウェア", "クラウドサービス", "デジタルコンテンツ", "システム開発", "データ分析", "AI開発",
-    "小売店", "レストラン", "カフェ", "食品スーパー", "アパレル", "ドラッグストア",
-    "建設会社", "不動産", "建築設計", "リフォーム", "インテリア",
-    "病院", "クリニック", "介護施設", "保育所", "リハビリ施設",
-    "美容院", "エステ", "ホテル", "旅館", "フィットネス", "学習塾",
-    "運輸", "倉庫", "農業", "水産", "林業", "環境"
+    "IoTソリューション", "ブロックチェーン", "サイバーセキュリティ", "デジタルマーケティング", "Web制作",
+    "アプリ開発", "ゲーム開発", "VR/AR開発",
+    
+    // 小売・サービス
+    "小売店", "レストラン", "カフェ", "食品スーパー", "アパレル", "ドラッグストア", "コンビニエンスストア",
+    "家電量販店", "書店", "雑貨店", "ペットショップ", "スポーツ用品店", "家具店", "玩具店",
+    
+    // 建設・不動産
+    "建設会社", "不動産", "建築設計", "リフォーム", "インテリア", "土木", "設備工事", "解体工事",
+    "住宅メーカー", "不動産仲介", "ビル管理", "マンション管理", "造園",
+    
+    // 医療・福祉
+    "病院", "クリニック", "介護施設", "保育所", "リハビリ施設", "歯科医院", "薬局", "訪問看護",
+    "在宅医療", "老人ホーム", "障害者支援施設", "健康診断センター",
+    
+    // 生活関連サービス
+    "美容院", "エステ", "ホテル", "旅館", "フィットネス", "学習塾", "理容室", "マッサージ",
+    "クリーニング", "整体院", "ネイルサロン", "アロマセラピー", "ヨガスタジオ",
+    
+    // 運輸・物流
+    "運輸", "倉庫", "宅配便", "海運", "航空運送", "引越し", "Cold Chain物流", "国際物流",
+    "運送代理店", "フォワーダー", "3PL", "配車サービス",
+    
+    // 農林水産
+    "農業", "水産", "林業", "畜産", "養殖", "園芸", "有機農業", "スマート農業", "農産物加工",
+    "水産加工", "種苗", "農業資材",
+    
+    // 環境・エネルギー
+    "環境", "再生可能エネルギー", "廃棄物処理", "リサイクル", "省エネルギー", "太陽光発電",
+    "風力発電", "バイオマス", "環境コンサルティング", "グリーンテクノロジー",
+    
+    // 教育・研究
+    "教育機関", "研究所", "職業訓練", "語学学校", "プログラミングスクール", "音楽教室",
+    "美術学校", "スポーツスクール", "オンライン教育", "企業研修",
+    
+    // クリエイティブ
+    "広告制作", "映像制作", "音楽制作", "出版", "デザイン事務所", "アニメーション制作",
+    "イベント企画", "芸能プロダクション", "コンテンツ制作", "アート galleries"
   ];
 
   const serviceCategories = [
@@ -254,44 +291,47 @@ const Index = () => {
         </div>
       </div>
 
-      {/* 対象業種セクション - ヒーローの直後に移動 */}
-      <div className="py-20 bg-white">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <span className="inline-block px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-semibold mb-4">
-              幅広い業種に対応
+    {/* 対象業種セクション */}
+    <div className="py-20 bg-white">
+      <div className="container mx-auto px-4">
+        <div className="text-center mb-16">
+          <span className="inline-block px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-semibold mb-4">
+            幅広い業種に対応
+          </span>
+          <h2 className="text-4xl font-bold mb-6">
+            あらゆる業種の企業様を
+            <span className="text-primary block mt-2">強力にサポート</span>
+          </h2>
+          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            業種や規模を問わず、さまざまな企業様の補助金・助成金申請をサポートしています。
+            <span className="block mt-2 font-medium">
+              豊富な実績と専門知識で、最適な補助金・助成金を見つけ出します。
             </span>
-            <h2 className="text-4xl font-bold mb-6">
-              あらゆる業種の企業様を
-              <span className="text-primary block mt-2">強力にサポート</span>
-            </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              業種や規模を問わず、さまざまな企業様の補助金・助成金申請をサポートしています。
-              <span className="block mt-2 font-medium">
-                豊富な実績と専門知識で、最適な補助金・助成金を見つけ出します。
+          </p>
+        </div>
+        <div className="bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 border-2 border-gray-100 hover:border-primary/20">
+          <h3 className="text-2xl font-bold text-gray-900 mb-8">
+            対応業種一覧
+          </h3>
+          <div className="flex flex-wrap gap-3">
+            {targetIndustries.map((industry, i) => (
+              <span
+                key={i}
+                className="inline-flex items-center px-4 py-2 bg-gray-50 text-gray-700 rounded-full text-sm font-medium border border-gray-200 hover:border-primary/30 hover:bg-primary/5 transition-colors duration-200"
+              >
+                {industry}
               </span>
-            </p>
+            ))}
           </div>
-          <div className="bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 border-2 border-gray-100 hover:border-primary/20">
-            <h3 className="text-2xl font-bold text-gray-900 mb-6">
-              対応業種一覧
-            </h3>
-            <div className="flex flex-wrap gap-3">
-              {targetIndustries.map((industry, i) => (
-                <span
-                  key={i}
-                  className="inline-flex items-center px-4 py-2 bg-gray-50 text-gray-700 rounded-full text-sm font-medium border border-gray-200 hover:border-primary/30 hover:bg-primary/5 transition-colors duration-200"
-                >
-                  {industry}
-                </span>
-              ))}
-            </div>
-            <p className="text-gray-500 text-sm mt-6">
-              ※上記以外の業種もサポート可能です。お気軽にご相談ください。
+          <div className="mt-8 p-4 bg-primary/5 rounded-xl">
+            <p className="text-gray-700 text-sm">
+              ※上記以外の業種もサポート可能です。業種特有の補助金・助成金についてもお気軽にご相談ください。
+              専門家が貴社に最適な支援策をご提案いたします。
             </p>
           </div>
         </div>
       </div>
+    </div>
 
       {/* メトリクスセクション */}
       <div className="py-20 bg-white">
