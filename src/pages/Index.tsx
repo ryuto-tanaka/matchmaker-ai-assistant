@@ -8,6 +8,7 @@ import { ArrowRight, CheckCircle2, Shield, Briefcase, Users, LogIn } from "lucid
 
 const Index = () => {
   const [isLoading, setIsLoading] = useState(true);
+  const [showAllIndustries, setShowAllIndustries] = useState(false);
   const navigate = useNavigate();
   const { user } = useAuthContext();
   
@@ -138,6 +139,12 @@ const Index = () => {
     "広告制作", "映像制作", "音楽制作", "出版", "デザイン事務所", "アニメーション制作",
     "イベント企画", "芸能プロダクション", "コンテンツ制作", "アート galleries"
   ];
+
+  // 初期表示用の業種数を制限
+  const initialDisplayCount = 24;
+  const displayedIndustries = showAllIndustries 
+    ? targetIndustries 
+    : targetIndustries.slice(0, initialDisplayCount);
 
   const serviceCategories = [
     {
@@ -314,7 +321,7 @@ const Index = () => {
             対応業種一覧
           </h3>
           <div className="flex flex-wrap gap-3">
-            {targetIndustries.map((industry, i) => (
+            {displayedIndustries.map((industry, i) => (
               <span
                 key={i}
                 className="inline-flex items-center px-4 py-2 bg-gray-50 text-gray-700 rounded-full text-sm font-medium border border-gray-200 hover:border-primary/30 hover:bg-primary/5 transition-colors duration-200"
@@ -323,11 +330,23 @@ const Index = () => {
               </span>
             ))}
           </div>
-          <div className="mt-8 p-4 bg-primary/5 rounded-xl">
-            <p className="text-gray-700 text-sm">
-              ※上記以外の業種もサポート可能です。業種特有の補助金・助成金についてもお気軽にご相談ください。
-              専門家が貴社に最適な支援策をご提案いたします。
-            </p>
+          <div className="mt-8 flex flex-col items-center gap-4">
+            {!showAllIndustries && (
+              <Button
+                variant="outline"
+                className="w-full max-w-md border-primary text-primary hover:bg-primary hover:text-white"
+                onClick={() => setShowAllIndustries(true)}
+              >
+                すべての対応業種を見る
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
+            )}
+            <div className="p-4 bg-primary/5 rounded-xl w-full">
+              <p className="text-gray-700 text-sm">
+                ※上記以外の業種もサポート可能です。業種特有の補助金・助成金についてもお気軽にご相談ください。
+                専門家が貴社に最適な支援策をご提案いたします。
+              </p>
+            </div>
           </div>
         </div>
       </div>
