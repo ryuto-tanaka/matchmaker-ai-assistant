@@ -7,10 +7,6 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { OfflineBanner } from "@/components/ui/offline-banner";
 import { ErrorBoundary } from "@/components/ui/error-boundary";
-import { PrivateRoute } from "@/components/routes/PrivateRoute";
-import { PublicRoute } from "@/components/routes/PublicRoute";
-import { UserRole } from "@/types/user";
-
 import Index from "./pages/Index";
 import Register from "./pages/Register";
 import Login from "./pages/Login";
@@ -52,216 +48,46 @@ const App = () => (
         <BrowserRouter>
           <AuthProvider>
             <Routes>
-              {/* パブリックルート */}
               <Route path="/" element={<Index />} />
               
-              {/* 未認証ユーザーのみアクセス可能なルート */}
-              <Route
-                path="/register"
-                element={
-                  <PublicRoute>
-                    <Register />
-                  </PublicRoute>
-                }
-              />
-              <Route
-                path="/register/details"
-                element={
-                  <PublicRoute>
-                    <RegisterDetails />
-                  </PublicRoute>
-                }
-              />
+              {/* 登録関連のルート */}
+              <Route path="/register" element={<Register />} />
+              <Route path="/register/details" element={<RegisterDetails />} />
               <Route path="/register/applicant" element={<Navigate to="/register" state={{ userType: 'applicant' }} />} />
               <Route path="/register/provider" element={<Navigate to="/register" state={{ userType: 'provider' }} />} />
               <Route path="/register/expert" element={<Navigate to="/register" state={{ userType: 'expert' }} />} />
               
-              <Route
-                path="/login"
-                element={
-                  <PublicRoute>
-                    <Login />
-                  </PublicRoute>
-                }
-              />
-              <Route
-                path="/profile-setup"
-                element={
-                  <PrivateRoute>
-                    <ProfileSetup />
-                  </PrivateRoute>
-                }
-              />
+              <Route path="/login" element={<Login />} />
+              <Route path="/profile-setup" element={<ProfileSetup />} />
               
-              {/* 申請者専用のルート */}
-              <Route
-                path="/dashboard/applicant"
-                element={
-                  <PrivateRoute allowedRoles={[UserRole.APPLICANT]}>
-                    <ApplicantDashboard />
-                  </PrivateRoute>
-                }
-              />
-              <Route
-                path="/dashboard/applicant/applications"
-                element={
-                  <PrivateRoute allowedRoles={[UserRole.APPLICANT]}>
-                    <ApplicationsPage />
-                  </PrivateRoute>
-                }
-              />
-              <Route
-                path="/dashboard/applicant/experts"
-                element={
-                  <PrivateRoute allowedRoles={[UserRole.APPLICANT]}>
-                    <ExpertsPage />
-                  </PrivateRoute>
-                }
-              />
-              <Route
-                path="/dashboard/applicant/messages"
-                element={
-                  <PrivateRoute allowedRoles={[UserRole.APPLICANT]}>
-                    <MessagesPage />
-                  </PrivateRoute>
-                }
-              />
-              <Route
-                path="/dashboard/applicant/messages/:expertId"
-                element={
-                  <PrivateRoute allowedRoles={[UserRole.APPLICANT]}>
-                    <ApplicantChatPage />
-                  </PrivateRoute>
-                }
-              />
+              {/* 申請者関連のルート */}
+              <Route path="/dashboard/applicant" element={<ApplicantDashboard />} />
+              <Route path="/dashboard/applicant/applications" element={<ApplicationsPage />} />
+              <Route path="/dashboard/applicant/experts" element={<ExpertsPage />} />
+              <Route path="/dashboard/applicant/messages" element={<MessagesPage />} />
+              <Route path="/dashboard/applicant/messages/:expertId" element={<ApplicantChatPage />} />
               
-              {/* サービス提供者専用のルート */}
-              <Route
-                path="/dashboard/provider"
-                element={
-                  <PrivateRoute allowedRoles={[UserRole.PROVIDER]}>
-                    <ProviderDashboard />
-                  </PrivateRoute>
-                }
-              />
-              <Route
-                path="/dashboard/provider/cases"
-                element={
-                  <PrivateRoute allowedRoles={[UserRole.PROVIDER]}>
-                    <CasesPage />
-                  </PrivateRoute>
-                }
-              />
-              <Route
-                path="/dashboard/provider/clients"
-                element={
-                  <PrivateRoute allowedRoles={[UserRole.PROVIDER]}>
-                    <ProviderClientsPage />
-                  </PrivateRoute>
-                }
-              />
-              <Route
-                path="/dashboard/provider/messages"
-                element={
-                  <PrivateRoute allowedRoles={[UserRole.PROVIDER]}>
-                    <MessagesPage />
-                  </PrivateRoute>
-                }
-              />
-              <Route
-                path="/dashboard/provider/messages/:expertId"
-                element={
-                  <PrivateRoute allowedRoles={[UserRole.PROVIDER]}>
-                    <ProviderChatPage />
-                  </PrivateRoute>
-                }
-              />
+              {/* サービス提供者関連のルート */}
+              <Route path="/dashboard/provider" element={<ProviderDashboard />} />
+              <Route path="/dashboard/provider/cases" element={<CasesPage />} />
+              <Route path="/dashboard/provider/clients" element={<ProviderClientsPage />} />
+              <Route path="/dashboard/provider/messages" element={<MessagesPage />} />
+              <Route path="/dashboard/provider/messages/:expertId" element={<ProviderChatPage />} />
               
-              {/* 専門家専用のルート */}
-              <Route
-                path="/dashboard/expert"
-                element={
-                  <PrivateRoute allowedRoles={[UserRole.EXPERT]}>
-                    <ExpertDashboard />
-                  </PrivateRoute>
-                }
-              />
-              <Route
-                path="/dashboard/expert/consultations"
-                element={
-                  <PrivateRoute allowedRoles={[UserRole.EXPERT]}>
-                    <ConsultationsPage />
-                  </PrivateRoute>
-                }
-              />
-              <Route
-                path="/dashboard/expert/clients"
-                element={
-                  <PrivateRoute allowedRoles={[UserRole.EXPERT]}>
-                    <ExpertClientsPage />
-                  </PrivateRoute>
-                }
-              />
-              <Route
-                path="/dashboard/expert/messages"
-                element={
-                  <PrivateRoute allowedRoles={[UserRole.EXPERT]}>
-                    <MessagesPage />
-                  </PrivateRoute>
-                }
-              />
-              <Route
-                path="/dashboard/expert/messages/:expertId"
-                element={
-                  <PrivateRoute allowedRoles={[UserRole.EXPERT]}>
-                    <ExpertChatPage />
-                  </PrivateRoute>
-                }
-              />
+              {/* 専門家関連のルート */}
+              <Route path="/dashboard/expert" element={<ExpertDashboard />} />
+              <Route path="/dashboard/expert/consultations" element={<ConsultationsPage />} />
+              <Route path="/dashboard/expert/clients" element={<ExpertClientsPage />} />
+              <Route path="/dashboard/expert/messages" element={<MessagesPage />} />
+              <Route path="/dashboard/expert/messages/:expertId" element={<ExpertChatPage />} />
               
-              {/* 設定関連のルート（全認証ユーザーがアクセス可能） */}
-              <Route
-                path="/dashboard/settings"
-                element={
-                  <PrivateRoute>
-                    <Settings />
-                  </PrivateRoute>
-                }
-              />
-              <Route
-                path="/dashboard/settings/profile"
-                element={
-                  <PrivateRoute>
-                    <ProfileSettings />
-                  </PrivateRoute>
-                }
-              />
-              <Route
-                path="/dashboard/settings/notifications"
-                element={
-                  <PrivateRoute>
-                    <NotificationSettings />
-                  </PrivateRoute>
-                }
-              />
-              <Route
-                path="/dashboard/settings/security"
-                element={
-                  <PrivateRoute>
-                    <SecuritySettings />
-                  </PrivateRoute>
-                }
-              />
-              <Route
-                path="/dashboard/settings/locale"
-                element={
-                  <PrivateRoute>
-                    <LocaleSettings />
-                  </PrivateRoute>
-                }
-              />
+              {/* 設定関連のルート */}
+              <Route path="/dashboard/settings" element={<Settings />} />
+              <Route path="/dashboard/settings/profile" element={<ProfileSettings />} />
+              <Route path="/dashboard/settings/notifications" element={<NotificationSettings />} />
+              <Route path="/dashboard/settings/security" element={<SecuritySettings />} />
+              <Route path="/dashboard/settings/locale" element={<LocaleSettings />} />
               
-              {/* 404ページ */}
               <Route path="*" element={<NotFound />} />
             </Routes>
           </AuthProvider>
