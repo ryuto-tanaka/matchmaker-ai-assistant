@@ -8,6 +8,10 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Building, FileText, Users, Phone } from 'lucide-react';
+import { useState } from 'react';
+import { Textarea } from "@/components/ui/textarea";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/components/ui/use-toast";
 
 interface ProviderClientDetailsModalProps {
   client: {
@@ -19,10 +23,38 @@ interface ProviderClientDetailsModalProps {
     phone: string;
     status: string;
     lastUpdated: string;
+    memo?: string;
   };
 }
 
 export function ProviderClientDetailsModal({ client }: ProviderClientDetailsModalProps) {
+  const [memo, setMemo] = useState(client.memo || '');
+  const { toast } = useToast();
+
+  const handleMemoChange = async (value: string) => {
+    setMemo(value);
+    try {
+      const { error } = await supabase
+        .from('clients')
+        .update({ memo: value })
+        .eq('id', client.id);
+
+      if (error) throw error;
+
+      toast({
+        title: "メモを保存しました",
+        duration: 3000,
+      });
+    } catch (error) {
+      toast({
+        title: "メモの保存に失敗しました",
+        variant: "destructive",
+        duration: 3000,
+      });
+      console.error('Error saving memo:', error);
+    }
+  };
+
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -81,6 +113,16 @@ export function ProviderClientDetailsModal({ client }: ProviderClientDetailsModa
           <div>
             <h4 className="font-semibold mb-2">最終更新日</h4>
             <p className="text-sm text-gray-600">{client.lastUpdated}</p>
+          </div>
+
+          <div>
+            <h4 className="font-semibold mb-2">メモ</h4>
+            <Textarea
+              value={memo}
+              onChange={(e) => handleMemoChange(e.target.value)}
+              placeholder="クライアントに関するメモを入力"
+              className="min-h-[100px]"
+            />
           </div>
         </div>
       </DialogContent>
