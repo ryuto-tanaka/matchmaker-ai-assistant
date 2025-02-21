@@ -14,7 +14,7 @@ const formSchema = z.object({
   preferredDate: z.string().min(1, "希望日時を選択してください"),
   consultationType: z.string().min(1, "相談内容を選択してください"),
   description: z.string().min(10, "相談内容を10文字以上で入力してください"),
-  contactEmail: z.string().email("有効なメールアドレスを入力してください"),
+  message: z.string().min(10, "メッセージを10文字以上で入力してください"),
 });
 
 interface ConsultationRequestModalProps {
@@ -35,7 +35,7 @@ export const ConsultationRequestModal = ({
       preferredDate: "",
       consultationType: "",
       description: "",
-      contactEmail: "",
+      message: "",
     },
   });
 
@@ -116,12 +116,16 @@ export const ConsultationRequestModal = ({
 
             <FormField
               control={form.control}
-              name="contactEmail"
+              name="message"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>連絡先メールアドレス</FormLabel>
+                  <FormLabel>専門家へのメッセージ</FormLabel>
                   <FormControl>
-                    <Input type="email" placeholder="your@email.com" {...field} />
+                    <Textarea
+                      placeholder="専門家へ直接メッセージを送ることができます"
+                      className="min-h-[100px]"
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
