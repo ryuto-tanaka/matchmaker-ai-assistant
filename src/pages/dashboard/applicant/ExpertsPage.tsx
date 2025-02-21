@@ -1,11 +1,15 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import DashboardLayout from '@/components/layout/DashboardLayout';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { User, Star, MessageSquare } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { ConsultationRequestModal } from '@/components/modals/ConsultationRequestModal';
 
 const ExpertsPage = () => {
+  const [isConsultationModalOpen, setIsConsultationModalOpen] = useState(false);
+  const [selectedExpert, setSelectedExpert] = useState("");
+  
   const experts = [
     { 
       id: 1, 
@@ -32,6 +36,11 @@ const ExpertsPage = () => {
       consultations: 128
     },
   ];
+
+  const handleConsultationRequest = (expertName: string) => {
+    setSelectedExpert(expertName);
+    setIsConsultationModalOpen(true);
+  };
 
   return (
     <DashboardLayout userType="applicant" userName="申請者">
@@ -72,12 +81,20 @@ const ExpertsPage = () => {
                       </div>
                     </div>
                   </div>
-                  <Button>相談する</Button>
+                  <Button onClick={() => handleConsultationRequest(expert.name)}>
+                    相談する
+                  </Button>
                 </div>
               </CardContent>
             </Card>
           ))}
         </div>
+
+        <ConsultationRequestModal
+          isOpen={isConsultationModalOpen}
+          onClose={() => setIsConsultationModalOpen(false)}
+          expertName={selectedExpert}
+        />
       </div>
     </DashboardLayout>
   );
