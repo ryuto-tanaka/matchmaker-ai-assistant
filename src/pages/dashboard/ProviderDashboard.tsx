@@ -44,9 +44,9 @@ const ProviderDashboard = () => {
                 </div>
                 <Dialog>
                   <DialogTrigger>
-                    <Button variant="ghost" size="icon" className="ml-2">
+                    <div className="cursor-pointer p-2 hover:bg-gray-100 rounded-full">
                       <ArrowRight className="h-4 w-4" />
-                    </Button>
+                    </div>
                   </DialogTrigger>
                   <StatDetailsModal statType={stat.label} value={stat.value} />
                 </Dialog>
