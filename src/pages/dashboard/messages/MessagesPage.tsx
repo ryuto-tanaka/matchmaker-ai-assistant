@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { useParams } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import MessageCard from '@/components/messages/MessageCard';
 import ProjectDetailsDialog from '@/components/messages/ProjectDetailsDialog';
@@ -8,7 +8,10 @@ import { UserType } from '@/types/dashboard';
 
 const MessagesPage = () => {
   const [showDetails, setShowDetails] = React.useState(false);
-  const { userType } = useParams<{ userType: UserType }>();
+  const location = useLocation();
+
+  // Extract user type from URL path
+  const userType = location.pathname.split('/')[2] as UserType;
 
   // ユーザータイプに基づいてメッセージデータを調整
   const conversations = [
@@ -32,10 +35,10 @@ const MessagesPage = () => {
     applicant: "申請者",
     provider: "株式会社〇〇",
     expert: "田中弁護士"
-  }[userType || 'applicant'];
+  }[userType];
 
   return (
-    <DashboardLayout userType={userType as UserType} userName={userName}>
+    <DashboardLayout userType={userType} userName={userName}>
       <div className="space-y-6">
         <h1 className="text-2xl font-bold">メッセージ</h1>
 
