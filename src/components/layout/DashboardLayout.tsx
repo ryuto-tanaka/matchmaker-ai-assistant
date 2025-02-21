@@ -5,24 +5,11 @@ import {
   LayoutGrid,
   FileText,
   Users,
-  Settings,
-  LogOut,
-  ChevronDown,
-  UserPlus,
-  UserCog,
   MessageSquare,
 } from 'lucide-react';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Separator } from "@/components/ui/separator";
-import { useAuthContext } from '@/contexts/AuthContext';
+import { NavigationMenu } from './NavigationMenu';
+import { NotificationsMenu } from './NotificationsMenu';
+import { UserMenu } from './UserMenu';
 
 interface Notification {
   id: string;
@@ -46,9 +33,8 @@ const DashboardLayout = ({
   userName = 'ユーザー'
 }: DashboardLayoutProps) => {
   const navigate = useNavigate();
-  const { signOut } = useAuthContext();
 
-  // 通知のモックデータ
+  // Notification mock data
   const notifications: Notification[] = [
     {
       id: '1',
@@ -102,14 +88,6 @@ const DashboardLayout = ({
     navigate(`/dashboard/${type}`);
   };
 
-  const handleLogout = async () => {
-    try {
-      await signOut();
-    } catch (error) {
-      console.error('Logout error:', error);
-    }
-  };
-
   return (
     <div className="min-h-screen flex">
       <div className="w-64 bg-white border-r flex flex-col">
@@ -117,112 +95,22 @@ const DashboardLayout = ({
           <h1 className="text-xl font-bold text-primary">補助金プラットフォーム</h1>
         </div>
         
-        <ScrollArea className="flex-1 py-4">
-          <nav className="space-y-1 px-2">
-            {currentMenu.map((item, index) => (
-              <Button
-                key={index}
-                variant="ghost"
-                className="w-full justify-start"
-                onClick={() => navigate(item.path)}
-              >
-                <item.icon className="mr-2 h-4 w-4" />
-                {item.label}
-              </Button>
-            ))}
-          </nav>
-        </ScrollArea>
+        <NavigationMenu currentMenu={currentMenu} />
 
         <div className="p-4 border-t">
           <div className="flex items-center space-x-2 mb-4">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  className="relative"
-                >
-                  {unreadCount > 0 && (
-                    <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                      {unreadCount}
-                    </span>
-                  )}
-                  <span className="sr-only">通知を表示</span>
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-80">
-                <div className="p-2">
-                  <h4 className="text-sm font-semibold mb-2">通知</h4>
-                  <div className="space-y-2">
-                    {notifications.map((notification) => (
-                      <div
-                        key={notification.id}
-                        className={`p-2 rounded-lg ${
-                          notification.read ? 'bg-gray-50' : 'bg-blue-50'
-                        }`}
-                      >
-                        <div className="text-sm font-medium">{notification.title}</div>
-                        <div className="text-xs text-gray-500">{notification.message}</div>
-                        <div className="text-xs text-gray-400 mt-1">{notification.date}</div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <NotificationsMenu 
+              notifications={notifications}
+              unreadCount={unreadCount}
+            />
           </div>
 
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="w-full flex items-center justify-between p-2">
-                <div className="flex items-center">
-                  <div className="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center">
-                    {userName[0]}
-                  </div>
-                  <span className="ml-2 text-sm font-medium">{userName}</span>
-                </div>
-                <ChevronDown className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56">
-              {secondaryTypes.map((type) => (
-                <DropdownMenuItem key={type} onClick={() => handleTypeSwitch(type)}>
-                  <UserCog className="mr-2 h-4 w-4" />
-                  {type === 'applicant' && '申請者として表示'}
-                  {type === 'provider' && 'サービス提供者として表示'}
-                  {type === 'expert' && '専門家として表示'}
-                </DropdownMenuItem>
-              ))}
-
-              {!secondaryTypes.includes('provider') && (
-                <DropdownMenuItem onClick={() => navigate('/register/provider')}>
-                  <UserPlus className="mr-2 h-4 w-4" />
-                  サービス提供者として登録
-                </DropdownMenuItem>
-              )}
-              {!secondaryTypes.includes('expert') && (
-                <DropdownMenuItem onClick={() => navigate('/register/expert')}>
-                  <UserPlus className="mr-2 h-4 w-4" />
-                  専門家として登録
-                </DropdownMenuItem>
-              )}
-
-              <DropdownMenuSeparator />
-              
-              <DropdownMenuItem onClick={() => navigate('/dashboard/settings')}>
-                <Settings className="mr-2 h-4 w-4" />
-                設定
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={handleLogout}
-                className="text-red-500 focus:text-red-500 focus:bg-red-50"
-              >
-                <LogOut className="mr-2 h-4 w-4" />
-                ログアウト
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <UserMenu
+            userName={userName}
+            userType={userType}
+            secondaryTypes={secondaryTypes}
+            onTypeSwitch={handleTypeSwitch}
+          />
         </div>
       </div>
 
