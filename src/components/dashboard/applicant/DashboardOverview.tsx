@@ -14,6 +14,15 @@ const DashboardOverview = () => {
   const [isBusinessPlanModalOpen, setIsBusinessPlanModalOpen] = React.useState(false);
   const [expandedCard, setExpandedCard] = React.useState<number | null>(null);
 
+  // 有効なルートのリスト
+  const validRoutes = [
+    '/dashboard/applicant/applications/1',
+    '/dashboard/applicant/applications/2',
+    '/dashboard/applicant/applications/3',
+    '/dashboard/messages/1',
+    '/dashboard/messages/2'
+  ];
+
   const stats = [
     { 
       icon: FileText, 
@@ -68,8 +77,12 @@ const DashboardOverview = () => {
 
   const handleDetailClick = (path: string, event: React.MouseEvent) => {
     event.stopPropagation();
-    navigate(path);
+    if (validRoutes.includes(path)) {
+      navigate(path);
+    }
   };
+
+  const isValidRoute = (path: string) => validRoutes.includes(path);
 
   return (
     <div className="space-y-6">
@@ -126,8 +139,13 @@ const DashboardOverview = () => {
                   {stat.details.map((detail, detailIndex) => (
                     <div
                       key={detailIndex}
-                      className="p-3 bg-gray-50 rounded-lg text-sm cursor-pointer hover:bg-gray-100 transition-colors"
+                      className={`p-3 rounded-lg text-sm ${
+                        isValidRoute(detail.path)
+                          ? 'bg-gray-50 cursor-pointer hover:bg-gray-100'
+                          : 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                      } transition-colors`}
                       onClick={(e) => handleDetailClick(detail.path, e)}
+                      title={isValidRoute(detail.path) ? undefined : 'このページは現在利用できません'}
                     >
                       {detail.text}
                     </div>
