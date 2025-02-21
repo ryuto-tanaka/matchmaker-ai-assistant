@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent } from "@/components/ui/card";
@@ -14,7 +13,6 @@ const DashboardOverview = () => {
   const [isBusinessPlanModalOpen, setIsBusinessPlanModalOpen] = React.useState(false);
   const [expandedCard, setExpandedCard] = React.useState<number | null>(null);
 
-  // 有効なルートのリスト
   const validRoutes = [
     '/dashboard/applicant/applications/1',
     '/dashboard/applicant/applications/2',
@@ -142,10 +140,9 @@ const DashboardOverview = () => {
                       className={`p-3 rounded-lg text-sm ${
                         isValidRoute(detail.path)
                           ? 'bg-gray-50 cursor-pointer hover:bg-gray-100'
-                          : 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                      } transition-colors`}
-                      onClick={(e) => handleDetailClick(detail.path, e)}
-                      title={isValidRoute(detail.path) ? undefined : 'このページは現在利用できません'}
+                          : 'bg-gray-100 text-gray-500'
+                      }`}
+                      onClick={(e) => isValidRoute(detail.path) && handleDetailClick(detail.path, e)}
                     >
                       {detail.text}
                     </div>
