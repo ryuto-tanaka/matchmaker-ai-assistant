@@ -15,8 +15,6 @@ export const NavigationMenu = ({ currentMenu, userType }: NavigationMenuProps) =
   const location = useLocation();
 
   const handleNavigation = (path: string) => {
-    // ユーザータイプに基づいてパスを構築
-    const basePath = `/dashboard/${userType}`;
     navigate(path);
   };
 

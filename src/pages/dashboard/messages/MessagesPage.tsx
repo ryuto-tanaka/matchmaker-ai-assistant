@@ -1,18 +1,21 @@
 
 import React from 'react';
+import { useParams } from 'react-router-dom';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import MessageCard from '@/components/messages/MessageCard';
 import ProjectDetailsDialog from '@/components/messages/ProjectDetailsDialog';
+import { UserType } from '@/types/dashboard';
 
 const MessagesPage = () => {
   const [showDetails, setShowDetails] = React.useState(false);
+  const { userType } = useParams<{ userType: UserType }>();
 
-  // 仮のメッセージデータ
+  // ユーザータイプに基づいてメッセージデータを調整
   const conversations = [
     {
       id: 1,
-      expertName: "山田太郎",
-      title: "中小企業診断士",
+      expertName: userType === 'expert' ? "クライアントA" : "山田太郎",
+      title: userType === 'expert' ? "相談者" : "中小企業診断士",
       lastMessage: "IT導入補助金について",
       timestamp: "2024-02-21T15:30:00",
       project: {
@@ -25,8 +28,14 @@ const MessagesPage = () => {
     },
   ];
 
+  const userName = {
+    applicant: "申請者",
+    provider: "株式会社〇〇",
+    expert: "田中弁護士"
+  }[userType || 'applicant'];
+
   return (
-    <DashboardLayout userType="applicant" userName="申請者">
+    <DashboardLayout userType={userType as UserType} userName={userName}>
       <div className="space-y-6">
         <h1 className="text-2xl font-bold">メッセージ</h1>
 
