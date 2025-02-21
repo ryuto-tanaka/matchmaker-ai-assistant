@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Bell, CalendarDays } from 'lucide-react';
+import { Google, Bell } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { useToast } from "@/components/ui/use-toast";
@@ -92,7 +92,7 @@ const CalendarSection = () => {
             onClick={handleGoogleCalendarConnect}
             className="flex items-center gap-2"
           >
-            <CalendarDays className="h-4 w-4" />
+            <Google className="h-4 w-4" />
             <span>{isGoogleCalendarConnected ? 'Google Calendar連携済み' : 'Google Calendar連携'}</span>
           </Button>
         </div>
