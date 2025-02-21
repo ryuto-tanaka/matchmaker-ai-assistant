@@ -26,9 +26,21 @@ interface UserMenuProps {
   onTypeSwitch: (type: UserType) => void;
 }
 
-export const UserMenu = ({ userName, userType, secondaryTypes, onTypeSwitch }: UserMenuProps) => {
+export const UserMenu = ({ userName, userType, userType: UserType, secondaryTypes, onTypeSwitch }: UserMenuProps) => {
   const navigate = useNavigate();
   const { signOut } = useAuthContext();
+
+  // 利用可能なユーザータイプを定義
+  const availableUserTypes: { type: UserType; label: string }[] = [
+    { type: 'applicant', label: '申請者' },
+    { type: 'provider', label: 'サービス提供者' },
+    { type: 'expert', label: '専門家' },
+  ];
+
+  // 現在のユーザータイプに基づいて、切り替え可能なタイプをフィルタリング
+  const switchableTypes = availableUserTypes.filter(
+    (availableType) => availableType.type !== userType
+  );
 
   const handleLogout = async () => {
     try {
@@ -52,27 +64,24 @@ export const UserMenu = ({ userName, userType, secondaryTypes, onTypeSwitch }: U
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-56">
-        {secondaryTypes.map((type) => (
-          <DropdownMenuItem key={type} onClick={() => onTypeSwitch(type)}>
-            <UserCog className="mr-2 h-4 w-4" />
-            {type === 'applicant' && '申請者として表示'}
-            {type === 'provider' && 'サービス提供者として表示'}
-            {type === 'expert' && '専門家として表示'}
-          </DropdownMenuItem>
-        ))}
-
-        {!secondaryTypes.includes('provider') && (
-          <DropdownMenuItem onClick={() => navigate('/register/provider')}>
-            <UserPlus className="mr-2 h-4 w-4" />
-            サービス提供者として登録
-          </DropdownMenuItem>
-        )}
-        {!secondaryTypes.includes('expert') && (
-          <DropdownMenuItem onClick={() => navigate('/register/expert')}>
-            <UserPlus className="mr-2 h-4 w-4" />
-            専門家として登録
-          </DropdownMenuItem>
-        )}
+        {switchableTypes.map((type) => {
+          const isRegistered = secondaryTypes.includes(type.type);
+          if (isRegistered) {
+            return (
+              <DropdownMenuItem key={type.type} onClick={() => onTypeSwitch(type.type)}>
+                <UserCog className="mr-2 h-4 w-4" />
+                {type.label}として表示
+              </DropdownMenuItem>
+            );
+          } else {
+            return (
+              <DropdownMenuItem key={type.type} onClick={() => navigate(`/register/${type.type}`)}>
+                <UserPlus className="mr-2 h-4 w-4" />
+                {type.label}として登録
+              </DropdownMenuItem>
+            );
+          }
+        })}
 
         <DropdownMenuSeparator />
         
