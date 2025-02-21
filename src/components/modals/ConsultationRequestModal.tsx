@@ -71,6 +71,13 @@ export const ConsultationRequestModal = ({
     now.setMinutes(roundedMinutes);
     now.setSeconds(0);
     now.setMilliseconds(0);
+    
+    // If rounding up puts us at 60 minutes, increment the hour
+    if (roundedMinutes === 60) {
+      now.setHours(now.getHours() + 1);
+      now.setMinutes(0);
+    }
+    
     return now.toISOString().slice(0, 16);
   }
 
@@ -93,9 +100,25 @@ export const ConsultationRequestModal = ({
                   <FormControl>
                     <Input 
                       type="datetime-local"
-                      step={900}
-                      min={roundToNearest15Minutes()}
                       {...field}
+                      onChange={(e) => {
+                        const date = new Date(e.target.value);
+                        const minutes = date.getMinutes();
+                        const roundedMinutes = Math.round(minutes / 15) * 15;
+                        date.setMinutes(roundedMinutes);
+                        date.setSeconds(0);
+                        date.setMilliseconds(0);
+                        
+                        // If rounding up puts us at 60 minutes, increment the hour
+                        if (roundedMinutes === 60) {
+                          date.setHours(date.getHours() + 1);
+                          date.setMinutes(0);
+                        }
+                        
+                        field.onChange(date.toISOString().slice(0, 16));
+                      }}
+                      step={900} // 15 minutes in seconds
+                      min={roundToNearest15Minutes()}
                     />
                   </FormControl>
                   <FormMessage />
