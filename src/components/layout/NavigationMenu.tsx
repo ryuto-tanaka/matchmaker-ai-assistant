@@ -17,45 +17,36 @@ export const NavigationMenu = ({ currentMenu, userType, isCollapsed }: Navigatio
   const location = useLocation();
 
   const handleNavigation = (path: string) => {
-    if (path) {
-      navigate(path);
-    }
+    navigate(path);
   };
 
   return (
     <ScrollArea className="flex-1 py-2">
       <nav className="space-y-1 px-2">
         {currentMenu.map((item, index) => (
-          <div
+          <Button
             key={index}
+            variant="ghost"
             className={cn(
-              "w-full",
-              isCollapsed ? "px-3" : "px-4"
+              "w-full justify-start hover:bg-gray-100 transition-colors",
+              isCollapsed ? "px-3" : "px-4",
+              location.pathname === item.path && "bg-gray-100"
             )}
             onClick={() => handleNavigation(item.path)}
           >
-            <Button
-              variant="ghost"
-              className={cn(
-                "w-full justify-start hover:bg-gray-100 transition-colors",
-                location.pathname === item.path && "bg-gray-100"
-              )}
-            >
-              <item.icon className={cn(
-                "h-4 w-4",
-                !isCollapsed && "mr-3"
-              )} />
-              <span className={cn(
-                "transition-all duration-200",
-                isCollapsed && "w-0 opacity-0 hidden"
-              )}>
-                {item.label}
-              </span>
-            </Button>
-          </div>
+            <item.icon className={cn(
+              "h-4 w-4",
+              !isCollapsed && "mr-3"
+            )} />
+            <span className={cn(
+              "transition-all duration-200",
+              isCollapsed && "w-0 opacity-0 hidden"
+            )}>
+              {item.label}
+            </span>
+          </Button>
         ))}
       </nav>
     </ScrollArea>
   );
 };
-
