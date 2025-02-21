@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent } from "@/components/ui/card";
@@ -14,9 +15,6 @@ const DashboardOverview = () => {
   const [expandedCard, setExpandedCard] = React.useState<number | null>(null);
 
   const validRoutes = [
-    '/dashboard/applicant/applications/1',
-    '/dashboard/applicant/applications/2',
-    '/dashboard/applicant/applications/3',
     '/dashboard/messages/1',
     '/dashboard/messages/2'
   ];
