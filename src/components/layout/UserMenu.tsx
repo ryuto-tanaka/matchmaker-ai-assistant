@@ -26,7 +26,7 @@ interface UserMenuProps {
   onTypeSwitch: (type: UserType) => void;
 }
 
-export const UserMenu = ({ userName, userType, userType: UserType, secondaryTypes, onTypeSwitch }: UserMenuProps) => {
+export const UserMenu = ({ userName, userType, secondaryTypes, onTypeSwitch }: UserMenuProps) => {
   const navigate = useNavigate();
   const { signOut } = useAuthContext();
 
