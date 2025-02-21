@@ -80,8 +80,10 @@ function Calendar({
           const dayEvents = eventsByDate[dateKey] || [];
           
           return (
-            <div className="relative h-full">
-              <div {...dayProps} />
+            <div className="relative h-full w-full" {...dayProps}>
+              <div className="absolute top-1 left-1/2 -translate-x-1/2">
+                {format(date, 'd')}
+              </div>
               {dayEvents.length > 0 && (
                 <div className="absolute top-8 left-0 right-0 flex flex-col gap-1 px-1">
                   {dayEvents.map((event) => (
