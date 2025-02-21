@@ -10,7 +10,7 @@ const MessagesPage = () => {
   const [showDetails, setShowDetails] = React.useState(false);
   const location = useLocation();
 
-  // Extract user type from URL path
+  // Extract user type from URL path and ensure it's a valid UserType
   const userType = location.pathname.split('/')[2] as UserType;
 
   // ユーザータイプに基づいてメッセージデータを調整

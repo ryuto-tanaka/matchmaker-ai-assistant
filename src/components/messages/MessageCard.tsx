@@ -4,6 +4,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { UserType } from "@/types/dashboard";
 
 interface ConversationProject {
   title: string;
@@ -33,8 +34,16 @@ const MessageCard = ({
   const navigate = useNavigate();
   const location = useLocation();
   
-  // Extract user type from current URL path
-  const userType = location.pathname.split('/')[2];
+  // URLパスから正確なユーザータイプを抽出
+  const userType = location.pathname.split('/')[2] as UserType;
+  
+  const handleOpenChat = (e: React.MouseEvent) => {
+    e.preventDefault();
+    // ユーザータイプに基づいて正しいパスを構築
+    const path = `/dashboard/${userType}/messages/${id}`;
+    console.log("Navigating to:", path);
+    navigate(path);
+  };
 
   return (
     <Card className="cursor-pointer hover:bg-accent/50 transition-colors">
@@ -65,11 +74,7 @@ const MessageCard = ({
           <div className="flex gap-2">
             <Button 
               variant="outline"
-              onClick={() => {
-                const path = `/dashboard/${userType}/messages/${id}`;
-                console.log("Navigating to:", path);
-                navigate(path, { replace: true });
-              }}
+              onClick={handleOpenChat}
             >
               開く
             </Button>
