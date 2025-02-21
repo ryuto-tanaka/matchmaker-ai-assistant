@@ -49,8 +49,14 @@ const App = () => (
           <AuthProvider>
             <Routes>
               <Route path="/" element={<Index />} />
+              
+              {/* 登録関連のルート */}
               <Route path="/register" element={<Register />} />
               <Route path="/register/details" element={<RegisterDetails />} />
+              <Route path="/register/applicant" element={<Navigate to="/register" state={{ userType: 'applicant' }} />} />
+              <Route path="/register/provider" element={<Navigate to="/register" state={{ userType: 'provider' }} />} />
+              <Route path="/register/expert" element={<Navigate to="/register" state={{ userType: 'expert' }} />} />
+              
               <Route path="/login" element={<Login />} />
               <Route path="/profile-setup" element={<ProfileSetup />} />
               
