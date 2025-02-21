@@ -5,6 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Building, FileText, Users, Phone } from 'lucide-react';
 import { NewClientModal } from '@/components/modals/NewClientModal';
 import { Button } from '@/components/ui/button';
+import { ProviderClientDetailsModal } from '@/components/modals/ProviderClientDetailsModal';
 import {
   Select,
   SelectContent,
@@ -117,7 +118,7 @@ const ClientsPage = () => {
                       </div>
                     </div>
                   </div>
-                  <Button variant="outline">詳細</Button>
+                  <ProviderClientDetailsModal client={client} />
                 </div>
               </CardContent>
             </Card>
