@@ -10,7 +10,8 @@ import { ConsultationRequestModal } from '@/components/modals/ConsultationReques
 const ExpertsPage = () => {
   const navigate = useNavigate();
   const [isConsultationModalOpen, setIsConsultationModalOpen] = useState(false);
-  const [selectedExpert, setSelectedExpert] = useState("");
+  const [selectedExpertId, setSelectedExpertId] = useState<number | null>(null);
+  const [selectedExpertName, setSelectedExpertName] = useState("");
   
   const experts = [
     { 
@@ -39,15 +40,17 @@ const ExpertsPage = () => {
     },
   ];
 
-  const handleConsultationRequest = (expertName: string) => {
-    setSelectedExpert(expertName);
+  const handleConsultationRequest = (expertId: number, expertName: string) => {
+    setSelectedExpertId(expertId);
+    setSelectedExpertName(expertName);
     setIsConsultationModalOpen(true);
   };
 
-  const handleConsultationComplete = (expertId: number) => {
+  const handleConsultationComplete = () => {
+    if (selectedExpertId) {
+      navigate(`/dashboard/messages/${selectedExpertId}`);
+    }
     setIsConsultationModalOpen(false);
-    // チャットページに遷移
-    navigate(`/dashboard/messages/${expertId}`);
   };
 
   return (
@@ -89,7 +92,7 @@ const ExpertsPage = () => {
                       </div>
                     </div>
                   </div>
-                  <Button onClick={() => handleConsultationRequest(expert.name)}>
+                  <Button onClick={() => handleConsultationRequest(expert.id, expert.name)}>
                     相談する
                   </Button>
                 </div>
@@ -101,13 +104,8 @@ const ExpertsPage = () => {
         <ConsultationRequestModal
           isOpen={isConsultationModalOpen}
           onClose={() => setIsConsultationModalOpen(false)}
-          expertName={selectedExpert}
-          onSubmitComplete={(values) => {
-            const expert = experts.find(e => e.name === selectedExpert);
-            if (expert) {
-              handleConsultationComplete(expert.id);
-            }
-          }}
+          expertName={selectedExpertName}
+          onSubmitComplete={() => handleConsultationComplete()}
         />
       </div>
     </DashboardLayout>
