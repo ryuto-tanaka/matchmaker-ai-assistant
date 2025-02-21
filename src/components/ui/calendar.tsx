@@ -1,6 +1,6 @@
 
 import * as React from "react";
-import { ChevronLeft, ChevronRight, Calendar as CalendarIcon } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { DayPicker } from "react-day-picker";
 import { format, isSameDay } from "date-fns";
 import { ja } from "date-fns/locale";
@@ -33,7 +33,7 @@ function Calendar({
   onEventClick,
   ...props
 }: CalendarProps) {
-  // Group events by date
+  // イベントを日付ごとにグループ化
   const eventsByDate = React.useMemo(() => {
     return events.reduce((acc, event) => {
       const dateKey = format(event.date, 'yyyy-MM-dd');
@@ -140,3 +140,4 @@ function Calendar({
 Calendar.displayName = "Calendar";
 
 export { Calendar };
+
