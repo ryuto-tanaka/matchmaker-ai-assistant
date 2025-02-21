@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Bell, CalendarDays } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import {
   Dialog,
   DialogContent,
@@ -25,11 +25,23 @@ import { Label } from "@/components/ui/label";
 import { format } from "date-fns";
 import { ja } from "date-fns/locale";
 
+interface EventDetails {
+  date: Date;
+  title: string;
+  type: 'deadline' | 'consultation' | 'reminder';
+  description?: string;
+}
+
 const CalendarSection = () => {
   const { toast } = useToast();
   const [date, setDate] = useState<Date | undefined>(new Date());
   const [isReminderDialogOpen, setIsReminderDialogOpen] = useState(false);
+  const [isEventDetailsOpen, setIsEventDetailsOpen] = useState(false);
   const [isGoogleCalendarConnected, setIsGoogleCalendarConnected] = useState(false);
+  const [selectedEvent, setSelectedEvent] = useState<EventDetails | null>(null);
+  const [reminderTime, setReminderTime] = useState<string>("");
+  const [emailNotifications, setEmailNotifications] = useState(true);
+  const [appNotifications, setAppNotifications] = useState(true);
 
   const today = new Date();
   const events = [
@@ -61,15 +73,25 @@ const CalendarSection = () => {
     setIsGoogleCalendarConnected(true);
   };
 
-  const handleEventClick = (event: any) => {
-    console.log('Event clicked:', event);
-    setIsReminderDialogOpen(true);
+  const handleEventClick = (event: EventDetails) => {
+    setSelectedEvent(event);
+    setIsEventDetailsOpen(true);
   };
 
-  const handleNotificationClick = () => {
+  const handleReminderSave = () => {
+    if (selectedEvent) {
+      toast({
+        title: "リマインダー設定完了",
+        description: `${selectedEvent.title}のリマインダーを設定しました。`,
+      });
+    }
+    setIsReminderDialogOpen(false);
+  };
+
+  const handleNotificationSettingsSave = () => {
     toast({
-      title: "通知設定",
-      description: "通知設定を開きます。",
+      title: "通知設定を保存しました",
+      description: "設定が更新されました。",
     });
   };
 
@@ -78,14 +100,46 @@ const CalendarSection = () => {
       <CardHeader className="flex flex-row items-center justify-between border-b pb-4">
         <CardTitle className="text-2xl">スケジュール管理</CardTitle>
         <div className="flex items-center gap-2">
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={handleNotificationClick}
-            className="relative"
-          >
-            <Bell className="h-4 w-4" />
-          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="outline"
+                size="icon"
+                className="relative"
+              >
+                <Bell className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-[240px]">
+              <div className="p-4 space-y-4">
+                <div className="space-y-2">
+                  <h4 className="font-medium">通知設定</h4>
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="email-notifications">メール通知</Label>
+                    <Switch
+                      id="email-notifications"
+                      checked={emailNotifications}
+                      onCheckedChange={setEmailNotifications}
+                    />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="app-notifications">アプリ内通知</Label>
+                    <Switch
+                      id="app-notifications"
+                      checked={appNotifications}
+                      onCheckedChange={setAppNotifications}
+                    />
+                  </div>
+                </div>
+                <Button
+                  className="w-full"
+                  onClick={handleNotificationSettingsSave}
+                >
+                  設定を保存
+                </Button>
+              </div>
+            </DropdownMenuContent>
+          </DropdownMenu>
           <Button
             variant="outline"
             size="default"
@@ -111,22 +165,85 @@ const CalendarSection = () => {
         </div>
       </CardContent>
 
+      <Dialog open={isEventDetailsOpen} onOpenChange={setIsEventDetailsOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{selectedEvent?.title}</DialogTitle>
+            <DialogDescription>
+              {selectedEvent?.description}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="flex items-center justify-between">
+              <span>日時</span>
+              <span>
+                {selectedEvent && format(selectedEvent.date, 'yyyy年MM月dd日')}
+              </span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span>種類</span>
+              <span>
+                {selectedEvent?.type === 'deadline' && '期限'}
+                {selectedEvent?.type === 'consultation' && '相談'}
+                {selectedEvent?.type === 'reminder' && 'リマインダー'}
+              </span>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setIsEventDetailsOpen(false);
+                setIsReminderDialogOpen(true);
+              }}
+            >
+              リマインダーを設定
+            </Button>
+            <Button onClick={() => setIsEventDetailsOpen(false)}>
+              閉じる
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       <Dialog open={isReminderDialogOpen} onOpenChange={setIsReminderDialogOpen}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>リマインダー設定</DialogTitle>
             <DialogDescription>
-              イベントの通知時間を設定してください
+              {selectedEvent?.title}のリマインダーを設定します
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div className="space-y-2">
               <Label>通知時間</Label>
-              <Input type="datetime-local" />
+              <Input
+                type="datetime-local"
+                value={reminderTime}
+                onChange={(e) => setReminderTime(e.target.value)}
+              />
+            </div>
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <Label htmlFor="reminder-email">メールで通知</Label>
+                <Switch
+                  id="reminder-email"
+                  checked={emailNotifications}
+                  onCheckedChange={setEmailNotifications}
+                />
+              </div>
+              <div className="flex items-center justify-between">
+                <Label htmlFor="reminder-app">アプリ内で通知</Label>
+                <Switch
+                  id="reminder-app"
+                  checked={appNotifications}
+                  onCheckedChange={setAppNotifications}
+                />
+              </div>
             </div>
           </div>
           <DialogFooter>
-            <Button onClick={() => setIsReminderDialogOpen(false)}>
+            <Button onClick={handleReminderSave}>
               設定を保存
             </Button>
           </DialogFooter>
