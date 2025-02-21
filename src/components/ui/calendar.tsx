@@ -2,7 +2,7 @@
 import * as React from "react";
 import { ChevronLeft, ChevronRight, Calendar as CalendarIcon } from "lucide-react";
 import { DayPicker } from "react-day-picker";
-import { format } from "date-fns";
+import { format, isSameDay } from "date-fns";
 import { ja } from "date-fns/locale";
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
@@ -47,16 +47,16 @@ function Calendar({
 
   const renderEventBadge = (event: CalendarEvent) => {
     const badgeVariants: Record<CalendarEvent['type'], string> = {
-      deadline: 'bg-red-100 text-red-800',
-      consultation: 'bg-blue-100 text-blue-800',
-      reminder: 'bg-yellow-100 text-yellow-800',
+      deadline: 'bg-red-100 text-red-800 hover:bg-red-200',
+      consultation: 'bg-blue-100 text-blue-800 hover:bg-blue-200',
+      reminder: 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200',
     };
 
     return (
       <Badge
-        key={event.title}
+        key={`${event.title}-${event.date.toISOString()}`}
         className={cn(
-          "text-xs cursor-pointer",
+          "text-xs cursor-pointer transition-colors",
           badgeVariants[event.type]
         )}
         onClick={(e) => {
@@ -91,11 +91,17 @@ function Calendar({
         head_cell:
           "text-muted-foreground rounded-md w-9 font-normal text-[0.8rem]",
         row: "flex w-full mt-2",
-        cell: "relative h-9 w-9 text-center text-sm p-0 [&:has([aria-selected].day-range-end)]:rounded-r-md [&:has([aria-selected].day-outside)]:bg-accent/50 [&:has([aria-selected])]:bg-accent first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20",
+        cell: cn(
+          "relative h-auto min-h-[60px] w-9 text-center text-sm p-0 first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20",
+          props.mode === "range"
+            ? "[&:has(>.day-range-end)]:rounded-r-md [&:has(>.day-range-start)]:rounded-l-md first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md"
+            : "[&:has([aria-selected])]:rounded-md"
+        ),
         day: cn(
           buttonVariants({ variant: "ghost" }),
           "h-9 w-9 p-0 font-normal aria-selected:opacity-100"
         ),
+        day_range_start: "day-range-start",
         day_range_end: "day-range-end",
         day_selected:
           "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground",
@@ -109,40 +115,19 @@ function Calendar({
         ...classNames,
       }}
       components={{
-        IconLeft: ({ ...props }) => <ChevronLeft className="h-4 w-4" />,
-        IconRight: ({ ...props }) => <ChevronRight className="h-4 w-4" />,
+        IconLeft: () => <ChevronLeft className="h-4 w-4" />,
+        IconRight: () => <ChevronRight className="h-4 w-4" />,
         Day: ({ date, displayMonth, ...dayProps }) => {
           const dateKey = format(date, 'yyyy-MM-dd');
           const dayEvents = eventsByDate[dateKey] || [];
           
           return (
-            <div className="relative">
+            <div className="relative flex flex-col items-center">
               <div {...dayProps} />
               {dayEvents.length > 0 && (
-                <HoverCard>
-                  <HoverCardTrigger asChild>
-                    <div className="absolute -bottom-4 left-0 right-0 flex flex-wrap gap-1 justify-center">
-                      {dayEvents.map(renderEventBadge)}
-                    </div>
-                  </HoverCardTrigger>
-                  <HoverCardContent className="w-80">
-                    <div className="space-y-2">
-                      {dayEvents.map((event) => (
-                        <div key={event.title} className="space-y-1">
-                          <div className="flex items-center gap-2">
-                            <CalendarIcon className="h-4 w-4" />
-                            <span className="font-medium">{event.title}</span>
-                          </div>
-                          {event.description && (
-                            <p className="text-sm text-muted-foreground">
-                              {event.description}
-                            </p>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  </HoverCardContent>
-                </HoverCard>
+                <div className="absolute top-8 left-0 right-0 flex flex-col gap-1 px-1">
+                  {dayEvents.map(renderEventBadge)}
+                </div>
               )}
             </div>
           );

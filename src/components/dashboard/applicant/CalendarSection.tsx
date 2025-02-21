@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Calendar as CalendarIcon, Settings2, Bell } from 'lucide-react';
+import { Settings2, Bell } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Calendar, type CalendarEvent } from "@/components/ui/calendar";
 import { useToast } from "@/components/ui/use-toast";
@@ -26,7 +26,7 @@ import { Label } from "@/components/ui/label";
 
 const CalendarSection = () => {
   const { toast } = useToast();
-  const [date, setDate] = useState<Date>(new Date());
+  const [date, setDate] = useState<Date | undefined>(new Date());
   const [isReminderDialogOpen, setIsReminderDialogOpen] = useState(false);
   const [isGoogleCalendarConnected, setIsGoogleCalendarConnected] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null);
@@ -117,7 +117,7 @@ const CalendarSection = () => {
         <Calendar
           mode="single"
           selected={date}
-          onSelect={(newDate) => newDate && setDate(newDate)}
+          onSelect={setDate}
           events={events}
           onEventClick={handleEventClick}
           className="rounded-md border"
