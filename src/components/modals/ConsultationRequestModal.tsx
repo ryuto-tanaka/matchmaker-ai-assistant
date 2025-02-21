@@ -14,7 +14,6 @@ const formSchema = z.object({
   preferredDate: z.string().min(1, "希望日時を選択してください"),
   consultationType: z.string().min(1, "相談内容を選択してください"),
   description: z.string().min(10, "相談内容を10文字以上で入力してください"),
-  message: z.string().min(10, "メッセージを10文字以上で入力してください"),
 });
 
 interface ConsultationRequestModalProps {
@@ -35,7 +34,6 @@ export const ConsultationRequestModal = ({
       preferredDate: "",
       consultationType: "",
       description: "",
-      message: "",
     },
   });
 
@@ -43,9 +41,10 @@ export const ConsultationRequestModal = ({
     try {
       console.log("Form submitted:", values);
       
+      // 相談予約完了時のメッセージをカスタマイズ
       toast({
-        title: "相談予約を受け付けました",
-        description: `${expertName}からの返信をお待ちください。`,
+        title: "見積り相談をしました",
+        description: `【やりたいこと】${values.consultationType}\n\n期間：${values.preferredDate}まで`,
       });
       
       onClose();
@@ -105,24 +104,6 @@ export const ConsultationRequestModal = ({
                   <FormControl>
                     <Textarea
                       placeholder="相談したい内容の詳細を記入してください"
-                      className="min-h-[100px]"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="message"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>専門家へのメッセージ</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      placeholder="専門家へ直接メッセージを送ることができます"
                       className="min-h-[100px]"
                       {...field}
                     />
