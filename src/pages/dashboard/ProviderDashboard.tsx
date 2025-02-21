@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { FileText, Users, TrendingUp, DollarSign, ArrowRight } from 'lucide-react';
+import { FileText, Users, TrendingUp, DollarSign } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { StatDetailsModal } from "@/components/modals/StatDetailsModal";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
@@ -47,28 +47,25 @@ const ProviderDashboard = () => {
         {stats.map((stat, index) => (
           <Card key={index}>
             <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-4">
-                  <div className="p-2 bg-primary/10 rounded-lg">
-                    <stat.icon className="h-6 w-6 text-primary" />
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-500">{stat.label}</p>
-                    <h3 className="text-2xl font-bold">{stat.value}</h3>
-                  </div>
-                </div>
-                <Dialog 
-                  open={openDialogs[index]} 
-                  onOpenChange={(open) => handleOpenChange(index, open)}
-                >
-                  <DialogTrigger asChild>
-                    <div className="cursor-pointer p-2 hover:bg-gray-100 rounded-full">
-                      <ArrowRight className="h-4 w-4" />
+              <Dialog 
+                open={openDialogs[index]} 
+                onOpenChange={(open) => handleOpenChange(index, open)}
+              >
+                <DialogTrigger asChild>
+                  <div className="flex items-center justify-between cursor-pointer">
+                    <div className="flex items-center space-x-4">
+                      <div className="p-2 bg-primary/10 rounded-lg">
+                        <stat.icon className="h-6 w-6 text-primary" />
+                      </div>
+                      <div>
+                        <p className="text-sm text-gray-500">{stat.label}</p>
+                        <h3 className="text-2xl font-bold">{stat.value}</h3>
+                      </div>
                     </div>
-                  </DialogTrigger>
-                  <StatDetailsModal statType={stat.label} value={stat.value} />
-                </Dialog>
-              </div>
+                  </div>
+                </DialogTrigger>
+                <StatDetailsModal statType={stat.label} value={stat.value} />
+              </Dialog>
             </CardContent>
           </Card>
         ))}
