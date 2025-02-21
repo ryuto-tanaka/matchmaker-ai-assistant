@@ -90,35 +90,41 @@ const DashboardLayout = ({
 
   return (
     <div className="min-h-screen flex">
-      <div className="w-64 bg-white border-r flex flex-col">
-        <div className="p-4 border-b">
-          <h1 className="text-xl font-bold text-primary">補助金プラットフォーム</h1>
-        </div>
-        
-        <NavigationMenu 
-          currentMenu={currentMenu}
-          userType={userType}
-        />
-
-        <div className="p-4 border-t">
-          <div className="flex items-center space-x-2 mb-4">
-            <NotificationsMenu 
-              notifications={notifications}
-              unreadCount={unreadCount}
+      {/* サイドバー */}
+      <div className="w-64 flex-shrink-0 fixed h-full bg-white border-r z-10">
+        <div className="flex flex-col h-full">
+          <div className="p-4 border-b">
+            <h1 className="text-xl font-bold text-primary">補助金プラットフォーム</h1>
+          </div>
+          
+          <div className="flex-1 overflow-y-auto">
+            <NavigationMenu 
+              currentMenu={currentMenu}
+              userType={userType}
             />
           </div>
 
-          <UserMenu
-            userName={userName}
-            userType={userType}
-            secondaryTypes={secondaryTypes}
-            onTypeSwitch={handleTypeSwitch}
-          />
+          <div className="p-4 border-t mt-auto bg-white">
+            <div className="flex items-center space-x-2 mb-4">
+              <NotificationsMenu 
+                notifications={notifications}
+                unreadCount={unreadCount}
+              />
+            </div>
+
+            <UserMenu
+              userName={userName}
+              userType={userType}
+              secondaryTypes={secondaryTypes}
+              onTypeSwitch={handleTypeSwitch}
+            />
+          </div>
         </div>
       </div>
 
-      <div className="flex-1 bg-gray-50">
-        <main className="p-6">
+      {/* メインコンテンツ */}
+      <div className="flex-1 ml-64">
+        <main className="p-6 min-h-screen bg-gray-50">
           {children}
         </main>
       </div>
@@ -127,3 +133,4 @@ const DashboardLayout = ({
 };
 
 export default DashboardLayout;
+
