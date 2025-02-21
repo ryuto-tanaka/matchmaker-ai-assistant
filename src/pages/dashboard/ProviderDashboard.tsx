@@ -43,7 +43,7 @@ const ProviderDashboard = () => {
                   </div>
                 </div>
                 <Dialog>
-                  <DialogTrigger asChild>
+                  <DialogTrigger>
                     <Button variant="ghost" size="icon" className="ml-2">
                       <ArrowRight className="h-4 w-4" />
                     </Button>
