@@ -16,7 +16,7 @@ const ProviderChatPage = () => {
 
   const userName = "株式会社〇〇";
 
-  // 仮の専門家データ
+  // 仮のクライアントデータ
   const expertData = {
     id: expertId,
     name: "山田太郎",
@@ -77,7 +77,7 @@ const ProviderChatPage = () => {
   };
 
   return (
-    <DashboardLayout userType="provider" userName={userName}>
+    <DashboardLayout userType="provider" userName={userName} secondaryTypes={['expert']}>
       <div className="flex gap-4 h-[calc(100vh-8rem)]">
         <div className="flex-1 flex flex-col">
           <ChatMessages messages={messages} />
@@ -103,3 +103,4 @@ const ProviderChatPage = () => {
 };
 
 export default ProviderChatPage;
+
