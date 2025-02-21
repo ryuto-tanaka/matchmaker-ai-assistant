@@ -5,7 +5,7 @@ import DashboardLayout from '@/components/layout/DashboardLayout';
 import { Card, CardContent } from "@/components/ui/card";
 import { User } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 
 const MessagesPage = () => {
   const navigate = useNavigate();
@@ -17,7 +17,7 @@ const MessagesPage = () => {
       id: 1,
       expertName: "山田太郎",
       title: "中小企業診断士",
-      lastMessage: "【やりたいこと】IT導入補助金について",
+      lastMessage: "IT導入補助金について",
       timestamp: "2024-02-21T15:30:00",
       project: {
         title: "クロードの project",
@@ -62,15 +62,16 @@ Claudeのプロジェクトで、質の高いセールスレターを書ける�
                       </div>
                       <p className="text-sm text-muted-foreground">{conversation.title}</p>
                       <p className="text-sm mt-1 line-clamp-1">{conversation.lastMessage}</p>
+                      <Button 
+                        variant="link"
+                        className="text-sm p-0 h-auto mt-1"
+                        onClick={() => setShowDetails(true)}
+                      >
+                        詳細を見る
+                      </Button>
                     </div>
                   </div>
                   <div className="flex gap-2">
-                    <Button 
-                      variant="outline"
-                      onClick={() => setShowDetails(true)}
-                    >
-                      詳細
-                    </Button>
                     <Button 
                       variant="outline"
                       onClick={() => {
@@ -91,6 +92,9 @@ Claudeのプロジェクトで、質の高いセールスレターを書ける�
           <DialogContent className="max-w-3xl">
             <DialogHeader>
               <DialogTitle>相談内容の詳細</DialogTitle>
+              <DialogDescription>
+                相談依頼の詳細情報
+              </DialogDescription>
             </DialogHeader>
             <div className="space-y-6">
               <div>
