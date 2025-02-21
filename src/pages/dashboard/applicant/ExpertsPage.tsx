@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import { Card, CardContent } from "@/components/ui/card";
-import { User, Star, MessageSquare, Search, ArrowUpDown } from 'lucide-react';
+import { User, Star, MessageSquare, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from "@/components/ui/input";
 import { ConsultationRequestModal } from '@/components/modals/ConsultationRequestModal';
@@ -15,7 +15,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-// 専門分野の定義
 const categories = [
   'IT導入補助金',
   '事業再構築補助金',
@@ -24,7 +23,7 @@ const categories = [
   '省エネ補助金'
 ] as const;
 
-type SortOption = 'rating-desc' | 'rating-asc' | 'consultations-desc' | 'consultations-asc';
+type SortOption = 'rating-desc' | 'rating-asc' | 'consultations-desc' | 'consultations-asc' | 'newest' | 'recommended';
 
 const ExpertsPage = () => {
   const navigate = useNavigate();
@@ -42,7 +41,9 @@ const ExpertsPage = () => {
       title: '中小企業診断士',
       specialties: ['IT導入補助金', '事業再構築補助金'],
       rating: 4.8,
-      consultations: 156
+      consultations: 156,
+      joinedAt: '2024-01-15',
+      recommendationScore: 92
     },
     { 
       id: 2, 
@@ -50,7 +51,9 @@ const ExpertsPage = () => {
       title: '税理士',
       specialties: ['小規模事業者持続化補助金', 'ものづくり補助金'],
       rating: 4.9,
-      consultations: 243
+      consultations: 243,
+      joinedAt: '2024-02-20',
+      recommendationScore: 95
     },
     { 
       id: 3, 
@@ -58,7 +61,9 @@ const ExpertsPage = () => {
       title: '行政書士',
       specialties: ['事業再構築補助金', '省エネ補助金'],
       rating: 4.7,
-      consultations: 128
+      consultations: 128,
+      joinedAt: '2024-03-01',
+      recommendationScore: 88
     },
   ];
 
@@ -113,6 +118,10 @@ const ExpertsPage = () => {
           return b.consultations - a.consultations;
         case 'consultations-asc':
           return a.consultations - b.consultations;
+        case 'newest':
+          return new Date(b.joinedAt).getTime() - new Date(a.joinedAt).getTime();
+        case 'recommended':
+          return b.recommendationScore - a.recommendationScore;
         default:
           return 0;
       }
@@ -144,6 +153,8 @@ const ExpertsPage = () => {
                 <SelectValue placeholder="並び替え" />
               </SelectTrigger>
               <SelectContent>
+                <SelectItem value="recommended">おすすめ順</SelectItem>
+                <SelectItem value="newest">新着順</SelectItem>
                 <SelectItem value="rating-desc">評価が高い順</SelectItem>
                 <SelectItem value="rating-asc">評価が低い順</SelectItem>
                 <SelectItem value="consultations-desc">相談件数が多い順</SelectItem>
