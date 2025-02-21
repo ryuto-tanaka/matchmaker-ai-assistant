@@ -1,6 +1,7 @@
 
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useNavigate } from 'react-router-dom';
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { FileText, Users, Clock, CheckCircle, ChevronDown } from 'lucide-react';
 import { useToast } from "@/components/ui/use-toast";
@@ -8,6 +9,7 @@ import { BusinessPlanSurveyModal } from '@/components/modals/BusinessPlanSurveyM
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
 const DashboardOverview = () => {
+  const navigate = useNavigate();
   const { toast } = useToast();
   const [isBusinessPlanModalOpen, setIsBusinessPlanModalOpen] = React.useState(false);
   const [expandedCard, setExpandedCard] = React.useState<number | null>(null);
@@ -18,9 +20,9 @@ const DashboardOverview = () => {
       label: '申請中の補助金', 
       value: '3件',
       details: [
-        '小規模事業者持続化補助金',
-        'IT導入補助金',
-        '事業再構築補助金'
+        { text: '小規模事業者持続化補助金', path: '/dashboard/applicant/applications/1' },
+        { text: 'IT導入補助金', path: '/dashboard/applicant/applications/2' },
+        { text: '事業再構築補助金', path: '/dashboard/applicant/applications/3' }
       ]
     },
     { 
@@ -28,8 +30,8 @@ const DashboardOverview = () => {
       label: '相談中の専門家', 
       value: '2名',
       details: [
-        '山田太郎（中小企業診断士）',
-        '佐藤花子（税理士）'
+        { text: '山田太郎（中小企業診断士）', path: '/dashboard/messages/1' },
+        { text: '佐藤花子（税理士）', path: '/dashboard/messages/2' }
       ]
     },
     { 
@@ -37,7 +39,7 @@ const DashboardOverview = () => {
       label: '審査待ち', 
       value: '1件',
       details: [
-        'ものづくり補助金（一次審査中）'
+        { text: 'ものづくり補助金（一次審査中）', path: '/dashboard/applicant/applications/4' }
       ]
     },
     { 
@@ -45,8 +47,8 @@ const DashboardOverview = () => {
       label: '承認済み', 
       value: '2件',
       details: [
-        '小規模事業者持続化補助金（50万円）',
-        'IT導入補助金（70万円）'
+        { text: '小規模事業者持続化補助金（50万円）', path: '/dashboard/applicant/applications/5' },
+        { text: 'IT導入補助金（70万円）', path: '/dashboard/applicant/applications/6' }
       ]
     },
   ];
@@ -62,6 +64,11 @@ const DashboardOverview = () => {
       description: "AI事業計画書の生成を開始します。完了までしばらくお待ちください。",
     });
     setIsBusinessPlanModalOpen(false);
+  };
+
+  const handleDetailClick = (path: string, event: React.MouseEvent) => {
+    event.stopPropagation(); // 親のCollapsibleのクリックイベントを停止
+    navigate(path);
   };
 
   return (
@@ -119,9 +126,10 @@ const DashboardOverview = () => {
                   {stat.details.map((detail, detailIndex) => (
                     <div
                       key={detailIndex}
-                      className="p-3 bg-gray-50 rounded-lg text-sm"
+                      className="p-3 bg-gray-50 rounded-lg text-sm cursor-pointer hover:bg-gray-100 transition-colors"
+                      onClick={(e) => handleDetailClick(detail.path, e)}
                     >
-                      {detail}
+                      {detail.text}
                     </div>
                   ))}
                 </div>
