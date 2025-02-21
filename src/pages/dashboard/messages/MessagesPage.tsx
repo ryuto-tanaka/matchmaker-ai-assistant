@@ -11,7 +11,7 @@ const MessagesPage = () => {
   const navigate = useNavigate();
   const [showDetails, setShowDetails] = React.useState(false);
 
-  // 仮のメッセージ一覧データ
+  // 仮のメッセージデータ
   const conversations = [
     {
       id: 1,
@@ -24,14 +24,7 @@ const MessagesPage = () => {
         budget: "見積り希望",
         deadline: "2025年2月21日",
         deliveryDate: "未定・相談してみたい",
-        details: `
-【やりたいこと】
-Claudeのプロジェクトで、質の高いセールスレターを書けるツールを作りたい。
-
-安室系、占い系、健康系などさまざまなジャンルに対応したライティングができるツールが好ましい。
-
-【自分の現時点での構想】
-ライティングが上手い人の文章を読み込ませ、その文章に沿って、Claudeに文章を作ってもらう。`,
+        details: `IT導入補助金について`,
       }
     },
   ];
@@ -99,6 +92,13 @@ Claudeのプロジェクトで、質の高いセールスレターを書ける�
             <div className="space-y-6">
               <div>
                 <h3 className="text-lg font-semibold mb-4">{conversations[0].project.title}</h3>
+                <div className="bg-green-600 text-white p-4 rounded-lg mb-6">
+                  <div className="font-bold mb-2">【やりたいこと】IT導入補助金について</div>
+                  <div className="text-sm">
+                    期間：2024年3月31日まで<br />
+                    15:30:00
+                  </div>
+                </div>
                 <div className="grid grid-cols-2 gap-4 mb-6">
                   <div>
                     <p className="text-sm text-muted-foreground">予算</p>
@@ -111,12 +111,6 @@ Claudeのプロジェクトで、質の高いセールスレターを書ける�
                   <div>
                     <p className="text-sm text-muted-foreground">納品希望日</p>
                     <p>{conversations[0].project.deliveryDate}</p>
-                  </div>
-                </div>
-                <div>
-                  <h4 className="font-medium mb-2">相談内容の詳細</h4>
-                  <div className="bg-muted p-4 rounded-lg">
-                    <pre className="whitespace-pre-wrap font-sans">{conversations[0].project.details}</pre>
                   </div>
                 </div>
               </div>
