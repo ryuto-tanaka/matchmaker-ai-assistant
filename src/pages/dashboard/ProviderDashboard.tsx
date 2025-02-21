@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { FileText, Users, TrendingUp, DollarSign, ArrowRight } from 'lucide-react';
@@ -17,12 +17,18 @@ interface DashboardStat {
 }
 
 const ProviderDashboard = () => {
+  const [openDialogs, setOpenDialogs] = useState<{ [key: number]: boolean }>({});
+
   const stats: DashboardStat[] = [
     { icon: FileText, label: '進行中の案件', value: '12件' },
     { icon: Users, label: '契約クライアント', value: '25社' },
     { icon: TrendingUp, label: '今月の成約率', value: '75%' },
     { icon: DollarSign, label: '今月の売上', value: '¥1.2M' },
   ];
+
+  const handleOpenChange = (index: number, open: boolean) => {
+    setOpenDialogs(prev => ({ ...prev, [index]: open }));
+  };
 
   return (
     <DashboardLayout userType="provider" userName="株式会社〇〇" secondaryTypes={['expert']}>
@@ -42,8 +48,11 @@ const ProviderDashboard = () => {
                     <h3 className="text-2xl font-bold">{stat.value}</h3>
                   </div>
                 </div>
-                <Dialog>
-                  <DialogTrigger>
+                <Dialog 
+                  open={openDialogs[index]} 
+                  onOpenChange={(open) => handleOpenChange(index, open)}
+                >
+                  <DialogTrigger asChild>
                     <div className="cursor-pointer p-2 hover:bg-gray-100 rounded-full">
                       <ArrowRight className="h-4 w-4" />
                     </div>
