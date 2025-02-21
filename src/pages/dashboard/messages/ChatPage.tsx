@@ -1,18 +1,30 @@
 
 import React from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useLocation } from 'react-router-dom';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import { useToast } from "@/components/ui/use-toast";
 import ExpertInfo from '@/components/messages/ExpertInfo';
 import VideoCallDialog from '@/components/messages/VideoCallDialog';
 import ChatMessages from '@/components/messages/ChatMessages';
 import MessageInput from '@/components/messages/MessageInput';
+import { UserType } from '@/types/dashboard';
 
 const ChatPage = () => {
   const { expertId } = useParams();
+  const location = useLocation();
   const { toast } = useToast();
   const [newMessage, setNewMessage] = React.useState("");
   const [showVideoCallDialog, setShowVideoCallDialog] = React.useState(false);
+
+  // URLパスからユーザータイプを抽出
+  const userType = location.pathname.split('/')[2] as UserType;
+
+  // ユーザータイプに基づいてユーザー名を設定
+  const userName = {
+    applicant: "申請者",
+    provider: "株式会社〇〇",
+    expert: "田中弁護士"
+  }[userType];
 
   // 仮の専門家データ
   const expertData = {
@@ -29,14 +41,14 @@ const ChatPage = () => {
     {
       id: 1,
       content: "【やりたいこと】IT導入補助金について\n\n期間：2024年3月31日まで",
-      sender: "user",
+      sender: "user" as const,
       timestamp: "2024-02-21T15:30:00",
       files: [],
     },
     {
       id: 2,
       content: "IT導入補助金についてご相談ありがとうございます。\n具体的な導入予定のシステムはお決まりでしょうか？",
-      sender: "expert",
+      sender: "expert" as const,
       timestamp: "2024-02-21T15:35:00",
       files: [{
         name: "IT導入補助金_概要資料.pdf",
@@ -75,7 +87,7 @@ const ChatPage = () => {
   };
 
   return (
-    <DashboardLayout userType="applicant" userName="申請者">
+    <DashboardLayout userType={userType} userName={userName}>
       <div className="flex gap-4 h-[calc(100vh-8rem)]">
         {/* メインチャットエリア */}
         <div className="flex-1 flex flex-col">
