@@ -32,14 +32,12 @@ export const UserMenu = ({ userName, userType, secondaryTypes, onTypeSwitch, isC
   const navigate = useNavigate();
   const { signOut } = useAuthContext();
 
-  // 利用可能なユーザータイプを定義
   const availableUserTypes: { type: UserType; label: string }[] = [
     { type: 'applicant', label: '申請者' },
     { type: 'provider', label: 'サービス提供者' },
     { type: 'expert', label: '専門家' },
   ];
 
-  // 現在のユーザータイプに基づいて、切り替え可能なタイプをフィルタリング
   const switchableTypes = availableUserTypes.filter(
     (availableType) => availableType.type !== userType
   );
@@ -58,17 +56,21 @@ export const UserMenu = ({ userName, userType, secondaryTypes, onTypeSwitch, isC
         <Button 
           variant="ghost" 
           className={cn(
-            "w-full flex items-center justify-between p-2",
-            isCollapsed && "justify-center"
+            "w-full flex items-center transition-colors hover:bg-gray-100",
+            isCollapsed ? "justify-center px-2" : "justify-between px-3"
           )}
         >
           <div className="flex items-center">
             <div className="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center">
               {userName[0]}
             </div>
-            {!isCollapsed && <span className="ml-2 text-sm font-medium">{userName}</span>}
+            {!isCollapsed && (
+              <span className="ml-3 text-sm font-medium overflow-hidden text-ellipsis">
+                {userName}
+              </span>
+            )}
           </div>
-          {!isCollapsed && <ChevronDown className="h-4 w-4" />}
+          {!isCollapsed && <ChevronDown className="h-4 w-4 ml-2" />}
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-56">

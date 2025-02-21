@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import {
@@ -101,14 +100,14 @@ const DashboardLayout = ({
     <div className="min-h-screen flex w-full">
       {/* サイドバー */}
       <div className={cn(
-        "fixed h-full bg-white border-r z-10 transition-all duration-300",
-        isSidebarCollapsed ? "w-20" : "w-64"
+        "fixed h-full bg-white border-r z-10 transition-all duration-300 shadow-sm",
+        isSidebarCollapsed ? "w-16" : "w-64"
       )}>
         <div className="flex flex-col h-full">
           <div className="p-4 border-b flex items-center justify-between">
             <h1 className={cn(
-              "text-xl font-bold text-primary transition-opacity duration-300",
-              isSidebarCollapsed ? "opacity-0" : "opacity-100"
+              "text-xl font-bold text-primary transition-opacity duration-300 overflow-hidden",
+              isSidebarCollapsed ? "opacity-0 w-0" : "opacity-100 w-auto"
             )}>
               補助金プラットフォーム
             </h1>
@@ -116,7 +115,10 @@ const DashboardLayout = ({
               variant="ghost"
               size="icon"
               onClick={toggleSidebar}
-              className="ml-2"
+              className={cn(
+                "hover:bg-gray-100 transition-colors",
+                isSidebarCollapsed && "mx-auto"
+              )}
             >
               {isSidebarCollapsed ? (
                 <ChevronRight className="h-4 w-4" />
@@ -134,15 +136,12 @@ const DashboardLayout = ({
             />
           </div>
 
-          <div className="p-4 border-t mt-auto bg-white">
-            <div className="flex items-center space-x-2 mb-4">
-              <NotificationsMenu 
-                notifications={notifications}
-                unreadCount={unreadCount}
-                isCollapsed={isSidebarCollapsed}
-              />
-            </div>
-
+          <div className="p-4 border-t mt-auto bg-white space-y-4">
+            <NotificationsMenu 
+              notifications={notifications}
+              unreadCount={unreadCount}
+              isCollapsed={isSidebarCollapsed}
+            />
             <UserMenu
               userName={userName}
               userType={userType}
@@ -157,7 +156,7 @@ const DashboardLayout = ({
       {/* メインコンテンツ */}
       <div className={cn(
         "flex-1 transition-all duration-300",
-        isSidebarCollapsed ? "ml-20" : "ml-64"
+        isSidebarCollapsed ? "ml-16" : "ml-64"
       )}>
         <main className="p-6 min-h-screen bg-gray-50">
           {children}
@@ -168,4 +167,3 @@ const DashboardLayout = ({
 };
 
 export default DashboardLayout;
-
