@@ -72,13 +72,28 @@ export const ConsultationRequestModal = ({
     now.setSeconds(0);
     now.setMilliseconds(0);
     
-    // If rounding up puts us at 60 minutes, increment the hour
     if (roundedMinutes === 60) {
       now.setHours(now.getHours() + 1);
       now.setMinutes(0);
     }
     
     return now.toISOString().slice(0, 16);
+  }
+
+  function validateAndFormatTime(dateString: string) {
+    const date = new Date(dateString);
+    const minutes = date.getMinutes();
+    
+    // 最も近い15分単位に丸める
+    const remainder = minutes % 15;
+    let roundedMinutes = minutes;
+    
+    if (remainder !== 0) {
+      roundedMinutes = minutes - remainder;
+      date.setMinutes(roundedMinutes);
+    }
+    
+    return date.toISOString().slice(0, 16);
   }
 
   return (
@@ -100,25 +115,13 @@ export const ConsultationRequestModal = ({
                   <FormControl>
                     <Input 
                       type="datetime-local"
-                      {...field}
-                      onChange={(e) => {
-                        const date = new Date(e.target.value);
-                        const minutes = date.getMinutes();
-                        const roundedMinutes = Math.round(minutes / 15) * 15;
-                        date.setMinutes(roundedMinutes);
-                        date.setSeconds(0);
-                        date.setMilliseconds(0);
-                        
-                        // If rounding up puts us at 60 minutes, increment the hour
-                        if (roundedMinutes === 60) {
-                          date.setHours(date.getHours() + 1);
-                          date.setMinutes(0);
-                        }
-                        
-                        field.onChange(date.toISOString().slice(0, 16));
-                      }}
-                      step={900} // 15 minutes in seconds
+                      step="900"
                       min={roundToNearest15Minutes()}
+                      value={field.value}
+                      onChange={(e) => {
+                        const formattedDate = validateAndFormatTime(e.target.value);
+                        field.onChange(formattedDate);
+                      }}
                     />
                   </FormControl>
                   <FormMessage />
