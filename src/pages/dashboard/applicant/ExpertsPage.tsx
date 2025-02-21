@@ -3,10 +3,17 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import { Card, CardContent } from "@/components/ui/card";
-import { User, Star, MessageSquare, Search } from 'lucide-react';
+import { User, Star, MessageSquare, Search, ArrowUpDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from "@/components/ui/input";
 import { ConsultationRequestModal } from '@/components/modals/ConsultationRequestModal';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 // 専門分野の定義
 const categories = [
@@ -17,6 +24,8 @@ const categories = [
   '省エネ補助金'
 ] as const;
 
+type SortOption = 'rating-desc' | 'rating-asc' | 'consultations-desc' | 'consultations-asc';
+
 const ExpertsPage = () => {
   const navigate = useNavigate();
   const [isConsultationModalOpen, setIsConsultationModalOpen] = useState(false);
@@ -24,6 +33,7 @@ const ExpertsPage = () => {
   const [selectedExpertName, setSelectedExpertName] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [sortOption, setSortOption] = useState<SortOption>('rating-desc');
   
   const experts = [
     { 
@@ -76,21 +86,38 @@ const ExpertsPage = () => {
     );
   };
 
-  const filteredExperts = experts.filter(expert => {
-    const matchesSearch = searchQuery === "" ||
-      expert.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      expert.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      expert.specialties.some(specialty =>
-        specialty.toLowerCase().includes(searchQuery.toLowerCase())
-      );
+  const getSortedExperts = () => {
+    const filtered = experts.filter(expert => {
+      const matchesSearch = searchQuery === "" ||
+        expert.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        expert.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        expert.specialties.some(specialty =>
+          specialty.toLowerCase().includes(searchQuery.toLowerCase())
+        );
 
-    const matchesCategories = selectedCategories.length === 0 ||
-      expert.specialties.some(specialty =>
-        selectedCategories.includes(specialty)
-      );
+      const matchesCategories = selectedCategories.length === 0 ||
+        expert.specialties.some(specialty =>
+          selectedCategories.includes(specialty)
+        );
 
-    return matchesSearch && matchesCategories;
-  });
+      return matchesSearch && matchesCategories;
+    });
+
+    return filtered.sort((a, b) => {
+      switch (sortOption) {
+        case 'rating-desc':
+          return b.rating - a.rating;
+        case 'rating-asc':
+          return a.rating - b.rating;
+        case 'consultations-desc':
+          return b.consultations - a.consultations;
+        case 'consultations-asc':
+          return a.consultations - b.consultations;
+        default:
+          return 0;
+      }
+    });
+  };
 
   return (
     <DashboardLayout userType="applicant" userName="申請者">
@@ -98,15 +125,31 @@ const ExpertsPage = () => {
         <h1 className="text-2xl font-bold">専門家に相談</h1>
 
         <div className="space-y-4">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-            <Input
-              type="text"
-              placeholder="専門家を検索..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10"
-            />
+          <div className="flex flex-col sm:flex-row gap-4">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+              <Input
+                type="text"
+                placeholder="専門家を検索..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10"
+              />
+            </div>
+            <Select
+              value={sortOption}
+              onValueChange={(value) => setSortOption(value as SortOption)}
+            >
+              <SelectTrigger className="w-full sm:w-[200px]">
+                <SelectValue placeholder="並び替え" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="rating-desc">評価が高い順</SelectItem>
+                <SelectItem value="rating-asc">評価が低い順</SelectItem>
+                <SelectItem value="consultations-desc">相談件数が多い順</SelectItem>
+                <SelectItem value="consultations-asc">相談件数が少ない順</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
 
           <div className="flex flex-wrap gap-2">
@@ -123,7 +166,7 @@ const ExpertsPage = () => {
           </div>
 
           <div className="grid gap-6">
-            {filteredExperts.map((expert) => (
+            {getSortedExperts().map((expert) => (
               <Card key={expert.id}>
                 <CardContent className="p-6">
                   <div className="flex items-start justify-between">
@@ -178,4 +221,3 @@ const ExpertsPage = () => {
 };
 
 export default ExpertsPage;
-
