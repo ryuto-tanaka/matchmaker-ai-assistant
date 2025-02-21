@@ -1,6 +1,6 @@
 
 import React from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog";
 import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -36,7 +36,7 @@ export const ConsultationRequestModal = ({
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      preferredDate: "",
+      preferredDate: roundToNearest15Minutes(),
       consultationType: "",
       description: "",
     },
@@ -55,7 +55,7 @@ export const ConsultationRequestModal = ({
         onSubmitComplete(values);
       }
       
-      navigate("/dashboard/messages/1");
+      navigate("/dashboard/messages/1", { replace: true });
       onClose();
       form.reset();
     } catch (error) {
@@ -67,21 +67,23 @@ export const ConsultationRequestModal = ({
     }
   };
 
-  const roundToNearest15Minutes = () => {
+  function roundToNearest15Minutes() {
     const now = new Date();
     const minutes = now.getMinutes();
     const roundedMinutes = Math.ceil(minutes / 15) * 15;
-    now.setMinutes(roundedMinutes);
-    now.setSeconds(0);
-    now.setMilliseconds(0);
-    return now.toISOString().slice(0, 16); // フォーマット: "YYYY-MM-DDThh:mm"
-  };
+    const rounded = new Date(now);
+    rounded.setMinutes(roundedMinutes);
+    rounded.setSeconds(0);
+    rounded.setMilliseconds(0);
+    return rounded.toISOString().slice(0, 16);
+  }
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
           <DialogTitle>{expertName}への相談予約</DialogTitle>
+          <DialogDescription>相談日時は15分単位で選択できます</DialogDescription>
         </DialogHeader>
         
         <Form {...form}>
@@ -95,7 +97,7 @@ export const ConsultationRequestModal = ({
                   <FormControl>
                     <Input 
                       type="datetime-local"
-                      step="900"
+                      step={900}
                       min={roundToNearest15Minutes()}
                       {...field}
                     />

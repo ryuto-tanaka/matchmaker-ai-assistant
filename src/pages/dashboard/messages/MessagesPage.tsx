@@ -20,10 +20,6 @@ const MessagesPage = () => {
     },
   ];
 
-  const handleNavigate = (id: number) => {
-    navigate(`/dashboard/messages/${id}`);
-  };
-
   return (
     <DashboardLayout userType="applicant" userName="申請者">
       <div className="space-y-6">
@@ -34,7 +30,6 @@ const MessagesPage = () => {
             <Card
               key={conversation.id}
               className="cursor-pointer hover:bg-accent/50 transition-colors"
-              onClick={() => handleNavigate(conversation.id)}
             >
               <CardContent className="p-4">
                 <div className="flex items-start justify-between">
@@ -55,9 +50,9 @@ const MessagesPage = () => {
                   </div>
                   <Button 
                     variant="outline"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleNavigate(conversation.id);
+                    onClick={() => {
+                      console.log("Navigating to:", `/dashboard/messages/${conversation.id}`);
+                      navigate(`/dashboard/messages/${conversation.id}`, { replace: true });
                     }}
                   >
                     開く
