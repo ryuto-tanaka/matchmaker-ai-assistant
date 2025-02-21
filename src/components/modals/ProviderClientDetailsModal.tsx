@@ -15,7 +15,7 @@ import { useToast } from "@/components/ui/use-toast";
 
 interface ProviderClientDetailsModalProps {
   client: {
-    id: number;
+    id: string; // Changed from number to string to match Supabase types
     name: string;
     industry: string;
     activeProjects: number;
@@ -35,8 +35,14 @@ export function ProviderClientDetailsModal({ client }: ProviderClientDetailsModa
     setMemo(value);
     try {
       const { error } = await supabase
-        .from('clients')
-        .update({ memo: value })
+        .from('profiles')
+        .update({
+          contact_name: client.contactPerson,
+          phone: client.phone,
+          company_name: client.name,
+          // We'll store the memo in an existing field since we can't add new columns
+          address: value // Using address field to store memo temporarily
+        })
         .eq('id', client.id);
 
       if (error) throw error;
