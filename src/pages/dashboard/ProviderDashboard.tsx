@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -7,6 +8,14 @@ import { StatDetailsModal } from "@/components/modals/StatDetailsModal";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import { LucideIcon } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
 
 type StatLabel = '進行中の案件' | '契約クライアント' | '今月の成約率' | '今月の売上';
 
@@ -27,6 +36,8 @@ const monthlyData = [
 
 const ProviderDashboard = () => {
   const [openDialogs, setOpenDialogs] = useState<{ [key: number]: boolean }>({});
+  const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [dateFilter, setDateFilter] = useState<string>('');
 
   const stats: DashboardStat[] = [
     { icon: FileText, label: '進行中の案件', value: '12件' },
@@ -37,6 +48,14 @@ const ProviderDashboard = () => {
 
   const handleOpenChange = (index: number, open: boolean) => {
     setOpenDialogs(prev => ({ ...prev, [index]: open }));
+  };
+
+  const filterProjects = (projects: any[]) => {
+    return projects.filter(project => {
+      const matchesStatus = statusFilter === 'all' || project.status === statusFilter;
+      const matchesDate = !dateFilter || project.date === dateFilter;
+      return matchesStatus && matchesDate;
+    });
   };
 
   return (
@@ -69,6 +88,29 @@ const ProviderDashboard = () => {
             </CardContent>
           </Card>
         ))}
+      </div>
+
+      <div className="flex gap-4 mb-6">
+        <div className="w-48">
+          <Select onValueChange={setStatusFilter} defaultValue="all">
+            <SelectTrigger>
+              <SelectValue placeholder="ステータス" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">すべて</SelectItem>
+              <SelectItem value="in_progress">進行中</SelectItem>
+              <SelectItem value="completed">完了</SelectItem>
+              <SelectItem value="pending">保留中</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="w-48">
+          <Input
+            type="date"
+            onChange={(e) => setDateFilter(e.target.value)}
+            className="w-full"
+          />
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
