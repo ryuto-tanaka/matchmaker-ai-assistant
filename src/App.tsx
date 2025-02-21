@@ -32,7 +32,9 @@ import ExpertClientsPage from "./pages/dashboard/expert/ClientsPage";
 
 // 新規追加
 import MessagesPage from "./pages/dashboard/messages/MessagesPage";
-import ChatPage from "./pages/dashboard/messages/ChatPage";
+import ApplicantChatPage from "./pages/dashboard/messages/ApplicantChatPage";
+import ProviderChatPage from "./pages/dashboard/messages/ProviderChatPage";
+import ExpertChatPage from "./pages/dashboard/messages/ExpertChatPage";
 
 const queryClient = new QueryClient();
 
@@ -57,21 +59,21 @@ const App = () => (
               <Route path="/dashboard/applicant/applications" element={<ApplicationsPage />} />
               <Route path="/dashboard/applicant/experts" element={<ExpertsPage />} />
               <Route path="/dashboard/applicant/messages" element={<MessagesPage />} />
-              <Route path="/dashboard/applicant/messages/:expertId" element={<ChatPage />} />
+              <Route path="/dashboard/applicant/messages/:expertId" element={<ApplicantChatPage />} />
               
               {/* サービス提供者関連のルート */}
               <Route path="/dashboard/provider" element={<ProviderDashboard />} />
               <Route path="/dashboard/provider/cases" element={<CasesPage />} />
               <Route path="/dashboard/provider/clients" element={<ProviderClientsPage />} />
               <Route path="/dashboard/provider/messages" element={<MessagesPage />} />
-              <Route path="/dashboard/provider/messages/:expertId" element={<ChatPage />} />
+              <Route path="/dashboard/provider/messages/:expertId" element={<ProviderChatPage />} />
               
               {/* 専門家関連のルート */}
               <Route path="/dashboard/expert" element={<ExpertDashboard />} />
               <Route path="/dashboard/expert/consultations" element={<ConsultationsPage />} />
               <Route path="/dashboard/expert/clients" element={<ExpertClientsPage />} />
               <Route path="/dashboard/expert/messages" element={<MessagesPage />} />
-              <Route path="/dashboard/expert/messages/:expertId" element={<ChatPage />} />
+              <Route path="/dashboard/expert/messages/:expertId" element={<ExpertChatPage />} />
               
               {/* 設定関連のルート */}
               <Route path="/dashboard/settings" element={<Settings />} />
