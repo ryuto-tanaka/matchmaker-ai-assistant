@@ -24,6 +24,14 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { useAuthContext } from '@/contexts/AuthContext';
 
+interface Notification {
+  id: string;
+  title: string;
+  message: string;
+  date: string;
+  read: boolean;
+}
+
 interface DashboardLayoutProps {
   children: React.ReactNode;
   userType: 'applicant' | 'provider' | 'expert';
@@ -39,6 +47,33 @@ const DashboardLayout = ({
 }: DashboardLayoutProps) => {
   const navigate = useNavigate();
   const { signOut } = useAuthContext();
+
+  // 通知のモックデータ
+  const notifications: Notification[] = [
+    {
+      id: '1',
+      title: '補助金申請の締め切り',
+      message: 'IT導入補助金の申請締め切りが1週間後に迫っています。',
+      date: '2024-03-20',
+      read: false
+    },
+    {
+      id: '2',
+      title: '専門家からの返信',
+      message: '山田先生から申請書類についてコメントが届いています。',
+      date: '2024-03-19',
+      read: false
+    },
+    {
+      id: '3',
+      title: 'システムメンテナンス',
+      message: '明日午前2時からシステムメンテナンスを実施します。',
+      date: '2024-03-18',
+      read: true
+    }
+  ];
+
+  const unreadCount = notifications.filter(n => !n.read).length;
 
   const menuItems = {
     applicant: [
@@ -99,6 +134,45 @@ const DashboardLayout = ({
         </ScrollArea>
 
         <div className="p-4 border-t">
+          <div className="flex items-center space-x-2 mb-4">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="relative"
+                >
+                  {unreadCount > 0 && (
+                    <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                      {unreadCount}
+                    </span>
+                  )}
+                  <span className="sr-only">通知を表示</span>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-80">
+                <div className="p-2">
+                  <h4 className="text-sm font-semibold mb-2">通知</h4>
+                  <div className="space-y-2">
+                    {notifications.map((notification) => (
+                      <div
+                        key={notification.id}
+                        className={`p-2 rounded-lg ${
+                          notification.read ? 'bg-gray-50' : 'bg-blue-50'
+                        }`}
+                      >
+                        <div className="text-sm font-medium">{notification.title}</div>
+                        <div className="text-xs text-gray-500">{notification.message}</div>
+                        <div className="text-xs text-gray-400 mt-1">{notification.date}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="w-full flex items-center justify-between p-2">
