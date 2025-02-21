@@ -29,14 +29,15 @@ function Calendar({
   ...props
 }: CalendarProps) {
   const eventsByDate = React.useMemo(() => {
-    return events.reduce((acc, event) => {
+    const eventMap: Record<string, CalendarEvent[]> = {};
+    events.forEach(event => {
       const dateKey = format(event.date, 'yyyy-MM-dd');
-      if (!acc[dateKey]) {
-        acc[dateKey] = [];
+      if (!eventMap[dateKey]) {
+        eventMap[dateKey] = [];
       }
-      acc[dateKey].push(event);
-      return acc;
-    }, {} as Record<string, CalendarEvent[]>);
+      eventMap[dateKey].push(event);
+    });
+    return eventMap;
   }, [events]);
 
   const renderEventBadge = (event: CalendarEvent) => {
@@ -50,7 +51,7 @@ function Calendar({
       <Badge
         key={`${event.title}-${event.date.toISOString()}`}
         className={cn(
-          "text-xs cursor-pointer transition-colors whitespace-nowrap overflow-hidden text-ellipsis",
+          "text-xs cursor-pointer transition-colors whitespace-nowrap overflow-hidden text-ellipsis w-full",
           badgeVariants[event.type]
         )}
         onClick={(e) => {
@@ -85,36 +86,35 @@ function Calendar({
         head_cell:
           "text-muted-foreground rounded-md w-9 font-normal text-[0.8rem]",
         row: "flex w-full mt-2",
-        cell: "relative p-0 text-center text-sm focus-within:relative focus-within:z-20 [&:has([aria-selected])]:rounded-md",
+        cell: cn(
+          "relative p-0 text-center text-sm focus-within:relative focus-within:z-20",
+          "first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md"
+        ),
         day: cn(
           buttonVariants({ variant: "ghost" }),
           "h-9 w-9 p-0 font-normal aria-selected:opacity-100"
         ),
-        day_range_start: "day-range-start",
-        day_range_end: "day-range-end",
         day_selected:
           "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground",
         day_today: "bg-accent text-accent-foreground",
         day_outside:
-          "day-outside text-muted-foreground opacity-50 aria-selected:bg-accent/50 aria-selected:text-muted-foreground aria-selected:opacity-30",
+          "text-muted-foreground opacity-50 aria-selected:bg-accent/50 aria-selected:text-muted-foreground aria-selected:opacity-30",
         day_disabled: "text-muted-foreground opacity-50",
-        day_range_middle:
-          "aria-selected:bg-accent aria-selected:text-accent-foreground",
         day_hidden: "invisible",
         ...classNames,
       }}
       components={{
         IconLeft: () => <ChevronLeft className="h-4 w-4" />,
         IconRight: () => <ChevronRight className="h-4 w-4" />,
-        Day: ({ date, displayMonth, ...dayProps }) => {
+        Day: ({ date, ...dayProps }) => {
           const dateKey = format(date, 'yyyy-MM-dd');
           const dayEvents = eventsByDate[dateKey] || [];
           
           return (
-            <div className="relative min-h-[80px] w-full p-1">
+            <div className="relative min-h-[100px] w-full p-1 border-r border-b border-gray-200">
               <div {...dayProps} className="absolute top-1 left-1/2 -translate-x-1/2" />
               {dayEvents.length > 0 && (
-                <div className="absolute top-10 left-0 right-0 flex flex-col gap-1 px-0.5 max-h-[60px] overflow-y-auto">
+                <div className="absolute top-10 left-0 right-0 flex flex-col gap-1 px-1 max-h-[80px] overflow-y-auto">
                   {dayEvents.map(renderEventBadge)}
                 </div>
               )}
