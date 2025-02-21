@@ -112,7 +112,6 @@ const DashboardLayout = ({
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56">
-              {/* アカウントタイプの切り替え */}
               {secondaryTypes.map((type) => (
                 <DropdownMenuItem key={type} onClick={() => handleTypeSwitch(type)}>
                   <UserCog className="mr-2 h-4 w-4" />
@@ -122,7 +121,6 @@ const DashboardLayout = ({
                 </DropdownMenuItem>
               ))}
 
-              {/* 新規登録オプション */}
               {!secondaryTypes.includes('provider') && (
                 <DropdownMenuItem onClick={() => navigate('/register/provider')}>
                   <UserPlus className="mr-2 h-4 w-4" />
@@ -138,7 +136,6 @@ const DashboardLayout = ({
 
               <DropdownMenuSeparator />
               
-              {/* 設定とログアウト */}
               <DropdownMenuItem onClick={() => navigate('/dashboard/settings')}>
                 <Settings className="mr-2 h-4 w-4" />
                 設定
