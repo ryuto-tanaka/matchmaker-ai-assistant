@@ -31,7 +31,6 @@ const CalendarSection = () => {
   const [isReminderDialogOpen, setIsReminderDialogOpen] = useState(false);
   const [isGoogleCalendarConnected, setIsGoogleCalendarConnected] = useState(false);
 
-  // イベントデータの作成（現在日付を基準に）
   const today = new Date();
   const events = [
     {
@@ -68,9 +67,9 @@ const CalendarSection = () => {
   };
 
   return (
-    <Card>
-      <CardHeader className="flex flex-row items-center justify-between">
-        <CardTitle>スケジュール管理</CardTitle>
+    <Card className="w-full max-w-[1200px] mx-auto">
+      <CardHeader className="flex flex-row items-center justify-between border-b pb-4">
+        <CardTitle className="text-2xl">スケジュール管理</CardTitle>
         <div className="flex items-center space-x-2">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -84,34 +83,10 @@ const CalendarSection = () => {
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-          <Dialog>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>通知設定</DialogTitle>
-                <DialogDescription>
-                  イベントの通知設定を管理します
-                </DialogDescription>
-              </DialogHeader>
-              <div className="space-y-4 py-4">
-                <div className="flex items-center justify-between">
-                  <Label htmlFor="deadline-notify">申請期限の通知</Label>
-                  <Switch id="deadline-notify" defaultChecked />
-                </div>
-                <div className="flex items-center justify-between">
-                  <Label htmlFor="consultation-notify">相談予約の通知</Label>
-                  <Switch id="consultation-notify" defaultChecked />
-                </div>
-                <div className="flex items-center justify-between">
-                  <Label htmlFor="reminder-notify">リマインダーの通知</Label>
-                  <Switch id="reminder-notify" defaultChecked />
-                </div>
-              </div>
-            </DialogContent>
-          </Dialog>
         </div>
       </CardHeader>
-      <CardContent>
-        <div className="border rounded-lg p-4">
+      <CardContent className="p-6">
+        <div className="border rounded-lg p-6 bg-white shadow-sm">
           <Calendar
             mode="single"
             selected={date}
@@ -119,7 +94,7 @@ const CalendarSection = () => {
             locale={ja}
             events={events}
             onEventClick={handleEventClick}
-            className="rounded-md"
+            className="w-full"
           />
         </div>
       </CardContent>
