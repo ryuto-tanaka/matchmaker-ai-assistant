@@ -1,30 +1,20 @@
 
 import React from 'react';
-import { useParams, useLocation } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import { useToast } from "@/components/ui/use-toast";
 import ExpertInfo from '@/components/messages/ExpertInfo';
 import VideoCallDialog from '@/components/messages/VideoCallDialog';
 import ChatMessages from '@/components/messages/ChatMessages';
 import MessageInput from '@/components/messages/MessageInput';
-import { UserType } from '@/types/dashboard';
 
-const ChatPage = () => {
+const ApplicantChatPage = () => {
   const { expertId } = useParams();
-  const location = useLocation();
   const { toast } = useToast();
   const [newMessage, setNewMessage] = React.useState("");
   const [showVideoCallDialog, setShowVideoCallDialog] = React.useState(false);
 
-  // URLパスからユーザータイプを抽出
-  const userType = location.pathname.split('/')[2] as UserType;
-
-  // ユーザータイプに基づいてユーザー名を設定
-  const userName = {
-    applicant: "申請者",
-    provider: "株式会社〇〇",
-    expert: "田中弁護士"
-  }[userType];
+  const userName = "申請者";
 
   // 仮の専門家データ
   const expertData = {
@@ -87,9 +77,8 @@ const ChatPage = () => {
   };
 
   return (
-    <DashboardLayout userType={userType} userName={userName}>
+    <DashboardLayout userType="applicant" userName={userName}>
       <div className="flex gap-4 h-[calc(100vh-8rem)]">
-        {/* メインチャットエリア */}
         <div className="flex-1 flex flex-col">
           <ChatMessages messages={messages} />
           <MessageInput
@@ -100,7 +89,6 @@ const ChatPage = () => {
           />
         </div>
 
-        {/* 右サイドバー: 専門家情報とアクション */}
         <div className="w-80 space-y-4">
           <ExpertInfo expertData={expertData} />
           <VideoCallDialog
@@ -114,4 +102,4 @@ const ChatPage = () => {
   );
 };
 
-export default ChatPage;
+export default ApplicantChatPage;

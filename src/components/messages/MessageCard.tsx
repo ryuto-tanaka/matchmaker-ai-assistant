@@ -39,10 +39,8 @@ const MessageCard = ({
   
   const handleOpenChat = (e: React.MouseEvent) => {
     e.preventDefault();
-    // ユーザータイプに基づいて正しいパスを構築
-    const path = `/dashboard/${userType}/messages/${id}`;
-    console.log("Navigating to:", path);
-    navigate(path);
+    // ユーザータイプに基づいて正しいページに遷移
+    navigate(`/dashboard/${userType}/messages/${id}`, { replace: true });
   };
 
   return (
