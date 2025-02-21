@@ -9,6 +9,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useToast } from "@/hooks/use-toast";
+import { useNavigate } from "react-router-dom";
 
 const formSchema = z.object({
   preferredDate: z.string().min(1, "希望日時を選択してください"),
@@ -30,6 +31,8 @@ export const ConsultationRequestModal = ({
   onSubmitComplete 
 }: ConsultationRequestModalProps) => {
   const { toast } = useToast();
+  const navigate = useNavigate();
+  
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -45,13 +48,14 @@ export const ConsultationRequestModal = ({
       
       toast({
         title: "相談予約を受け付けました",
-        description: `${values.consultationType}\n\n期間：${values.preferredDate}まで`,
+        description: `${values.consultationType}\n\n期間：${values.preferredDate}`,
       });
       
       if (onSubmitComplete) {
         onSubmitComplete(values);
       }
       
+      navigate("/dashboard/messages/1");
       onClose();
       form.reset();
     } catch (error) {
@@ -61,6 +65,16 @@ export const ConsultationRequestModal = ({
         variant: "destructive",
       });
     }
+  };
+
+  const roundToNearest15Minutes = () => {
+    const now = new Date();
+    const minutes = now.getMinutes();
+    const roundedMinutes = Math.ceil(minutes / 15) * 15;
+    now.setMinutes(roundedMinutes);
+    now.setSeconds(0);
+    now.setMilliseconds(0);
+    return now.toISOString().slice(0, 16); // フォーマット: "YYYY-MM-DDThh:mm"
   };
 
   return (
@@ -80,9 +94,10 @@ export const ConsultationRequestModal = ({
                   <FormLabel>希望日時</FormLabel>
                   <FormControl>
                     <Input 
-                      type="datetime-local" 
-                      step="900" // 15分（900秒）区切り
-                      {...field} 
+                      type="datetime-local"
+                      step="900"
+                      min={roundToNearest15Minutes()}
+                      {...field}
                     />
                   </FormControl>
                   <FormMessage />
