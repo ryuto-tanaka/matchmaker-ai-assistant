@@ -67,7 +67,7 @@ const DashboardOverview = () => {
   };
 
   const handleDetailClick = (path: string, event: React.MouseEvent) => {
-    event.stopPropagation(); // 親のCollapsibleのクリックイベントを停止
+    event.stopPropagation();
     navigate(path);
   };
 
