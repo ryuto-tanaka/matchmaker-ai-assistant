@@ -6,9 +6,18 @@ import { FileText, Users, TrendingUp, DollarSign, ArrowRight } from 'lucide-reac
 import { Button } from "@/components/ui/button";
 import { StatDetailsModal } from "@/components/modals/StatDetailsModal";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
+import { LucideIcon } from 'lucide-react';
+
+type StatLabel = '進行中の案件' | '契約クライアント' | '今月の成約率' | '今月の売上';
+
+interface DashboardStat {
+  icon: LucideIcon;
+  label: StatLabel;
+  value: string;
+}
 
 const ProviderDashboard = () => {
-  const stats = [
+  const stats: DashboardStat[] = [
     { icon: FileText, label: '進行中の案件', value: '12件' },
     { icon: Users, label: '契約クライアント', value: '25社' },
     { icon: TrendingUp, label: '今月の成約率', value: '75%' },
