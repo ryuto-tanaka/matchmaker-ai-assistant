@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -31,6 +31,10 @@ const MessageCard = ({
   onDetailsClick 
 }: MessageCardProps) => {
   const navigate = useNavigate();
+  const location = useLocation();
+  
+  // Extract user type from current URL path
+  const userType = location.pathname.split('/')[2];
 
   return (
     <Card className="cursor-pointer hover:bg-accent/50 transition-colors">
@@ -62,8 +66,9 @@ const MessageCard = ({
             <Button 
               variant="outline"
               onClick={() => {
-                console.log("Navigating to:", `/dashboard/messages/${id}`);
-                navigate(`/dashboard/messages/${id}`, { replace: true });
+                const path = `/dashboard/${userType}/messages/${id}`;
+                console.log("Navigating to:", path);
+                navigate(path, { replace: true });
               }}
             >
               開く
