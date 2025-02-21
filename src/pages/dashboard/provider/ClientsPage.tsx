@@ -1,8 +1,8 @@
-
 import React from 'react';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import { Card, CardContent } from "@/components/ui/card";
 import { Building, FileText, Users, Phone } from 'lucide-react';
+import { NewClientModal } from '@/components/modals/NewClientModal';
 import { Button } from '@/components/ui/button';
 
 const ClientsPage = () => {
@@ -38,7 +38,7 @@ const ClientsPage = () => {
       <div className="space-y-6">
         <div className="flex justify-between items-center">
           <h1 className="text-2xl font-bold">クライアント管理</h1>
-          <Button>新規登録</Button>
+          <NewClientModal />
         </div>
 
         <div className="grid gap-6">

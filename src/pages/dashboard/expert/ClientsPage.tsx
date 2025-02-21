@@ -3,7 +3,7 @@ import React from 'react';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import { Card, CardContent } from "@/components/ui/card";
 import { Building, MessageSquare, Clock, CheckCircle } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { ExpertClientDetailsModal } from '@/components/modals/ExpertClientDetailsModal';
 
 const ClientsPage = () => {
   const clients = [
@@ -70,7 +70,7 @@ const ClientsPage = () => {
                     }`}>
                       {client.status}
                     </span>
-                    <Button variant="outline">詳細</Button>
+                    <ExpertClientDetailsModal client={client} />
                   </div>
                 </div>
               </CardContent>

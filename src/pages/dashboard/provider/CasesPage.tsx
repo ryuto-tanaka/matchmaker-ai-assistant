@@ -1,9 +1,9 @@
 
 import React from 'react';
 import DashboardLayout from '@/components/layout/DashboardLayout';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { FileText, Calendar, DollarSign } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { CaseDetailsModal } from '@/components/modals/CaseDetailsModal';
 
 const CasesPage = () => {
   const cases = [
@@ -14,6 +14,7 @@ const CasesPage = () => {
       status: '申請準備中',
       amount: '450万円',
       deadline: '2024/03/31',
+      description: 'クラウドシステムの導入に関する補助金申請支援',
     },
     {
       id: 2,
@@ -22,6 +23,7 @@ const CasesPage = () => {
       status: '審査中',
       amount: '1,200万円',
       deadline: '2024/04/15',
+      description: '新規事業展開に向けた設備投資の補助金申請',
     },
     {
       id: 3,
@@ -30,6 +32,7 @@ const CasesPage = () => {
       status: '交付決定',
       amount: '800万円',
       deadline: '2024/05/01',
+      description: '製造ライン改善のための設備導入補助金',
     },
   ];
 
@@ -66,7 +69,7 @@ const CasesPage = () => {
                     <span className="px-3 py-1 text-sm bg-blue-100 text-blue-700 rounded-full">
                       {case_.status}
                     </span>
-                    <Button variant="outline">詳細</Button>
+                    <CaseDetailsModal caseData={case_} />
                   </div>
                 </div>
               </CardContent>
