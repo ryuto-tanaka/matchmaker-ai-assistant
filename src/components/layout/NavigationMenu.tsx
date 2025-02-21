@@ -50,3 +50,4 @@ export const NavigationMenu = ({ currentMenu, userType, isCollapsed }: Navigatio
     </ScrollArea>
   );
 };
+
