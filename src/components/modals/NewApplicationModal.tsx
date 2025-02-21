@@ -8,7 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 
 const formSchema = z.object({
   companyName: z.string().min(1, "会社名を入力してください"),
@@ -20,9 +20,10 @@ const formSchema = z.object({
 interface NewApplicationModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onSubmit: () => void; // onSubmitプロパティを追加
 }
 
-export const NewApplicationModal = ({ isOpen, onClose }: NewApplicationModalProps) => {
+export const NewApplicationModal = ({ isOpen, onClose, onSubmit }: NewApplicationModalProps) => {
   const { toast } = useToast();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -34,9 +35,8 @@ export const NewApplicationModal = ({ isOpen, onClose }: NewApplicationModalProp
     },
   });
 
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+  const handleSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      // TODO: API実装後に実際の送信処理を追加
       console.log("Form submitted:", values);
       
       toast({
@@ -44,6 +44,7 @@ export const NewApplicationModal = ({ isOpen, onClose }: NewApplicationModalProp
         description: "内容を確認の上、担当者よりご連絡いたします。",
       });
       
+      onSubmit(); // onSubmitコールバックを呼び出し
       onClose();
       form.reset();
     } catch (error) {
@@ -63,7 +64,7 @@ export const NewApplicationModal = ({ isOpen, onClose }: NewApplicationModalProp
         </DialogHeader>
         
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
             <FormField
               control={form.control}
               name="companyName"

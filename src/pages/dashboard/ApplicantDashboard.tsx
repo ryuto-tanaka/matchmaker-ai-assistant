@@ -6,7 +6,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Button } from "@/components/ui/button";
 import { FileText, Users, Clock, CheckCircle, Calendar as CalendarIcon, File, MessageCircle } from 'lucide-react';
 import { useAuthContext } from '@/contexts/AuthContext';
-import BusinessPlanSurveyModal from '@/components/modals/BusinessPlanSurveyModal';
+import { BusinessPlanSurveyModal } from '@/components/modals/BusinessPlanSurveyModal'; // 修正
 import { useToast } from "@/components/ui/use-toast";
 
 const ApplicantDashboard = () => {
