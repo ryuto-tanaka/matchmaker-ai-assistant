@@ -1,11 +1,14 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import DashboardLayout from '@/components/layout/DashboardLayout';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { FileText, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { NewApplicationModal } from '@/components/modals/NewApplicationModal';
 
 const ApplicationsPage = () => {
+  const [isNewApplicationModalOpen, setIsNewApplicationModalOpen] = useState(false);
+  
   const applications = [
     { id: 1, name: 'IT導入補助金', status: '申請中', deadline: '2024/03/31' },
     { id: 2, name: '事業再構築補助金', status: '下書き', deadline: '2024/04/15' },
@@ -17,7 +20,7 @@ const ApplicationsPage = () => {
       <div className="space-y-6">
         <div className="flex justify-between items-center">
           <h1 className="text-2xl font-bold">補助金申請</h1>
-          <Button>
+          <Button onClick={() => setIsNewApplicationModalOpen(true)}>
             新規申請
             <ArrowRight className="ml-2 h-4 w-4" />
           </Button>
@@ -45,6 +48,11 @@ const ApplicationsPage = () => {
             </Card>
           ))}
         </div>
+
+        <NewApplicationModal
+          isOpen={isNewApplicationModalOpen}
+          onClose={() => setIsNewApplicationModalOpen(false)}
+        />
       </div>
     </DashboardLayout>
   );
