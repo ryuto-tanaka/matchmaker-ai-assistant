@@ -28,6 +28,7 @@ function Calendar({
   onEventClick,
   ...props
 }: CalendarProps) {
+  // イベントを日付ごとに整理
   const eventsByDate = React.useMemo(() => {
     const eventMap: Record<string, CalendarEvent[]> = {};
     events.forEach(event => {
@@ -40,6 +41,7 @@ function Calendar({
     return eventMap;
   }, [events]);
 
+  // イベントバッジのレンダリング
   const renderEventBadge = (event: CalendarEvent) => {
     const badgeVariants: Record<CalendarEvent['type'], string> = {
       deadline: 'bg-red-100 text-red-800 hover:bg-red-200',
@@ -51,7 +53,8 @@ function Calendar({
       <Badge
         key={`${event.title}-${event.date.toISOString()}`}
         className={cn(
-          "text-xs cursor-pointer transition-colors whitespace-nowrap overflow-hidden text-ellipsis w-full",
+          "text-xs cursor-pointer transition-colors py-1",
+          "whitespace-nowrap overflow-hidden text-ellipsis w-full",
           badgeVariants[event.type]
         )}
         onClick={(e) => {
@@ -83,8 +86,7 @@ function Calendar({
         nav_button_next: "absolute right-1",
         table: "w-full border-collapse space-y-1",
         head_row: "flex",
-        head_cell:
-          "text-muted-foreground rounded-md w-9 font-normal text-[0.8rem]",
+        head_cell: "text-muted-foreground rounded-md w-9 font-normal text-[0.8rem]",
         row: "flex w-full mt-2",
         cell: cn(
           "relative p-0 text-center text-sm focus-within:relative focus-within:z-20",
@@ -94,11 +96,9 @@ function Calendar({
           buttonVariants({ variant: "ghost" }),
           "h-9 w-9 p-0 font-normal aria-selected:opacity-100"
         ),
-        day_selected:
-          "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground",
+        day_selected: "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground",
         day_today: "bg-accent text-accent-foreground",
-        day_outside:
-          "text-muted-foreground opacity-50 aria-selected:bg-accent/50 aria-selected:text-muted-foreground aria-selected:opacity-30",
+        day_outside: "text-muted-foreground opacity-50",
         day_disabled: "text-muted-foreground opacity-50",
         day_hidden: "invisible",
         ...classNames,
@@ -111,10 +111,10 @@ function Calendar({
           const dayEvents = eventsByDate[dateKey] || [];
           
           return (
-            <div className="relative min-h-[100px] w-full p-1 border-r border-b border-gray-200">
+            <div className="relative min-h-[120px] w-full p-1 border border-gray-100">
               <div {...dayProps} className="absolute top-1 left-1/2 -translate-x-1/2" />
               {dayEvents.length > 0 && (
-                <div className="absolute top-10 left-0 right-0 flex flex-col gap-1 px-1 max-h-[80px] overflow-y-auto">
+                <div className="absolute top-10 left-0 right-0 flex flex-col gap-1 px-1 max-h-[90px] overflow-y-auto">
                   {dayEvents.map(renderEventBadge)}
                 </div>
               )}
