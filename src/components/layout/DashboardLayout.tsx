@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import {
   LayoutGrid,
   FileText,
@@ -26,6 +26,7 @@ const DashboardLayout = ({
   userName = 'ユーザー'
 }: DashboardLayoutProps) => {
   const navigate = useNavigate();
+  const location = useLocation();
 
   const notifications: Notification[] = [
     {
@@ -76,8 +77,17 @@ const DashboardLayout = ({
 
   const currentMenu = menuItems[userType];
 
-  const handleTypeSwitch = (type: UserType) => {
-    navigate(`/dashboard/${type}`);
+  const handleTypeSwitch = (newType: UserType) => {
+    // 現在のパスから新しいパスを構築
+    const currentPath = location.pathname;
+    let newPath = `/dashboard/${newType}`;
+
+    // メッセージページの場合は、ユーザータイプを変更してもメッセージページに留まる
+    if (currentPath.includes('/messages')) {
+      newPath = currentPath;
+    }
+
+    navigate(newPath);
   };
 
   return (
