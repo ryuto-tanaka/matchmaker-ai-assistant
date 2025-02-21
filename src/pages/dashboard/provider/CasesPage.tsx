@@ -10,37 +10,37 @@ const CasesPage = () => {
     {
       id: 1,
       client: '株式会社ABC',
-      type: 'IT導入補助金',
-      status: '申請準備中',
+      type: 'システム開発',
+      status: '見積依頼中',
       amount: '450万円',
       deadline: '2024/03/31',
-      description: 'クラウドシステムの導入に関する補助金申請支援',
+      description: 'クラウドシステムの開発案件',
     },
     {
       id: 2,
       client: '株式会社XYZ',
-      type: '事業再構築補助金',
-      status: '審査中',
-      amount: '1,200万円',
+      type: 'コンサルティング',
+      status: '商談中',
+      amount: '120万円',
       deadline: '2024/04/15',
-      description: '新規事業展開に向けた設備投資の補助金申請',
+      description: 'デジタル戦略策定支援',
     },
     {
       id: 3,
       client: '有限会社DEF',
-      type: 'ものづくり補助金',
-      status: '交付決定',
-      amount: '800万円',
+      type: 'システム保守',
+      status: '受注確定',
+      amount: '80万円',
       deadline: '2024/05/01',
-      description: '製造ライン改善のための設備導入補助金',
+      description: '基幹システムの保守運用サービス',
     },
   ];
 
   const stats = [
     { icon: FileText, label: '進行中の案件', value: '4件' },
     { icon: MessageSquare, label: 'トークルーム', value: '2件' },
-    { icon: Calendar, label: '審査中', value: '1件' },
-    { icon: DollarSign, label: '今月の成約額', value: '35,000円' },
+    { icon: Calendar, label: '商談中', value: '1件' },
+    { icon: DollarSign, label: '今月の受注額', value: '350,000円' },
   ];
 
   return (
@@ -93,19 +93,19 @@ const CasesPage = () => {
                         <div className="flex items-center mt-2 space-x-4">
                           <div className="flex items-center">
                             <DollarSign className="h-4 w-4 text-gray-400 mr-1" />
-                            <span className="text-sm">申請金額: {case_.amount}</span>
+                            <span className="text-sm">見積金額: {case_.amount}</span>
                           </div>
                           <div className="flex items-center">
                             <Calendar className="h-4 w-4 text-gray-400 mr-1" />
-                            <span className="text-sm">期限: {case_.deadline}</span>
+                            <span className="text-sm">納期: {case_.deadline}</span>
                           </div>
                         </div>
                       </div>
                     </div>
                     <div className="flex items-center space-x-2">
                       <span className={`px-3 py-1 text-sm rounded-full ${
-                        case_.status === '審査中' ? 'bg-yellow-100 text-yellow-700' :
-                        case_.status === '交付決定' ? 'bg-green-100 text-green-700' :
+                        case_.status === '商談中' ? 'bg-yellow-100 text-yellow-700' :
+                        case_.status === '受注確定' ? 'bg-green-100 text-green-700' :
                         'bg-blue-100 text-blue-700'
                       }`}>
                         {case_.status}
