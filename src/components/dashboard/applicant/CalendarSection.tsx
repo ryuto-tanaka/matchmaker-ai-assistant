@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Google, Bell } from 'lucide-react';
+import { Settings2, Bell } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { useToast } from "@/components/ui/use-toast";
@@ -66,35 +66,23 @@ const CalendarSection = () => {
     setIsReminderDialogOpen(true);
   };
 
-  const handleNotificationClick = () => {
-    toast({
-      title: "通知設定",
-      description: "通知設定を開きます。",
-    });
-  };
-
   return (
     <Card className="w-full max-w-[1200px] mx-auto">
       <CardHeader className="flex flex-row items-center justify-between border-b pb-4">
         <CardTitle className="text-2xl">スケジュール管理</CardTitle>
-        <div className="flex items-center gap-2">
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={handleNotificationClick}
-            className="relative"
-          >
-            <Bell className="h-4 w-4" />
-          </Button>
-          <Button
-            variant="outline"
-            size="default"
-            onClick={handleGoogleCalendarConnect}
-            className="flex items-center gap-2"
-          >
-            <Google className="h-4 w-4" />
-            <span>{isGoogleCalendarConnected ? 'Google Calendar連携済み' : 'Google Calendar連携'}</span>
-          </Button>
+        <div className="flex items-center space-x-2">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="icon">
+                <Settings2 className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuItem onClick={handleGoogleCalendarConnect}>
+                {isGoogleCalendarConnected ? 'Google Calendar連携済み' : 'Google Calendar連携'}
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </CardHeader>
       <CardContent className="p-6">
