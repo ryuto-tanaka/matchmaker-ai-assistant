@@ -4,9 +4,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Calendar } from "@/components/ui/calendar";
 import { Button } from "@/components/ui/button";
-import { FileText, Users, Clock, CheckCircle, Calendar as CalendarIcon, File, MessageCircle } from 'lucide-react';
+import { FileText, Users, Clock, CheckCircle, Calendar as CalendarIcon, File } from 'lucide-react';
 import { useAuthContext } from '@/contexts/AuthContext';
-import { BusinessPlanSurveyModal } from '@/components/modals/BusinessPlanSurveyModal'; // 修正
+import { BusinessPlanSurveyModal } from '@/components/modals/BusinessPlanSurveyModal';
 import { useToast } from "@/components/ui/use-toast";
 
 const ApplicantDashboard = () => {
@@ -27,7 +27,6 @@ const ApplicantDashboard = () => {
 
   const handleSurveySubmit = async (data: any) => {
     console.log('Survey data:', data);
-    // TODO: AIによる事業計画書生成の処理を実装
     toast({
       title: "アンケート送信完了",
       description: "AI事業計画書の生成を開始します。完了までしばらくお待ちください。",
@@ -44,11 +43,10 @@ const ApplicantDashboard = () => {
       />
       
       <Tabs defaultValue="dashboard" className="w-full space-y-6">
-        <TabsList className="grid w-full grid-cols-4 lg:w-[600px]">
+        <TabsList className="grid w-full grid-cols-3 lg:w-[400px]">
           <TabsTrigger value="dashboard">ダッシュボード</TabsTrigger>
           <TabsTrigger value="calendar">カレンダー</TabsTrigger>
           <TabsTrigger value="documents">書類</TabsTrigger>
-          <TabsTrigger value="messages">メッセージ</TabsTrigger>
         </TabsList>
 
         <TabsContent value="dashboard" className="space-y-6">
@@ -165,30 +163,6 @@ const ApplicantDashboard = () => {
                       </div>
                     </div>
                     <Button variant="outline" size="sm">表示</Button>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="messages">
-          <Card>
-            <CardHeader>
-              <CardTitle>メッセージ</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {[1, 2, 3].map((_, index) => (
-                  <div key={index} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                    <div className="flex items-center space-x-4">
-                      <MessageCircle className="h-6 w-6 text-gray-400" />
-                      <div>
-                        <p className="font-medium">専門家 太田様からの新着メッセージ</p>
-                        <p className="text-sm text-gray-500">受信日時: 2024/02/01 10:30</p>
-                      </div>
-                    </div>
-                    <Button variant="outline" size="sm">開く</Button>
                   </div>
                 ))}
               </div>
