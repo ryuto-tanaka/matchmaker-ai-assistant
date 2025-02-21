@@ -20,12 +20,14 @@ interface ConsultationRequestModalProps {
   isOpen: boolean;
   onClose: () => void;
   expertName: string;
+  onSubmitComplete?: (values: z.infer<typeof formSchema>) => void;
 }
 
 export const ConsultationRequestModal = ({ 
   isOpen, 
   onClose,
-  expertName 
+  expertName,
+  onSubmitComplete 
 }: ConsultationRequestModalProps) => {
   const { toast } = useToast();
   const form = useForm<z.infer<typeof formSchema>>({
@@ -41,11 +43,14 @@ export const ConsultationRequestModal = ({
     try {
       console.log("Form submitted:", values);
       
-      // 相談予約完了時のメッセージをカスタマイズ
       toast({
         title: "見積り相談をしました",
         description: `【やりたいこと】${values.consultationType}\n\n期間：${values.preferredDate}まで`,
       });
+      
+      if (onSubmitComplete) {
+        onSubmitComplete(values);
+      }
       
       onClose();
       form.reset();

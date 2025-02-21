@@ -1,5 +1,6 @@
 
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import { Card, CardContent } from "@/components/ui/card";
 import { User, Star, MessageSquare } from 'lucide-react';
@@ -7,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { ConsultationRequestModal } from '@/components/modals/ConsultationRequestModal';
 
 const ExpertsPage = () => {
+  const navigate = useNavigate();
   const [isConsultationModalOpen, setIsConsultationModalOpen] = useState(false);
   const [selectedExpert, setSelectedExpert] = useState("");
   
@@ -40,6 +42,12 @@ const ExpertsPage = () => {
   const handleConsultationRequest = (expertName: string) => {
     setSelectedExpert(expertName);
     setIsConsultationModalOpen(true);
+  };
+
+  const handleConsultationComplete = (expertId: number) => {
+    setIsConsultationModalOpen(false);
+    // チャットページに遷移
+    navigate(`/dashboard/messages/${expertId}`);
   };
 
   return (
@@ -94,6 +102,12 @@ const ExpertsPage = () => {
           isOpen={isConsultationModalOpen}
           onClose={() => setIsConsultationModalOpen(false)}
           expertName={selectedExpert}
+          onSubmitComplete={(values) => {
+            const expert = experts.find(e => e.name === selectedExpert);
+            if (expert) {
+              handleConsultationComplete(expert.id);
+            }
+          }}
         />
       </div>
     </DashboardLayout>
