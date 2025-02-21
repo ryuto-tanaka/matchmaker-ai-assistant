@@ -44,8 +44,8 @@ export const ConsultationRequestModal = ({
       console.log("Form submitted:", values);
       
       toast({
-        title: "見積り相談をしました",
-        description: `【やりたいこと】${values.consultationType}\n\n期間：${values.preferredDate}まで`,
+        title: "相談予約を受け付けました",
+        description: `${values.consultationType}\n\n期間：${values.preferredDate}まで`,
       });
       
       if (onSubmitComplete) {
@@ -79,7 +79,11 @@ export const ConsultationRequestModal = ({
                 <FormItem>
                   <FormLabel>希望日時</FormLabel>
                   <FormControl>
-                    <Input type="datetime-local" {...field} />
+                    <Input 
+                      type="datetime-local" 
+                      step="900" // 15分（900秒）区切り
+                      {...field} 
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -93,7 +97,7 @@ export const ConsultationRequestModal = ({
                 <FormItem>
                   <FormLabel>相談内容</FormLabel>
                   <FormControl>
-                    <Input placeholder="例：IT導入補助金について" {...field} />
+                    <Input placeholder="相談内容を入力してください" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
