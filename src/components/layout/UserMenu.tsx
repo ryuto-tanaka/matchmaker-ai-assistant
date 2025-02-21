@@ -17,12 +17,13 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { useAuthContext } from '@/contexts/AuthContext';
+import { UserType } from '@/types/dashboard';
 
 interface UserMenuProps {
   userName: string;
-  userType: string;
-  secondaryTypes: ('applicant' | 'provider' | 'expert')[];
-  onTypeSwitch: (type: string) => void;
+  userType: UserType;
+  secondaryTypes: UserType[];
+  onTypeSwitch: (type: UserType) => void;
 }
 
 export const UserMenu = ({ userName, userType, secondaryTypes, onTypeSwitch }: UserMenuProps) => {

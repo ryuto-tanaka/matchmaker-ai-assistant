@@ -10,19 +10,12 @@ import {
 import { NavigationMenu } from './NavigationMenu';
 import { NotificationsMenu } from './NotificationsMenu';
 import { UserMenu } from './UserMenu';
-
-interface Notification {
-  id: string;
-  title: string;
-  message: string;
-  date: string;
-  read: boolean;
-}
+import { MenuItem, Notification, UserType } from '@/types/dashboard';
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
-  userType: 'applicant' | 'provider' | 'expert';
-  secondaryTypes?: ('applicant' | 'provider' | 'expert')[];
+  userType: UserType;
+  secondaryTypes?: UserType[];
   userName?: string;
 }
 
@@ -34,7 +27,6 @@ const DashboardLayout = ({
 }: DashboardLayoutProps) => {
   const navigate = useNavigate();
 
-  // Notification mock data
   const notifications: Notification[] = [
     {
       id: '1',
@@ -61,7 +53,7 @@ const DashboardLayout = ({
 
   const unreadCount = notifications.filter(n => !n.read).length;
 
-  const menuItems = {
+  const menuItems: Record<UserType, MenuItem[]> = {
     applicant: [
       { icon: LayoutGrid, label: 'ダッシュボード', path: '/dashboard/applicant' },
       { icon: FileText, label: '補助金申請', path: '/dashboard/applicant/applications' },
@@ -84,7 +76,7 @@ const DashboardLayout = ({
 
   const currentMenu = menuItems[userType];
 
-  const handleTypeSwitch = (type: string) => {
+  const handleTypeSwitch = (type: UserType) => {
     navigate(`/dashboard/${type}`);
   };
 

@@ -3,18 +3,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import {
-  LayoutGrid,
-  FileText,
-  Users,
-  MessageSquare,
-} from 'lucide-react';
-
-interface MenuItem {
-  icon: any;
-  label: string;
-  path: string;
-}
+import { MenuItem } from '@/types/dashboard';
 
 interface NavigationMenuProps {
   currentMenu: MenuItem[];
