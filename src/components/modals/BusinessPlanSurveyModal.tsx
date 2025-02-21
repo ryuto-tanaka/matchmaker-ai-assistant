@@ -1,310 +1,303 @@
 
-import React, { useState } from 'react';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
+import React from "react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Label } from "@/components/ui/label";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { useToast } from "@/hooks/use-toast";
+
+const formSchema = z.object({
+  companyOverview: z.object({
+    name: z.string().min(1, "会社名を入力してください"),
+    established: z.string().min(1, "設立年月を入力してください"),
+    employees: z.string().min(1, "従業員数を入力してください"),
+    capital: z.string().min(1, "資本金を入力してください"),
+  }),
+  businessPlan: z.object({
+    currentState: z.string().min(10, "現状分析を入力してください"),
+    objectives: z.string().min(10, "目標を入力してください"),
+    strategy: z.string().min(10, "実施計画を入力してください"),
+    marketAnalysis: z.string().min(10, "市場分析を入力してください"),
+    financialProjection: z.string().min(10, "収支計画を入力してください"),
+  }),
+  subsidy: z.object({
+    amount: z.string().min(1, "申請金額を入力してください"),
+    purpose: z.string().min(10, "資金用途を入力してください"),
+    timeline: z.string().min(10, "実施スケジュールを入力してください"),
+  }),
+});
 
 interface BusinessPlanSurveyModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (data: any) => void;
+  onSubmit: (data: z.infer<typeof formSchema>) => void;
 }
 
-const BusinessPlanSurveyModal: React.FC<BusinessPlanSurveyModalProps> = ({
-  isOpen,
-  onClose,
-  onSubmit,
-}) => {
-  const [currentStep, setCurrentStep] = useState(1);
-  const [formData, setFormData] = useState({
-    // 基本情報
-    businessName: '',
-    industry: '',
-    location: '',
-    
-    // 事業概要
-    businessDescription: '',
-    targetCustomer: '',
-    
-    // 目標
-    goals: [] as string[],
-    otherGoal: '',
-    
-    // 補助金詳細
-    grantPurpose: '',
-    expenseTypes: [] as string[],
-    otherExpense: '',
-    schedule: '',
-    requestAmount: '',
-    expectedOutcome: ''
+export const BusinessPlanSurveyModal = ({ isOpen, onClose, onSubmit }: BusinessPlanSurveyModalProps) => {
+  const { toast } = useToast();
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      companyOverview: {
+        name: "",
+        established: "",
+        employees: "",
+        capital: "",
+      },
+      businessPlan: {
+        currentState: "",
+        objectives: "",
+        strategy: "",
+        marketAnalysis: "",
+        financialProjection: "",
+      },
+      subsidy: {
+        amount: "",
+        purpose: "",
+        timeline: "",
+      },
+    },
   });
 
-  const handleChange = (field: string, value: any) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-  };
-
-  const handleCheckboxChange = (field: string, value: string) => {
-    setFormData(prev => {
-      const currentValues = prev[field] as string[];
-      const exists = currentValues.includes(value);
-      
-      return {
-        ...prev,
-        [field]: exists 
-          ? currentValues.filter(v => v !== value)
-          : [...currentValues, value]
-      };
-    });
-  };
-
-  const handleNext = () => {
-    if (currentStep < 4) {
-      setCurrentStep(prev => prev + 1);
-    } else {
-      onSubmit(formData);
+  const handleSubmit = async (values: z.infer<typeof formSchema>) => {
+    try {
+      await onSubmit(values);
+      toast({
+        title: "事業計画書を保存しました",
+        description: "次のステップに進みます。",
+      });
+    } catch (error) {
+      toast({
+        title: "エラーが発生しました",
+        description: "申し訳ありません。時間をおいて再度お試しください。",
+        variant: "destructive",
+      });
     }
   };
-
-  const handleBack = () => {
-    if (currentStep > 1) {
-      setCurrentStep(prev => prev - 1);
-    }
-  };
-
-  const renderBasicInfo = () => (
-    <div className="space-y-4">
-      <div className="space-y-2">
-        <Label>事業者名（個人名または会社名）</Label>
-        <Input
-          value={formData.businessName}
-          onChange={(e) => handleChange('businessName', e.target.value)}
-          placeholder="例：株式会社〇〇"
-        />
-      </div>
-      <div className="space-y-2">
-        <Label>業種</Label>
-        <Select onValueChange={(value) => handleChange('industry', value)}>
-          <SelectTrigger>
-            <SelectValue placeholder="業種を選択" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="retail">小売業</SelectItem>
-            <SelectItem value="restaurant">飲食業</SelectItem>
-            <SelectItem value="service">サービス業</SelectItem>
-            <SelectItem value="manufacturing">製造業</SelectItem>
-            <SelectItem value="it">IT・情報通信</SelectItem>
-            <SelectItem value="other">その他</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
-      <div className="space-y-2">
-        <Label>所在地（市区町村）</Label>
-        <Input
-          value={formData.location}
-          onChange={(e) => handleChange('location', e.target.value)}
-          placeholder="例：東京都渋谷区"
-        />
-      </div>
-    </div>
-  );
-
-  const renderBusinessOverview = () => (
-    <div className="space-y-4">
-      <div className="space-y-2">
-        <Label>事業の概要</Label>
-        <Textarea
-          value={formData.businessDescription}
-          onChange={(e) => handleChange('businessDescription', e.target.value)}
-          placeholder="提供する商品・サービスを簡単に説明してください&#10;例：個人経営のカフェ、地域限定の宅配サービスなど"
-          rows={4}
-        />
-      </div>
-      <div className="space-y-2">
-        <Label>ターゲット顧客層</Label>
-        <Textarea
-          value={formData.targetCustomer}
-          onChange={(e) => handleChange('targetCustomer', e.target.value)}
-          placeholder="例：若い女性、ビジネスマン、高齢者など"
-          rows={3}
-        />
-      </div>
-    </div>
-  );
-
-  const renderGoals = () => (
-    <div className="space-y-4">
-      <Label>現在、最も達成したい目標は何ですか？（複数選択可）</Label>
-      <div className="space-y-2">
-        {[
-          { id: 'increase_sales', label: '売上を伸ばしたい' },
-          { id: 'new_customers', label: '新しい顧客を増やしたい' },
-          { id: 'expand_area', label: 'サービスエリアを拡大したい' },
-        ].map((goal) => (
-          <div key={goal.id} className="flex items-center space-x-2">
-            <Checkbox
-              id={goal.id}
-              checked={formData.goals.includes(goal.id)}
-              onCheckedChange={(checked) => {
-                if (checked) {
-                  handleCheckboxChange('goals', goal.id);
-                }
-              }}
-            />
-            <Label htmlFor={goal.id}>{goal.label}</Label>
-          </div>
-        ))}
-      </div>
-      <div className="space-y-2">
-        <Label>その他の目標</Label>
-        <Input
-          value={formData.otherGoal}
-          onChange={(e) => handleChange('otherGoal', e.target.value)}
-          placeholder="その他の目標があれば記入してください"
-        />
-      </div>
-    </div>
-  );
-
-  const renderGrantDetails = () => (
-    <div className="space-y-6">
-      <div className="space-y-2">
-        <Label>補助金や助成金を利用する目的</Label>
-        <Textarea
-          value={formData.grantPurpose}
-          onChange={(e) => handleChange('grantPurpose', e.target.value)}
-          placeholder="例：新商品開発、店舗改装、広告キャンペーンの実施など"
-          rows={3}
-        />
-      </div>
-
-      <div className="space-y-2">
-        <Label>申請したい経費（複数選択可）</Label>
-        {[
-          { id: 'equipment', label: '設備費用（機械の導入、店舗内装の変更など）' },
-          { id: 'labor', label: '人件費（新規採用、研修費用など）' },
-          { id: 'advertising', label: '広告費（SNS広告、チラシ制作費など）' },
-          { id: 'development', label: '開発費（商品/サービスの試作やリニューアル）' },
-          { id: 'it', label: 'IT導入費（ウェブサイト作成、ITツール導入）' },
-          { id: 'other', label: 'その他' },
-        ].map((expense) => (
-          <div key={expense.id} className="flex items-center space-x-2">
-            <Checkbox
-              id={expense.id}
-              checked={formData.expenseTypes.includes(expense.id)}
-              onCheckedChange={(checked) => {
-                if (checked) {
-                  handleCheckboxChange('expenseTypes', expense.id);
-                }
-              }}
-            />
-            <Label htmlFor={expense.id}>{expense.label}</Label>
-          </div>
-        ))}
-      </div>
-
-      {formData.expenseTypes.includes('other') && (
-        <div className="space-y-2 pl-6">
-          <Label>その他の経費の詳細</Label>
-          <Textarea
-            value={formData.otherExpense}
-            onChange={(e) => handleChange('otherExpense', e.target.value)}
-            placeholder="その他の経費の詳細を記入してください"
-            rows={2}
-          />
-        </div>
-      )}
-
-      <div className="space-y-2">
-        <Label>事業スケジュール</Label>
-        <Textarea
-          value={formData.schedule}
-          onChange={(e) => handleChange('schedule', e.target.value)}
-          placeholder="例：来月から3ヶ月以内に店舗改装を完了したい"
-          rows={3}
-        />
-      </div>
-
-      <div className="space-y-2">
-        <Label>申請金額の目安</Label>
-        <Select onValueChange={(value) => handleChange('requestAmount', value)}>
-          <SelectTrigger>
-            <SelectValue placeholder="金額を選択" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="under_500k">50万円以下</SelectItem>
-            <SelectItem value="500k_1m">50万円～100万円</SelectItem>
-            <SelectItem value="1m_3m">100万円～300万円</SelectItem>
-            <SelectItem value="over_3m">300万円以上</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
-
-      <div className="space-y-2">
-        <Label>期待される成果</Label>
-        <Textarea
-          value={formData.expectedOutcome}
-          onChange={(e) => handleChange('expectedOutcome', e.target.value)}
-          placeholder="例：売上を20％アップさせる、新たな顧客層を獲得する、業務効率化を実現するなど"
-          rows={3}
-        />
-      </div>
-    </div>
-  );
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[600px] max-h-[80vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-[700px]">
         <DialogHeader>
-          <DialogTitle>AI事業計画書作成アンケート</DialogTitle>
-          <DialogDescription>
-            Step {currentStep} / 4: {
-              currentStep === 1 ? '基本情報' :
-              currentStep === 2 ? '事業概要' :
-              currentStep === 3 ? '目標設定' :
-              '補助金詳細'
-            }
-          </DialogDescription>
+          <DialogTitle>事業計画書の作成</DialogTitle>
         </DialogHeader>
+        
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-8">
+            {/* 会社概要セクション */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold">会社概要</h3>
+              <div className="grid grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="companyOverview.name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>会社名</FormLabel>
+                      <FormControl>
+                        <Input placeholder="株式会社〇〇" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="companyOverview.established"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>設立年月</FormLabel>
+                      <FormControl>
+                        <Input type="month" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="companyOverview.employees"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>従業員数</FormLabel>
+                      <FormControl>
+                        <Input type="number" placeholder="10" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="companyOverview.capital"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>資本金</FormLabel>
+                      <FormControl>
+                        <Input type="number" placeholder="1000000" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+            </div>
 
-        <div className="py-4">
-          {currentStep === 1 && renderBasicInfo()}
-          {currentStep === 2 && renderBusinessOverview()}
-          {currentStep === 3 && renderGoals()}
-          {currentStep === 4 && renderGrantDetails()}
-        </div>
+            {/* 事業計画セクション */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold">事業計画</h3>
+              <FormField
+                control={form.control}
+                name="businessPlan.currentState"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>現状分析</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder="現在の事業状況や課題について記述してください"
+                        className="min-h-[100px]"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="businessPlan.objectives"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>目標</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder="達成したい目標を具体的に記述してください"
+                        className="min-h-[100px]"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="businessPlan.strategy"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>実施計画</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder="目標達成のための具体的な計画を記述してください"
+                        className="min-h-[100px]"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="businessPlan.marketAnalysis"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>市場分析</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder="対象市場の規模や競合状況について記述してください"
+                        className="min-h-[100px]"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="businessPlan.financialProjection"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>収支計画</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder="3年間の収支予測を記述してください"
+                        className="min-h-[100px]"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
 
-        <DialogFooter className="flex justify-between">
-          <Button
-            variant="outline"
-            onClick={handleBack}
-            disabled={currentStep === 1}
-          >
-            戻る
-          </Button>
-          <Button onClick={handleNext}>
-            {currentStep === 4 ? '完了' : '次へ'}
-          </Button>
-        </DialogFooter>
+            {/* 補助金利用計画セクション */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold">補助金利用計画</h3>
+              <FormField
+                control={form.control}
+                name="subsidy.amount"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>申請金額</FormLabel>
+                    <FormControl>
+                      <Input type="number" placeholder="1000000" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="subsidy.purpose"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>資金用途</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder="補助金の具体的な使途について記述してください"
+                        className="min-h-[100px]"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="subsidy.timeline"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>実施スケジュール</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder="補助金を活用した事業の実施スケジュールを記述してください"
+                        className="min-h-[100px]"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            <DialogFooter>
+              <Button type="button" variant="outline" onClick={onClose}>
+                下書き保存
+              </Button>
+              <Button type="submit">次へ進む</Button>
+            </DialogFooter>
+          </form>
+        </Form>
       </DialogContent>
     </Dialog>
   );
 };
-
-export default BusinessPlanSurveyModal;
