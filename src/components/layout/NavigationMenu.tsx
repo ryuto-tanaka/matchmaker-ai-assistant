@@ -17,19 +17,7 @@ export const NavigationMenu = ({ currentMenu, userType }: NavigationMenuProps) =
   const handleNavigation = (path: string) => {
     // ユーザータイプに基づいてパスを構築
     const basePath = `/dashboard/${userType}`;
-    
-    // メッセージページの場合は特別処理
-    if (path.includes('/messages')) {
-      navigate(path);
-      return;
-    }
-
-    // その他のページの場合は、現在のユーザータイプに基づいてパスを構築
-    const newPath = path.startsWith('/dashboard') 
-      ? path.replace(/^\/dashboard\/[^/]+/, basePath)
-      : path;
-
-    navigate(newPath);
+    navigate(path);
   };
 
   return (

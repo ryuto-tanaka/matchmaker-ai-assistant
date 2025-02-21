@@ -59,19 +59,19 @@ const DashboardLayout = ({
       { icon: LayoutGrid, label: 'ダッシュボード', path: '/dashboard/applicant' },
       { icon: FileText, label: '補助金申請', path: '/dashboard/applicant/applications' },
       { icon: Users, label: '専門家に相談', path: '/dashboard/applicant/experts' },
-      { icon: MessageSquare, label: 'メッセージ', path: '/dashboard/messages' },
+      { icon: MessageSquare, label: 'メッセージ', path: '/dashboard/applicant/messages' },
     ],
     provider: [
       { icon: LayoutGrid, label: 'ダッシュボード', path: '/dashboard/provider' },
       { icon: FileText, label: '案件一覧', path: '/dashboard/provider/cases' },
       { icon: Users, label: 'クライアント管理', path: '/dashboard/provider/clients' },
-      { icon: MessageSquare, label: 'メッセージ', path: '/dashboard/messages' },
+      { icon: MessageSquare, label: 'メッセージ', path: '/dashboard/provider/messages' },
     ],
     expert: [
       { icon: LayoutGrid, label: 'ダッシュボード', path: '/dashboard/expert' },
       { icon: FileText, label: '相談案件', path: '/dashboard/expert/consultations' },
       { icon: Users, label: 'クライアント一覧', path: '/dashboard/expert/clients' },
-      { icon: MessageSquare, label: 'メッセージ', path: '/dashboard/messages' },
+      { icon: MessageSquare, label: 'メッセージ', path: '/dashboard/expert/messages' },
     ],
   };
 
@@ -82,7 +82,7 @@ const DashboardLayout = ({
     let newPath = `/dashboard/${newType}`;
 
     if (currentPath.includes('/messages')) {
-      newPath = currentPath;
+      newPath = `/dashboard/${newType}/messages`;
     }
 
     navigate(newPath);
