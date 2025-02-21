@@ -29,6 +29,10 @@ import ProviderClientsPage from "./pages/dashboard/provider/ClientsPage";
 import ConsultationsPage from "./pages/dashboard/expert/ConsultationsPage";
 import ExpertClientsPage from "./pages/dashboard/expert/ClientsPage";
 
+// 新規追加
+import MessagesPage from "./pages/dashboard/messages/MessagesPage";
+import ChatPage from "./pages/dashboard/messages/ChatPage";
+
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -68,6 +72,10 @@ const App = () => (
               <Route path="/dashboard/settings/notifications" element={<NotificationSettings />} />
               <Route path="/dashboard/settings/security" element={<SecuritySettings />} />
               <Route path="/dashboard/settings/locale" element={<LocaleSettings />} />
+              
+              {/* メッセージ関連のルート */}
+              <Route path="/dashboard/messages" element={<MessagesPage />} />
+              <Route path="/dashboard/messages/:expertId" element={<ChatPage />} />
               
               <Route path="*" element={<NotFound />} />
             </Routes>
