@@ -1,11 +1,22 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { FileText, Calendar, DollarSign, MessageSquare } from 'lucide-react';
 import { CaseDetailsModal } from '@/components/modals/CaseDetailsModal';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
 
 const CasesPage = () => {
+  const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [deadlineFilter, setDeadlineFilter] = useState<string>('');
+
   const cases = [
     {
       id: 1,
@@ -36,6 +47,12 @@ const CasesPage = () => {
     },
   ];
 
+  const filteredCases = cases.filter(case_ => {
+    const matchesStatus = statusFilter === 'all' || case_.status === statusFilter;
+    const matchesDeadline = !deadlineFilter || case_.deadline === deadlineFilter;
+    return matchesStatus && matchesDeadline;
+  });
+
   const stats = [
     { icon: FileText, label: '進行中の案件', value: '4件' },
     { icon: MessageSquare, label: 'トークルーム', value: '2件' },
@@ -50,6 +67,30 @@ const CasesPage = () => {
           <h1 className="text-2xl font-bold">案件一覧</h1>
           <div className="text-sm text-gray-500">
             最終更新: {new Date().toLocaleDateString('ja-JP')}
+          </div>
+        </div>
+
+        <div className="flex gap-4 mb-6">
+          <div className="w-48">
+            <Select onValueChange={setStatusFilter} defaultValue="all">
+              <SelectTrigger>
+                <SelectValue placeholder="ステータス" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">すべて</SelectItem>
+                <SelectItem value="見積依頼中">見積依頼中</SelectItem>
+                <SelectItem value="商談中">商談中</SelectItem>
+                <SelectItem value="受注確定">受注確定</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="w-48">
+            <Input
+              type="date"
+              value={deadlineFilter}
+              onChange={(e) => setDeadlineFilter(e.target.value)}
+              className="w-full"
+            />
           </div>
         </div>
 
@@ -77,7 +118,7 @@ const CasesPage = () => {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {cases.map((case_) => (
+              {filteredCases.map((case_) => (
                 <div
                   key={case_.id}
                   className="p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
