@@ -47,10 +47,15 @@ const ExpertsPage = () => {
   };
 
   const handleConsultationComplete = () => {
-    if (selectedExpertId) {
-      navigate(`/dashboard/messages/${selectedExpertId}`, { replace: true });
-    }
     setIsConsultationModalOpen(false);
+    if (selectedExpertId) {
+      // まず専門家一覧ページに戻る
+      navigate("/dashboard/applicant/experts");
+      // その後メッセージページに遷移
+      setTimeout(() => {
+        navigate(`/dashboard/messages/${selectedExpertId}`);
+      }, 100);
+    }
   };
 
   return (
