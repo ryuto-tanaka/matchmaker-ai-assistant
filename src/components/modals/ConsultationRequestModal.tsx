@@ -64,37 +64,42 @@ export const ConsultationRequestModal = ({
     }
   };
 
-  function roundToNearest15Minutes() {
-    const now = new Date();
-    const minutes = now.getMinutes();
+  function roundToNearest15Minutes(date = new Date()) {
+    const minutes = date.getMinutes();
     const roundedMinutes = Math.ceil(minutes / 15) * 15;
-    now.setMinutes(roundedMinutes);
-    now.setSeconds(0);
-    now.setMilliseconds(0);
+    const newDate = new Date(date);
+    newDate.setMinutes(roundedMinutes);
+    newDate.setSeconds(0);
+    newDate.setMilliseconds(0);
     
     if (roundedMinutes === 60) {
-      now.setHours(now.getHours() + 1);
-      now.setMinutes(0);
+      newDate.setHours(newDate.getHours() + 1);
+      newDate.setMinutes(0);
     }
     
-    return now.toISOString().slice(0, 16);
+    return newDate.toISOString().slice(0, 16);
   }
 
-  function validateAndFormatTime(dateString: string) {
-    const date = new Date(dateString);
-    const minutes = date.getMinutes();
+  const handleDateTimeChange = (e: React.ChangeEvent<HTMLInputElement>, field: any) => {
+    const selectedDate = new Date(e.target.value);
+    const currentDate = new Date();
     
-    // 最も近い15分単位に丸める
-    const remainder = minutes % 15;
-    let roundedMinutes = minutes;
-    
-    if (remainder !== 0) {
-      roundedMinutes = minutes - remainder;
-      date.setMinutes(roundedMinutes);
+    // 過去の日時を選択できないようにする
+    if (selectedDate < currentDate) {
+      field.onChange(roundToNearest15Minutes());
+      return;
     }
+
+    // 15分間隔に強制的に丸める
+    const minutes = selectedDate.getMinutes();
+    const remainder = minutes % 15;
+    const roundedMinutes = minutes - remainder;
+    selectedDate.setMinutes(roundedMinutes);
+    selectedDate.setSeconds(0);
+    selectedDate.setMilliseconds(0);
     
-    return date.toISOString().slice(0, 16);
-  }
+    field.onChange(selectedDate.toISOString().slice(0, 16));
+  };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -115,13 +120,11 @@ export const ConsultationRequestModal = ({
                   <FormControl>
                     <Input 
                       type="datetime-local"
-                      step="900"
                       min={roundToNearest15Minutes()}
                       value={field.value}
-                      onChange={(e) => {
-                        const formattedDate = validateAndFormatTime(e.target.value);
-                        field.onChange(formattedDate);
-                      }}
+                      onChange={(e) => handleDateTimeChange(e, field)}
+                      onBlur={field.onBlur}
+                      name={field.name}
                     />
                   </FormControl>
                   <FormMessage />
