@@ -21,7 +21,7 @@ const ClientsPage = () => {
 
   const allClients = [
     {
-      id: 1,
+      id: "1", // Changed from number to string
       name: '株式会社ABC',
       industry: 'IT・通信',
       activeProjects: 2,
@@ -31,7 +31,7 @@ const ClientsPage = () => {
       lastUpdated: '2024-03-10',
     },
     {
-      id: 2,
+      id: "2", // Changed from number to string
       name: '株式会社XYZ',
       industry: '製造業',
       activeProjects: 1,
@@ -41,7 +41,7 @@ const ClientsPage = () => {
       lastUpdated: '2024-03-05',
     },
     {
-      id: 3,
+      id: "3", // Changed from number to string
       name: '有限会社DEF',
       industry: 'サービス業',
       activeProjects: 3,
