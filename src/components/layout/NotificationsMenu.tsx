@@ -7,20 +7,25 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { Notification } from '@/types/dashboard';
+import { cn } from "@/lib/utils";
 
 interface NotificationsMenuProps {
   notifications: Notification[];
   unreadCount: number;
+  isCollapsed: boolean;
 }
 
-export const NotificationsMenu = ({ notifications, unreadCount }: NotificationsMenuProps) => {
+export const NotificationsMenu = ({ notifications, unreadCount, isCollapsed }: NotificationsMenuProps) => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button
           variant="outline"
           size="icon"
-          className="relative"
+          className={cn(
+            "relative",
+            isCollapsed ? "w-full" : "w-auto"
+          )}
         >
           {unreadCount > 0 && (
             <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">

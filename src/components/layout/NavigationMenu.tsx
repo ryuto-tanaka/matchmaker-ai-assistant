@@ -4,13 +4,15 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { MenuItem, UserType } from '@/types/dashboard';
+import { cn } from "@/lib/utils";
 
 interface NavigationMenuProps {
   currentMenu: MenuItem[];
   userType: UserType;
+  isCollapsed: boolean;
 }
 
-export const NavigationMenu = ({ currentMenu, userType }: NavigationMenuProps) => {
+export const NavigationMenu = ({ currentMenu, userType, isCollapsed }: NavigationMenuProps) => {
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -25,11 +27,17 @@ export const NavigationMenu = ({ currentMenu, userType }: NavigationMenuProps) =
           <Button
             key={index}
             variant="ghost"
-            className="w-full justify-start"
+            className={cn(
+              "w-full justify-start",
+              isCollapsed && "justify-center px-2"
+            )}
             onClick={() => handleNavigation(item.path)}
           >
-            <item.icon className="mr-2 h-4 w-4" />
-            {item.label}
+            <item.icon className={cn(
+              "h-4 w-4",
+              !isCollapsed && "mr-2"
+            )} />
+            {!isCollapsed && item.label}
           </Button>
         ))}
       </nav>

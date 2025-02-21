@@ -18,15 +18,17 @@ import {
 import { Button } from "@/components/ui/button";
 import { useAuthContext } from '@/contexts/AuthContext';
 import { UserType } from '@/types/dashboard';
+import { cn } from "@/lib/utils";
 
 interface UserMenuProps {
   userName: string;
   userType: UserType;
   secondaryTypes: UserType[];
   onTypeSwitch: (type: UserType) => void;
+  isCollapsed: boolean;
 }
 
-export const UserMenu = ({ userName, userType, secondaryTypes, onTypeSwitch }: UserMenuProps) => {
+export const UserMenu = ({ userName, userType, secondaryTypes, onTypeSwitch, isCollapsed }: UserMenuProps) => {
   const navigate = useNavigate();
   const { signOut } = useAuthContext();
 
@@ -53,14 +55,20 @@ export const UserMenu = ({ userName, userType, secondaryTypes, onTypeSwitch }: U
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="w-full flex items-center justify-between p-2">
+        <Button 
+          variant="ghost" 
+          className={cn(
+            "w-full flex items-center justify-between p-2",
+            isCollapsed && "justify-center"
+          )}
+        >
           <div className="flex items-center">
             <div className="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center">
               {userName[0]}
             </div>
-            <span className="ml-2 text-sm font-medium">{userName}</span>
+            {!isCollapsed && <span className="ml-2 text-sm font-medium">{userName}</span>}
           </div>
-          <ChevronDown className="h-4 w-4" />
+          {!isCollapsed && <ChevronDown className="h-4 w-4" />}
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-56">
