@@ -78,11 +78,9 @@ const DashboardLayout = ({
   const currentMenu = menuItems[userType];
 
   const handleTypeSwitch = (newType: UserType) => {
-    // 現在のパスから新しいパスを構築
     const currentPath = location.pathname;
     let newPath = `/dashboard/${newType}`;
 
-    // メッセージページの場合は、ユーザータイプを変更してもメッセージページに留まる
     if (currentPath.includes('/messages')) {
       newPath = currentPath;
     }
@@ -97,7 +95,10 @@ const DashboardLayout = ({
           <h1 className="text-xl font-bold text-primary">補助金プラットフォーム</h1>
         </div>
         
-        <NavigationMenu currentMenu={currentMenu} />
+        <NavigationMenu 
+          currentMenu={currentMenu}
+          userType={userType}
+        />
 
         <div className="p-4 border-t">
           <div className="flex items-center space-x-2 mb-4">
