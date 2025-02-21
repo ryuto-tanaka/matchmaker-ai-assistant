@@ -31,21 +31,28 @@ const CalendarSection = () => {
   const [isGoogleCalendarConnected, setIsGoogleCalendarConnected] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null);
 
+  // 現在の日付を基準にイベントを設定
+  const today = new Date();
+  const tomorrow = new Date(today);
+  tomorrow.setDate(today.getDate() + 1);
+  const dayAfterTomorrow = new Date(today);
+  dayAfterTomorrow.setDate(today.getDate() + 2);
+
   const events: CalendarEvent[] = [
     {
-      date: new Date(2024, 2, 15),
+      date: today,
       title: 'IT導入補助金申請期限',
       type: 'deadline',
       description: '申請書類の提出期限です。'
     },
     {
-      date: new Date(2024, 2, 16),
+      date: tomorrow,
       title: '専門家相談',
       type: 'consultation',
       description: '山田先生との相談予約'
     },
     {
-      date: new Date(2024, 2, 17),
+      date: dayAfterTomorrow,
       title: '書類確認リマインダー',
       type: 'reminder',
       description: '事業計画書の最終確認'

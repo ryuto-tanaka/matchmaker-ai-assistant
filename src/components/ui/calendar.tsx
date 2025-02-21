@@ -28,7 +28,6 @@ function Calendar({
   onEventClick,
   ...props
 }: CalendarProps) {
-  // イベントを日付ごとにグループ化
   const eventsByDate = React.useMemo(() => {
     return events.reduce((acc, event) => {
       const dateKey = format(event.date, 'yyyy-MM-dd');
@@ -51,7 +50,7 @@ function Calendar({
       <Badge
         key={`${event.title}-${event.date.toISOString()}`}
         className={cn(
-          "text-xs cursor-pointer transition-colors",
+          "text-xs cursor-pointer transition-colors whitespace-nowrap overflow-hidden text-ellipsis",
           badgeVariants[event.type]
         )}
         onClick={(e) => {
@@ -86,7 +85,7 @@ function Calendar({
         head_cell:
           "text-muted-foreground rounded-md w-9 font-normal text-[0.8rem]",
         row: "flex w-full mt-2",
-        cell: "relative p-0 text-center text-sm focus-within:relative focus-within:z-20 [&:has([aria-selected].day-range-end)]:rounded-r-md [&:has([aria-selected].day-range-start)]:rounded-l-md first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md",
+        cell: "relative p-0 text-center text-sm focus-within:relative focus-within:z-20 [&:has([aria-selected])]:rounded-md",
         day: cn(
           buttonVariants({ variant: "ghost" }),
           "h-9 w-9 p-0 font-normal aria-selected:opacity-100"
@@ -112,10 +111,10 @@ function Calendar({
           const dayEvents = eventsByDate[dateKey] || [];
           
           return (
-            <div className="relative min-h-[60px] w-9">
-              <div {...dayProps} className="absolute top-0 left-0 right-0" />
+            <div className="relative min-h-[80px] w-full p-1">
+              <div {...dayProps} className="absolute top-1 left-1/2 -translate-x-1/2" />
               {dayEvents.length > 0 && (
-                <div className="absolute top-8 left-0 right-0 flex flex-col gap-1 px-1">
+                <div className="absolute top-10 left-0 right-0 flex flex-col gap-1 px-0.5 max-h-[60px] overflow-y-auto">
                   {dayEvents.map(renderEventBadge)}
                 </div>
               )}
