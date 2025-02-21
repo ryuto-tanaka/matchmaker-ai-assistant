@@ -26,7 +26,6 @@ const ApplicationsPage = () => {
 
   const handleBusinessPlanSubmit = async (data: any) => {
     try {
-      // TODO: API実装後に実際の送信処理を追加
       console.log("Business plan submitted:", data);
       
       toast({

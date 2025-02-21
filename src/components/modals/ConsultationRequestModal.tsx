@@ -41,7 +41,6 @@ export const ConsultationRequestModal = ({
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      // TODO: API実装後に実際の送信処理を追加
       console.log("Form submitted:", values);
       
       toast({
