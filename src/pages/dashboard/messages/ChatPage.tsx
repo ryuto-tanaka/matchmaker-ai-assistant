@@ -2,14 +2,11 @@
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import DashboardLayout from '@/components/layout/DashboardLayout';
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Send, FileUp, Video, Download, User, Calendar } from "lucide-react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useToast } from "@/components/ui/use-toast";
+import ExpertInfo from '@/components/messages/ExpertInfo';
+import VideoCallDialog from '@/components/messages/VideoCallDialog';
+import ChatMessages from '@/components/messages/ChatMessages';
+import MessageInput from '@/components/messages/MessageInput';
 
 const ChatPage = () => {
   const { expertId } = useParams();
@@ -82,129 +79,23 @@ const ChatPage = () => {
       <div className="flex gap-4 h-[calc(100vh-8rem)]">
         {/* メインチャットエリア */}
         <div className="flex-1 flex flex-col">
-          <div className="flex-1 overflow-y-auto space-y-4 p-4 bg-background rounded-lg border">
-            {messages.map((message) => (
-              <div
-                key={message.id}
-                className={`flex ${
-                  message.sender === "user" ? "justify-end" : "justify-start"
-                }`}
-              >
-                <div
-                  className={`max-w-[70%] rounded-lg p-3 ${
-                    message.sender === "user"
-                      ? "bg-primary text-primary-foreground"
-                      : "bg-muted"
-                  }`}
-                >
-                  <pre className="whitespace-pre-wrap font-sans">{message.content}</pre>
-                  {message.files.length > 0 && (
-                    <div className="mt-2 space-y-1">
-                      {message.files.map((file, index) => (
-                        <div key={index} className="flex items-center text-xs space-x-2">
-                          <Download className="h-4 w-4" />
-                          <span>{file.name}</span>
-                          <span className="opacity-70">({file.size})</span>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                  <div className="text-xs mt-1 opacity-70">
-                    {new Date(message.timestamp).toLocaleTimeString()}
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          <div className="p-4 border-t">
-            <form onSubmit={handleSendMessage} className="flex gap-2">
-              <Input
-                value={newMessage}
-                onChange={(e) => setNewMessage(e.target.value)}
-                placeholder="メッセージを入力..."
-                className="flex-1"
-              />
-              <input
-                type="file"
-                id="file-upload"
-                className="hidden"
-                onChange={handleFileUpload}
-              />
-              <Button
-                type="button"
-                variant="outline"
-                size="icon"
-                onClick={() => document.getElementById("file-upload")?.click()}
-              >
-                <FileUp className="h-4 w-4" />
-              </Button>
-              <Button type="submit">
-                <Send className="h-4 w-4" />
-              </Button>
-            </form>
-          </div>
+          <ChatMessages messages={messages} />
+          <MessageInput
+            value={newMessage}
+            onChange={(e) => setNewMessage(e.target.value)}
+            onSubmit={handleSendMessage}
+            onFileUpload={handleFileUpload}
+          />
         </div>
 
         {/* 右サイドバー: 専門家情報とアクション */}
         <div className="w-80 space-y-4">
-          <Card>
-            <CardHeader className="flex flex-row items-center space-x-4 p-4">
-              <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-                <User className="h-6 w-6 text-primary" />
-              </div>
-              <div>
-                <h3 className="font-semibold">{expertData.name}</h3>
-                <p className="text-sm text-muted-foreground">{expertData.title}</p>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <Label>専門分野</Label>
-                <div className="mt-1 text-sm space-y-1">
-                  {expertData.specialties.map((specialty, index) => (
-                    <div key={index} className="bg-muted rounded px-2 py-1">
-                      {specialty}
-                    </div>
-                  ))}
-                </div>
-              </div>
-              <div>
-                <Label>経験年数</Label>
-                <p className="mt-1 text-sm">{expertData.experience}</p>
-              </div>
-              <div>
-                <Label>プロフィール</Label>
-                <p className="mt-1 text-sm">{expertData.profile}</p>
-              </div>
-              <Dialog open={showVideoCallDialog} onOpenChange={setShowVideoCallDialog}>
-                <DialogTrigger asChild>
-                  <Button className="w-full" variant="secondary">
-                    <Video className="mr-2 h-4 w-4" />
-                    ビデオ通話を予約
-                  </Button>
-                </DialogTrigger>
-                <DialogContent>
-                  <DialogHeader>
-                    <DialogTitle>ビデオ通話の予約</DialogTitle>
-                  </DialogHeader>
-                  <div className="space-y-4 py-4">
-                    <div className="space-y-2">
-                      <Label>予約日時</Label>
-                      <Input type="datetime-local" />
-                    </div>
-                    <div className="space-y-2">
-                      <Label>相談内容</Label>
-                      <Textarea placeholder="相談したい内容を記入してください" />
-                    </div>
-                    <Button onClick={handleVideoCallSchedule} className="w-full">
-                      予約を確定する
-                    </Button>
-                  </div>
-                </DialogContent>
-              </Dialog>
-            </CardContent>
-          </Card>
+          <ExpertInfo expertData={expertData} />
+          <VideoCallDialog
+            open={showVideoCallDialog}
+            onOpenChange={setShowVideoCallDialog}
+            onSchedule={handleVideoCallSchedule}
+          />
         </div>
       </div>
     </DashboardLayout>
