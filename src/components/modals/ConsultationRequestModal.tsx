@@ -9,7 +9,6 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useToast } from "@/hooks/use-toast";
-import { useNavigate } from "react-router-dom";
 
 const formSchema = z.object({
   preferredDate: z.string().min(1, "希望日時を選択してください"),
@@ -31,7 +30,6 @@ export const ConsultationRequestModal = ({
   onSubmitComplete 
 }: ConsultationRequestModalProps) => {
   const { toast } = useToast();
-  const navigate = useNavigate();
   
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -55,7 +53,6 @@ export const ConsultationRequestModal = ({
         onSubmitComplete(values);
       }
       
-      navigate("/dashboard/messages/1", { replace: true });
       onClose();
       form.reset();
     } catch (error) {
@@ -71,11 +68,10 @@ export const ConsultationRequestModal = ({
     const now = new Date();
     const minutes = now.getMinutes();
     const roundedMinutes = Math.ceil(minutes / 15) * 15;
-    const rounded = new Date(now);
-    rounded.setMinutes(roundedMinutes);
-    rounded.setSeconds(0);
-    rounded.setMilliseconds(0);
-    return rounded.toISOString().slice(0, 16);
+    now.setMinutes(roundedMinutes);
+    now.setSeconds(0);
+    now.setMilliseconds(0);
+    return now.toISOString().slice(0, 16);
   }
 
   return (

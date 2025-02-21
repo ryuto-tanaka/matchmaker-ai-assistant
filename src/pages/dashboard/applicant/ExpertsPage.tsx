@@ -48,7 +48,7 @@ const ExpertsPage = () => {
 
   const handleConsultationComplete = () => {
     if (selectedExpertId) {
-      navigate(`/dashboard/messages/${selectedExpertId}`);
+      navigate(`/dashboard/messages/${selectedExpertId}`, { replace: true });
     }
     setIsConsultationModalOpen(false);
   };
@@ -105,7 +105,7 @@ const ExpertsPage = () => {
           isOpen={isConsultationModalOpen}
           onClose={() => setIsConsultationModalOpen(false)}
           expertName={selectedExpertName}
-          onSubmitComplete={() => handleConsultationComplete()}
+          onSubmitComplete={handleConsultationComplete}
         />
       </div>
     </DashboardLayout>
