@@ -1,16 +1,20 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import {
   LayoutGrid,
   FileText,
   Users,
   MessageSquare,
+  ChevronLeft,
+  ChevronRight,
 } from 'lucide-react';
 import { NavigationMenu } from './NavigationMenu';
 import { NotificationsMenu } from './NotificationsMenu';
 import { UserMenu } from './UserMenu';
 import { MenuItem, Notification, UserType } from '@/types/dashboard';
+import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -27,6 +31,7 @@ const DashboardLayout = ({
 }: DashboardLayoutProps) => {
   const navigate = useNavigate();
   const location = useLocation();
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
   const notifications: Notification[] = [
     {
@@ -88,19 +93,44 @@ const DashboardLayout = ({
     navigate(newPath);
   };
 
+  const toggleSidebar = () => {
+    setIsSidebarCollapsed(!isSidebarCollapsed);
+  };
+
   return (
-    <div className="min-h-screen flex">
+    <div className="min-h-screen flex w-full">
       {/* サイドバー */}
-      <div className="w-64 flex-shrink-0 fixed h-full bg-white border-r z-10">
+      <div className={cn(
+        "fixed h-full bg-white border-r z-10 transition-all duration-300",
+        isSidebarCollapsed ? "w-20" : "w-64"
+      )}>
         <div className="flex flex-col h-full">
-          <div className="p-4 border-b">
-            <h1 className="text-xl font-bold text-primary">補助金プラットフォーム</h1>
+          <div className="p-4 border-b flex items-center justify-between">
+            <h1 className={cn(
+              "text-xl font-bold text-primary transition-opacity duration-300",
+              isSidebarCollapsed ? "opacity-0" : "opacity-100"
+            )}>
+              補助金プラットフォーム
+            </h1>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={toggleSidebar}
+              className="ml-2"
+            >
+              {isSidebarCollapsed ? (
+                <ChevronRight className="h-4 w-4" />
+              ) : (
+                <ChevronLeft className="h-4 w-4" />
+              )}
+            </Button>
           </div>
           
           <div className="flex-1 overflow-y-auto">
             <NavigationMenu 
               currentMenu={currentMenu}
               userType={userType}
+              isCollapsed={isSidebarCollapsed}
             />
           </div>
 
@@ -109,6 +139,7 @@ const DashboardLayout = ({
               <NotificationsMenu 
                 notifications={notifications}
                 unreadCount={unreadCount}
+                isCollapsed={isSidebarCollapsed}
               />
             </div>
 
@@ -117,13 +148,17 @@ const DashboardLayout = ({
               userType={userType}
               secondaryTypes={secondaryTypes}
               onTypeSwitch={handleTypeSwitch}
+              isCollapsed={isSidebarCollapsed}
             />
           </div>
         </div>
       </div>
 
       {/* メインコンテンツ */}
-      <div className="flex-1 ml-64">
+      <div className={cn(
+        "flex-1 transition-all duration-300",
+        isSidebarCollapsed ? "ml-20" : "ml-64"
+      )}>
         <main className="p-6 min-h-screen bg-gray-50">
           {children}
         </main>
