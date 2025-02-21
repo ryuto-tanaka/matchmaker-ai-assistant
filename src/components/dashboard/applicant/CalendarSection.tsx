@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Settings2, Bell } from 'lucide-react';
 import { Button } from "@/components/ui/button";
-import { Calendar, type CalendarEvent } from "@/components/ui/calendar";
+import { Calendar } from "@/components/ui/calendar";
 import { useToast } from "@/components/ui/use-toast";
 import {
   Dialog,
@@ -12,7 +12,6 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import {
   DropdownMenu,
@@ -23,43 +22,39 @@ import {
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
+import { format } from "date-fns";
+import { ja } from "date-fns/locale";
 
 const CalendarSection = () => {
   const { toast } = useToast();
   const [date, setDate] = useState<Date | undefined>(new Date());
   const [isReminderDialogOpen, setIsReminderDialogOpen] = useState(false);
   const [isGoogleCalendarConnected, setIsGoogleCalendarConnected] = useState(false);
-  const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null);
 
-  // 現在の日付を基準にイベントを設定
+  // イベントデータの作成（現在日付を基準に）
   const today = new Date();
-  const tomorrow = new Date(today);
-  tomorrow.setDate(today.getDate() + 1);
-  const dayAfterTomorrow = new Date(today);
-  dayAfterTomorrow.setDate(today.getDate() + 2);
-
-  const events: CalendarEvent[] = [
+  const events = [
     {
       date: today,
       title: 'IT導入補助金申請期限',
-      type: 'deadline',
+      type: 'deadline' as const,
       description: '申請書類の提出期限です。'
     },
     {
-      date: tomorrow,
+      date: new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1),
       title: '専門家相談',
-      type: 'consultation',
+      type: 'consultation' as const,
       description: '山田先生との相談予約'
     },
     {
-      date: dayAfterTomorrow,
+      date: new Date(today.getFullYear(), today.getMonth(), today.getDate() + 2),
       title: '書類確認リマインダー',
-      type: 'reminder',
+      type: 'reminder' as const,
       description: '事業計画書の最終確認'
     }
   ];
 
-  const handleGoogleCalendarConnect = async () => {
+  const handleGoogleCalendarConnect = () => {
     toast({
       title: "Google Calendar連携",
       description: "連携が完了しました。",
@@ -67,8 +62,8 @@ const CalendarSection = () => {
     setIsGoogleCalendarConnected(true);
   };
 
-  const handleEventClick = (event: CalendarEvent) => {
-    setSelectedEvent(event);
+  const handleEventClick = (event: any) => {
+    console.log('Event clicked:', event);
     setIsReminderDialogOpen(true);
   };
 
@@ -90,11 +85,6 @@ const CalendarSection = () => {
             </DropdownMenuContent>
           </DropdownMenu>
           <Dialog>
-            <DialogTrigger asChild>
-              <Button variant="outline" size="icon">
-                <Bell className="h-4 w-4" />
-              </Button>
-            </DialogTrigger>
             <DialogContent>
               <DialogHeader>
                 <DialogTitle>通知設定</DialogTitle>
@@ -121,25 +111,30 @@ const CalendarSection = () => {
         </div>
       </CardHeader>
       <CardContent>
-        <Calendar
-          mode="single"
-          selected={date}
-          onSelect={setDate}
-          events={events}
-          onEventClick={handleEventClick}
-          className="rounded-md border"
-        />
+        <div className="border rounded-lg p-4">
+          <Calendar
+            mode="single"
+            selected={date}
+            onSelect={setDate}
+            locale={ja}
+            events={events}
+            onEventClick={handleEventClick}
+            className="rounded-md"
+          />
+        </div>
       </CardContent>
 
       <Dialog open={isReminderDialogOpen} onOpenChange={setIsReminderDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>{selectedEvent?.title}</DialogTitle>
-            <DialogDescription>{selectedEvent?.description}</DialogDescription>
+            <DialogTitle>リマインダー設定</DialogTitle>
+            <DialogDescription>
+              イベントの通知時間を設定してください
+            </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div className="space-y-2">
-              <Label>リマインダー設定</Label>
+              <Label>通知時間</Label>
               <Input type="datetime-local" />
             </div>
           </div>

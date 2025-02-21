@@ -28,7 +28,6 @@ function Calendar({
   onEventClick,
   ...props
 }: CalendarProps) {
-  // イベントを日付ごとに整理
   const eventsByDate = React.useMemo(() => {
     const eventMap: Record<string, CalendarEvent[]> = {};
     events.forEach(event => {
@@ -41,35 +40,8 @@ function Calendar({
     return eventMap;
   }, [events]);
 
-  // イベントバッジのレンダリング
-  const renderEventBadge = (event: CalendarEvent) => {
-    const badgeVariants: Record<CalendarEvent['type'], string> = {
-      deadline: 'bg-red-100 text-red-800 hover:bg-red-200',
-      consultation: 'bg-blue-100 text-blue-800 hover:bg-blue-200',
-      reminder: 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200',
-    };
-
-    return (
-      <Badge
-        key={`${event.title}-${event.date.toISOString()}`}
-        className={cn(
-          "text-xs cursor-pointer transition-colors py-1",
-          "whitespace-nowrap overflow-hidden text-ellipsis w-full",
-          badgeVariants[event.type]
-        )}
-        onClick={(e) => {
-          e.stopPropagation();
-          onEventClick?.(event);
-        }}
-      >
-        {event.title}
-      </Badge>
-    );
-  };
-
   return (
     <DayPicker
-      locale={ja}
       showOutsideDays={showOutsideDays}
       className={cn("p-3", className)}
       classNames={{
@@ -88,13 +60,10 @@ function Calendar({
         head_row: "flex",
         head_cell: "text-muted-foreground rounded-md w-9 font-normal text-[0.8rem]",
         row: "flex w-full mt-2",
-        cell: cn(
-          "relative p-0 text-center text-sm focus-within:relative focus-within:z-20",
-          "first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md"
-        ),
+        cell: "h-24 w-full border border-gray-200 p-1",
         day: cn(
           buttonVariants({ variant: "ghost" }),
-          "h-9 w-9 p-0 font-normal aria-selected:opacity-100"
+          "h-6 w-6 p-0 font-normal absolute top-1 left-1/2 -translate-x-1/2"
         ),
         day_selected: "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground",
         day_today: "bg-accent text-accent-foreground",
@@ -111,11 +80,27 @@ function Calendar({
           const dayEvents = eventsByDate[dateKey] || [];
           
           return (
-            <div className="relative min-h-[120px] w-full p-1 border border-gray-100">
-              <div {...dayProps} className="absolute top-1 left-1/2 -translate-x-1/2" />
+            <div className="relative h-full">
+              <div {...dayProps} />
               {dayEvents.length > 0 && (
-                <div className="absolute top-10 left-0 right-0 flex flex-col gap-1 px-1 max-h-[90px] overflow-y-auto">
-                  {dayEvents.map(renderEventBadge)}
+                <div className="absolute top-8 left-0 right-0 flex flex-col gap-1 px-1">
+                  {dayEvents.map((event) => (
+                    <Badge
+                      key={`${event.title}-${event.date.toISOString()}`}
+                      className={cn(
+                        "text-xs cursor-pointer whitespace-nowrap overflow-hidden text-ellipsis",
+                        event.type === 'deadline' && "bg-red-100 text-red-800 hover:bg-red-200",
+                        event.type === 'consultation' && "bg-blue-100 text-blue-800 hover:bg-blue-200",
+                        event.type === 'reminder' && "bg-yellow-100 text-yellow-800 hover:bg-yellow-200"
+                      )}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onEventClick?.(event);
+                      }}
+                    >
+                      {event.title}
+                    </Badge>
+                  ))}
                 </div>
               )}
             </div>
