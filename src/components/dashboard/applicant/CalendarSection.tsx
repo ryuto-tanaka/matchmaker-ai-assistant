@@ -20,6 +20,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { format } from "date-fns";
 import { ja } from "date-fns/locale";
 
@@ -165,8 +166,9 @@ const CalendarSection = () => {
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div className="space-y-2">
-              <Label>通知時間</Label>
+              <Label htmlFor="reminder-time">通知時間</Label>
               <Input
+                id="reminder-time"
                 type="datetime-local"
                 value={reminderTime}
                 onChange={(e) => setReminderTime(e.target.value)}
