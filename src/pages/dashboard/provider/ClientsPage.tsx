@@ -1,12 +1,24 @@
-import React from 'react';
+
+import React, { useState } from 'react';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import { Card, CardContent } from "@/components/ui/card";
 import { Building, FileText, Users, Phone } from 'lucide-react';
 import { NewClientModal } from '@/components/modals/NewClientModal';
 import { Button } from '@/components/ui/button';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
 
 const ClientsPage = () => {
-  const clients = [
+  const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [dateFilter, setDateFilter] = useState<string>('');
+
+  const allClients = [
     {
       id: 1,
       name: '株式会社ABC',
@@ -14,6 +26,8 @@ const ClientsPage = () => {
       activeProjects: 2,
       contactPerson: '山田太郎',
       phone: '03-1234-5678',
+      status: 'アクティブ',
+      lastUpdated: '2024-03-10',
     },
     {
       id: 2,
@@ -22,6 +36,8 @@ const ClientsPage = () => {
       activeProjects: 1,
       contactPerson: '鈴木花子',
       phone: '03-8765-4321',
+      status: 'アクティブ',
+      lastUpdated: '2024-03-05',
     },
     {
       id: 3,
@@ -30,8 +46,16 @@ const ClientsPage = () => {
       activeProjects: 3,
       contactPerson: '佐藤一郎',
       phone: '03-2468-1357',
+      status: '完了',
+      lastUpdated: '2024-02-28',
     },
   ];
+
+  const filteredClients = allClients.filter(client => {
+    const matchesStatus = statusFilter === 'all' || client.status === statusFilter;
+    const matchesDate = !dateFilter || client.lastUpdated === dateFilter;
+    return matchesStatus && matchesDate;
+  });
 
   return (
     <DashboardLayout userType="provider" userName="提供者">
@@ -41,8 +65,32 @@ const ClientsPage = () => {
           <NewClientModal />
         </div>
 
+        <div className="flex gap-4 mb-6">
+          <div className="w-48">
+            <Select onValueChange={setStatusFilter} defaultValue="all">
+              <SelectTrigger>
+                <SelectValue placeholder="ステータス" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">すべて</SelectItem>
+                <SelectItem value="アクティブ">アクティブ</SelectItem>
+                <SelectItem value="完了">完了</SelectItem>
+                <SelectItem value="保留中">保留中</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="w-48">
+            <Input
+              type="date"
+              value={dateFilter}
+              onChange={(e) => setDateFilter(e.target.value)}
+              className="w-full"
+            />
+          </div>
+        </div>
+
         <div className="grid gap-6">
-          {clients.map((client) => (
+          {filteredClients.map((client) => (
             <Card key={client.id}>
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
