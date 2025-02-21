@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -55,16 +56,22 @@ const App = () => (
               <Route path="/dashboard/applicant" element={<ApplicantDashboard />} />
               <Route path="/dashboard/applicant/applications" element={<ApplicationsPage />} />
               <Route path="/dashboard/applicant/experts" element={<ExpertsPage />} />
+              <Route path="/dashboard/applicant/messages" element={<MessagesPage />} />
+              <Route path="/dashboard/applicant/messages/:expertId" element={<ChatPage />} />
               
               {/* サービス提供者関連のルート */}
               <Route path="/dashboard/provider" element={<ProviderDashboard />} />
               <Route path="/dashboard/provider/cases" element={<CasesPage />} />
               <Route path="/dashboard/provider/clients" element={<ProviderClientsPage />} />
+              <Route path="/dashboard/provider/messages" element={<MessagesPage />} />
+              <Route path="/dashboard/provider/messages/:expertId" element={<ChatPage />} />
               
               {/* 専門家関連のルート */}
               <Route path="/dashboard/expert" element={<ExpertDashboard />} />
               <Route path="/dashboard/expert/consultations" element={<ConsultationsPage />} />
               <Route path="/dashboard/expert/clients" element={<ExpertClientsPage />} />
+              <Route path="/dashboard/expert/messages" element={<MessagesPage />} />
+              <Route path="/dashboard/expert/messages/:expertId" element={<ChatPage />} />
               
               {/* 設定関連のルート */}
               <Route path="/dashboard/settings" element={<Settings />} />
@@ -72,10 +79,6 @@ const App = () => (
               <Route path="/dashboard/settings/notifications" element={<NotificationSettings />} />
               <Route path="/dashboard/settings/security" element={<SecuritySettings />} />
               <Route path="/dashboard/settings/locale" element={<LocaleSettings />} />
-              
-              {/* メッセージ関連のルート */}
-              <Route path="/dashboard/messages" element={<MessagesPage />} />
-              <Route path="/dashboard/messages/:expertId" element={<ChatPage />} />
               
               <Route path="*" element={<NotFound />} />
             </Routes>
