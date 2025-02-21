@@ -4,6 +4,8 @@ import DashboardLayout from '@/components/layout/DashboardLayout';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { FileText, Users, TrendingUp, DollarSign, ArrowRight } from 'lucide-react';
 import { Button } from "@/components/ui/button";
+import { StatDetailsModal } from "@/components/modals/StatDetailsModal";
+import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 
 const ProviderDashboard = () => {
   const stats = [
@@ -31,9 +33,14 @@ const ProviderDashboard = () => {
                     <h3 className="text-2xl font-bold">{stat.value}</h3>
                   </div>
                 </div>
-                <Button variant="ghost" size="icon" className="ml-2">
-                  <ArrowRight className="h-4 w-4" />
-                </Button>
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <Button variant="ghost" size="icon" className="ml-2">
+                      <ArrowRight className="h-4 w-4" />
+                    </Button>
+                  </DialogTrigger>
+                  <StatDetailsModal statType={stat.label} value={stat.value} />
+                </Dialog>
               </div>
             </CardContent>
           </Card>
