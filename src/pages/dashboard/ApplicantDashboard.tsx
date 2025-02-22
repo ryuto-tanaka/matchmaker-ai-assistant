@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { Suspense } from 'react';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import DashboardOverview from '@/components/dashboard/applicant/DashboardOverview';
@@ -8,6 +8,20 @@ import DocumentsSection from '@/components/dashboard/applicant/DocumentsSection'
 import { useOnlineStatus } from '@/hooks/useOnlineStatus';
 import { Badge } from "@/components/ui/badge";
 import { Wifi, WifiOff } from 'lucide-react';
+import { Skeleton } from "@/components/ui/skeleton";
+
+// タブコンテンツのローディングプレースホルダー
+const TabLoading = () => (
+  <div className="space-y-4">
+    <Skeleton className="h-[125px] w-full" />
+    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <Skeleton className="h-[125px]" />
+      <Skeleton className="h-[125px]" />
+      <Skeleton className="h-[125px]" />
+      <Skeleton className="h-[125px]" />
+    </div>
+  </div>
+);
 
 const ApplicantDashboard = () => {
   const isOnline = useOnlineStatus();
@@ -42,17 +56,19 @@ const ApplicantDashboard = () => {
           </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="dashboard" role="tabpanel" id="dashboard-tab">
-          <DashboardOverview />
-        </TabsContent>
+        <Suspense fallback={<TabLoading />}>
+          <TabsContent value="dashboard" role="tabpanel" id="dashboard-tab">
+            <DashboardOverview />
+          </TabsContent>
 
-        <TabsContent value="calendar" role="tabpanel" id="calendar-tab">
-          <CalendarSection />
-        </TabsContent>
+          <TabsContent value="calendar" role="tabpanel" id="calendar-tab">
+            <CalendarSection />
+          </TabsContent>
 
-        <TabsContent value="documents" role="tabpanel" id="documents-tab">
-          <DocumentsSection />
-        </TabsContent>
+          <TabsContent value="documents" role="tabpanel" id="documents-tab">
+            <DocumentsSection />
+          </TabsContent>
+        </Suspense>
       </Tabs>
     </DashboardLayout>
   );
