@@ -28,7 +28,7 @@ interface ProviderClientDetailsModalProps {
 }
 
 export function ProviderClientDetailsModal({ client }: ProviderClientDetailsModalProps) {
-  const [open, setOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
   const [memo, setMemo] = useState(client.memo || '');
   const { toast } = useToast();
 
@@ -65,11 +65,12 @@ export function ProviderClientDetailsModal({ client }: ProviderClientDetailsModa
     <>
       <Button 
         variant="outline" 
-        onClick={() => setOpen(true)}
+        onClick={() => setIsOpen(true)}
       >
         詳細
       </Button>
-      <Dialog open={open} onOpenChange={setOpen}>
+
+      <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogContent className="sm:max-w-[600px]">
           <DialogHeader>
             <DialogTitle>クライアント詳細</DialogTitle>
