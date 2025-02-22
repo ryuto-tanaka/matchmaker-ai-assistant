@@ -97,7 +97,7 @@ const Login = () => {
               <div className="space-y-4">
                 <Button 
                   type="button"
-                  className="w-full flex items-center justify-center gap-2"
+                  className="w-full flex items-center justify-center gap-2 hover:bg-primary/80 transition-colors duration-200"
                   onClick={() => handleLoginAsType(UserRole.APPLICANT)}
                   disabled={loading}
                 >
@@ -107,7 +107,7 @@ const Login = () => {
                 <Button 
                   type="button"
                   variant="secondary"
-                  className="w-full flex items-center justify-center gap-2"
+                  className="w-full flex items-center justify-center gap-2 hover:bg-secondary/70 transition-colors duration-200"
                   onClick={() => handleLoginAsType(UserRole.PROVIDER)}
                   disabled={loading}
                 >
@@ -117,7 +117,7 @@ const Login = () => {
                 <Button 
                   type="button"
                   variant="outline"
-                  className="w-full flex items-center justify-center gap-2"
+                  className="w-full flex items-center justify-center gap-2 hover:bg-accent/80 transition-colors duration-200"
                   onClick={() => handleLoginAsType(UserRole.EXPERT)}
                   disabled={loading}
                 >
