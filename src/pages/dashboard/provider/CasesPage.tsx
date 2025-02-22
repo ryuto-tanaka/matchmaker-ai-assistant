@@ -134,16 +134,12 @@ const CasesPage = () => {
 
         <CaseStats stats={stats} />
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2">
-            <CaseBoard 
-              filteredCases={filteredCases}
-              onStatusChange={handleStatusChange}
-            />
-          </div>
-          <div>
-            <CaseCalendar cases={cases} />
-          </div>
+        <div className="grid grid-cols-1 gap-6">
+          <CaseCalendar cases={cases} />
+          <CaseBoard 
+            filteredCases={filteredCases}
+            onStatusChange={handleStatusChange}
+          />
         </div>
       </div>
     </DashboardLayout>
