@@ -12,6 +12,29 @@ const monthlyData = [
   { month: '6月', revenue: 1200000, projects: 12 },
 ];
 
+const formatRevenue = (value: number) => {
+  return `${(value / 10000).toLocaleString()} 万円`;
+};
+
+const formatProjects = (value: number) => {
+  return `${value} 件`;
+};
+
+const CustomTooltip = ({ active, payload, label }: any) => {
+  if (!active || !payload) return null;
+
+  return (
+    <div className="bg-white p-3 border border-gray-200 rounded-lg shadow-lg">
+      <p className="font-medium text-sm mb-2">{label}</p>
+      {payload.map((item: any, index: number) => (
+        <p key={index} className="text-sm" style={{ color: item.color }}>
+          {item.name === '売上' ? formatRevenue(item.value) : formatProjects(item.value)}
+        </p>
+      ))}
+    </div>
+  );
+};
+
 export const MonthlyChart = () => {
   return (
     <Card>
@@ -31,10 +54,36 @@ export const MonthlyChart = () => {
               }}
             >
               <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="month" />
-              <YAxis yAxisId="left" />
-              <YAxis yAxisId="right" orientation="right" />
-              <Tooltip />
+              <XAxis 
+                dataKey="month" 
+                label={{ 
+                  value: '月', 
+                  position: 'insideBottomRight', 
+                  offset: -5 
+                }} 
+              />
+              <YAxis 
+                yAxisId="left"
+                tickFormatter={formatRevenue}
+                label={{ 
+                  value: '売上', 
+                  angle: -90, 
+                  position: 'insideLeft',
+                  style: { textAnchor: 'middle' }
+                }}
+              />
+              <YAxis 
+                yAxisId="right" 
+                orientation="right"
+                tickFormatter={formatProjects}
+                label={{ 
+                  value: '案件数', 
+                  angle: 90, 
+                  position: 'insideRight',
+                  style: { textAnchor: 'middle' }
+                }}
+              />
+              <Tooltip content={<CustomTooltip />} />
               <Line
                 yAxisId="left"
                 type="monotone"
