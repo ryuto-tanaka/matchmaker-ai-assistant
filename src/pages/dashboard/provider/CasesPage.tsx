@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import { FileText, Calendar, DollarSign, MessageSquare } from 'lucide-react';
@@ -134,12 +135,12 @@ const CasesPage = () => {
 
         <CaseStats stats={stats} />
 
-        <div className="grid grid-cols-1 gap-6">
-          <CaseCalendar cases={cases} />
+        <div className="space-y-6">
           <CaseBoard 
             filteredCases={filteredCases}
             onStatusChange={handleStatusChange}
           />
+          <CaseCalendar cases={cases} />
         </div>
       </div>
     </DashboardLayout>
