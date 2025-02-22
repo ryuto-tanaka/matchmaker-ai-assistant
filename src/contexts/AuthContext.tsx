@@ -5,7 +5,6 @@ import { toast } from '@/components/ui/use-toast';
 import { UserProfile } from '@/types/auth';
 import { UserRole } from '@/types/user';
 
-// モック用のUUID
 const MOCK_USER_ID = 'f47ac10b-58cc-4372-a567-0e02b2c3d479';
 
 type AuthContextType = {
@@ -26,37 +25,21 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [profile, setProfile] = useState<UserProfile | null>(null);
 
   const signIn = async (email: string, password: string) => {
-    setLoading(true);
-    try {
-      if (email && password) {
-        const mockUser = { id: MOCK_USER_ID, email, role: UserRole.APPLICANT };
-        setUser(mockUser);
-        setProfile({
-          id: mockUser.id,
-          company_name: null,
-          contact_name: null,
-          phone: null,
-          address: null,
-          primary_type: 'applicant'
-        });
-        toast({
-          title: "ログイン成功",
-          description: "ログインに成功しました",
-        });
-        navigate('/dashboard/applicant');
-      } else {
-        throw new Error('Invalid credentials');
-      }
-    } catch (error: any) {
-      toast({
-        title: "ログインエラー",
-        description: "ログインに失敗しました",
-        variant: "destructive",
-      });
-      throw error;
-    } finally {
-      setLoading(false);
+    if (!email || !password) {
+      throw new Error('メールアドレスとパスワードを入力してください');
     }
+
+    // For demo purposes, accept any non-empty email/password
+    const mockUser = { id: MOCK_USER_ID, email, role: UserRole.APPLICANT };
+    setUser(mockUser);
+    setProfile({
+      id: mockUser.id,
+      company_name: null,
+      contact_name: null,
+      phone: null,
+      address: null,
+      primary_type: 'applicant'
+    });
   };
 
   const signUp = async (email: string, password: string) => {

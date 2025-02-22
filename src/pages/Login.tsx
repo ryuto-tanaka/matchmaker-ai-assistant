@@ -8,6 +8,7 @@ import { ArrowLeft, User, Building2, GraduationCap } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthContext } from '@/contexts/AuthContext';
 import { UserRole } from '@/types/user';
+import { toast } from "@/components/ui/use-toast";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -16,11 +17,35 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
 
+  const validateForm = () => {
+    if (!email || !password) {
+      toast({
+        title: "入力エラー",
+        description: "メールアドレスとパスワードを入力してください",
+        variant: "destructive",
+      });
+      return false;
+    }
+    return true;
+  };
+
   const handleLoginAsType = async (userType: UserRole) => {
+    if (!validateForm()) return;
+    
     setLoading(true);
     try {
       await signIn(email, password);
       navigate(`/dashboard/${userType}`);
+      toast({
+        title: "ログイン成功",
+        description: "ダッシュボードに移動します",
+      });
+    } catch (error) {
+      toast({
+        title: "ログインエラー",
+        description: "認証に失敗しました。入力内容を確認してください。",
+        variant: "destructive",
+      });
     } finally {
       setLoading(false);
     }
