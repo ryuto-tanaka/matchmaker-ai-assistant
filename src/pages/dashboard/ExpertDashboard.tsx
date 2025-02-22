@@ -3,13 +3,14 @@ import React from 'react';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { FileText, Users, MessageSquare, TrendingUp } from 'lucide-react';
+import { ExpertPerformanceChart } from '@/components/dashboard/expert/ExpertPerformanceChart';
 
 const ExpertDashboard = () => {
   const stats = [
-    { icon: FileText, label: '担当案件数', value: '8件' },
-    { icon: Users, label: '相談対応数', value: '15件' },
-    { icon: MessageSquare, label: '未回答の質問', value: '3件' },
-    { icon: TrendingUp, label: '評価スコア', value: '4.8' },
+    { icon: FileText, label: '担当案件数', value: '8件', description: '現在進行中の案件数' },
+    { icon: Users, label: '相談対応数', value: '15件', description: '今月の相談対応総数' },
+    { icon: MessageSquare, label: '未回答の質問', value: '3件', description: '回答待ちの質問件数' },
+    { icon: TrendingUp, label: '評価スコア', value: '4.8', description: 'クライアントからの平均評価' },
   ];
 
   return (
@@ -18,7 +19,7 @@ const ExpertDashboard = () => {
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         {stats.map((stat, index) => (
-          <Card key={index}>
+          <Card key={index} className="hover:shadow-md transition-shadow">
             <CardContent className="p-6">
               <div className="flex items-center space-x-4">
                 <div className="p-2 bg-primary/10 rounded-lg">
@@ -27,6 +28,7 @@ const ExpertDashboard = () => {
                 <div>
                   <p className="text-sm text-gray-500">{stat.label}</p>
                   <h3 className="text-2xl font-bold">{stat.value}</h3>
+                  <p className="text-xs text-gray-500 mt-1">{stat.description}</p>
                 </div>
               </div>
             </CardContent>
@@ -42,7 +44,7 @@ const ExpertDashboard = () => {
           <CardContent>
             <div className="space-y-4">
               {[1, 2, 3].map((_, index) => (
-                <div key={index} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                <div key={index} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
                   <div>
                     <p className="font-medium">補助金申請に関する相談</p>
                     <p className="text-sm text-gray-500">クライアント: 株式会社XYZ</p>
@@ -63,7 +65,7 @@ const ExpertDashboard = () => {
           <CardContent>
             <div className="space-y-4">
               {[1, 2, 3].map((_, index) => (
-                <div key={index} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                <div key={index} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
                   <div>
                     <p className="font-medium">オンライン相談</p>
                     <p className="text-sm text-gray-500">
@@ -78,6 +80,10 @@ const ExpertDashboard = () => {
             </div>
           </CardContent>
         </Card>
+      </div>
+
+      <div className="mt-8">
+        <ExpertPerformanceChart />
       </div>
     </DashboardLayout>
   );
