@@ -23,15 +23,23 @@ const DocumentsSection = () => {
         throw error;
       }
 
-      // Create download link and trigger download
-      const url = window.URL.createObjectURL(data);
-      const link = window.document.createElement('a');
+      // Create a blob URL directly
+      const blob = new Blob([data]);
+      const url = URL.createObjectURL(blob);
+      
+      // Create and click a hidden download link
+      const link = document.createElement('a');
+      link.style.display = 'none';
       link.href = url;
       link.download = doc.title;
-      window.document.body.appendChild(link);
+      document.body.appendChild(link);
       link.click();
-      window.URL.revokeObjectURL(url);
-      window.document.body.removeChild(link);
+      
+      // Clean up
+      setTimeout(() => {
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+      }, 100);
 
       toast.success("ダウンロードを開始しました");
     } catch (error) {
