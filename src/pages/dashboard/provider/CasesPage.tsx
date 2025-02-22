@@ -1,26 +1,11 @@
 import React, { useState } from 'react';
 import DashboardLayout from '@/components/layout/DashboardLayout';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { FileText, Calendar, DollarSign, MessageSquare, Bell } from 'lucide-react';
-import { CaseDetailsModal } from '@/components/modals/CaseDetailsModal';
+import { FileText, Calendar, DollarSign, MessageSquare } from 'lucide-react';
 import { Case } from '@/types/client';
 import { CaseFilters } from '@/components/provider/cases/CaseFilters';
-import {
-  DndContext,
-  closestCenter,
-  KeyboardSensor,
-  PointerSensor,
-  useSensor,
-  useSensors,
-  DragEndEvent,
-} from '@dnd-kit/core';
-import {
-  SortableContext,
-  sortableKeyboardCoordinates,
-  verticalListSortingStrategy,
-} from '@dnd-kit/sortable';
-import { Calendar as CalendarComponent } from '@/components/ui/calendar';
-import type { CalendarEvent } from '@/components/ui/calendar';
+import { CaseStats } from '@/components/provider/cases/CaseStats';
+import { CaseBoard } from '@/components/provider/cases/CaseBoard';
+import { CaseCalendar } from '@/components/provider/cases/CaseCalendar';
 
 const CasesPage = () => {
   const [statusFilter, setStatusFilter] = useState<string>('all');
@@ -105,13 +90,6 @@ const CasesPage = () => {
     },
   ]);
 
-  const sensors = useSensors(
-    useSensor(PointerSensor),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates,
-    })
-  );
-
   const filteredCases = cases.filter(case_ => {
     const matchesStatus = statusFilter === 'all' || case_.status === statusFilter;
     const matchesIndustry = industryFilter === 'all' || case_.industry === industryFilter;
@@ -119,32 +97,14 @@ const CasesPage = () => {
     return matchesStatus && matchesIndustry && matchesDeadline;
   });
 
-  const handleDragEnd = (event: DragEndEvent) => {
-    const { active, over } = event;
-    if (active.id !== over?.id) {
-      const updatedCases = [...cases];
-      const caseIndex = updatedCases.findIndex(c => c.id === active.id);
-      if (caseIndex !== -1) {
-        updatedCases[caseIndex].status = over?.id as string;
-        setCases(updatedCases);
-      }
+  const handleStatusChange = (caseId: number, newStatus: string) => {
+    const updatedCases = [...cases];
+    const caseIndex = updatedCases.findIndex(c => c.id === caseId);
+    if (caseIndex !== -1) {
+      updatedCases[caseIndex].status = newStatus;
+      setCases(updatedCases);
     }
   };
-
-  const calendarEvents: CalendarEvent[] = cases.flatMap(case_ => [
-    {
-      date: new Date(case_.deadline),
-      title: `期限: ${case_.client}`,
-      type: 'deadline',
-      description: case_.description
-    },
-    ...(case_.reminder ? [{
-      date: new Date(case_.reminder),
-      title: `リマインダー: ${case_.client}`,
-      type: 'reminder',
-      description: case_.description
-    }] : [])
-  ]);
 
   const stats = [
     { icon: FileText, label: '進行中の案件', value: '4件' },
@@ -172,91 +132,17 @@ const CasesPage = () => {
           onDeadlineFilterChange={setDeadlineFilter}
         />
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-          {stats.map((stat, index) => (
-            <Card key={index}>
-              <CardContent className="p-4">
-                <div className="flex items-center space-x-4">
-                  <div className="p-2 bg-primary/10 rounded-lg">
-                    <stat.icon className="h-5 w-5 text-primary" />
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-500">{stat.label}</p>
-                    <h3 className="text-xl font-bold">{stat.value}</h3>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+        <CaseStats stats={stats} />
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2">
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">案件管理</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <DndContext
-                  sensors={sensors}
-                  collisionDetection={closestCenter}
-                  onDragEnd={handleDragEnd}
-                >
-                  <div className="grid grid-cols-3 gap-4">
-                    {['見積依頼中', '商談中', '受注確定'].map(status => (
-                      <div key={status} className="space-y-4">
-                        <h3 className="font-semibold text-center p-2 bg-gray-100 rounded-lg">
-                          {status}
-                        </h3>
-                        <SortableContext
-                          items={filteredCases.filter(c => c.status === status).map(c => c.id)}
-                          strategy={verticalListSortingStrategy}
-                        >
-                          {filteredCases
-                            .filter(case_ => case_.status === status)
-                            .map((case_) => (
-                              <div
-                                key={case_.id}
-                                className="p-4 bg-white rounded-lg border hover:shadow-md transition-shadow"
-                              >
-                                <div className="flex justify-between items-start">
-                                  <div>
-                                    <h4 className="font-semibold">{case_.client}</h4>
-                                    <p className="text-sm text-gray-500">{case_.type}</p>
-                                    {case_.reminder && (
-                                      <div className="flex items-center mt-2 text-yellow-600">
-                                        <Bell className="h-4 w-4 mr-1" />
-                                        <span className="text-sm">
-                                          リマインダー: {case_.reminder}
-                                        </span>
-                                      </div>
-                                    )}
-                                  </div>
-                                  <CaseDetailsModal caseData={case_} />
-                                </div>
-                              </div>
-                            ))}
-                        </SortableContext>
-                      </div>
-                    ))}
-                  </div>
-                </DndContext>
-              </CardContent>
-            </Card>
+            <CaseBoard 
+              filteredCases={filteredCases}
+              onStatusChange={handleStatusChange}
+            />
           </div>
-
           <div>
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">スケジュール</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <CalendarComponent
-                  className="rounded-md border"
-                  events={calendarEvents}
-                />
-              </CardContent>
-            </Card>
+            <CaseCalendar cases={cases} />
           </div>
         </div>
       </div>
