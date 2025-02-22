@@ -39,6 +39,7 @@ const Login = () => {
       toast({
         title: "ログイン成功",
         description: "ダッシュボードに移動します",
+        duration: 3000, // 3秒後に自動的に消えるように設定
       });
     } catch (error) {
       toast({
