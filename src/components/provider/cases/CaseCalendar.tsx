@@ -13,13 +13,13 @@ export const CaseCalendar = ({ cases }: CaseCalendarProps) => {
     {
       date: new Date(case_.deadline),
       title: `期限: ${case_.client}`,
-      type: 'deadline',
+      type: 'deadline' as const,
       description: case_.description
     },
     ...(case_.reminder ? [{
       date: new Date(case_.reminder),
       title: `リマインダー: ${case_.client}`,
-      type: 'reminder',
+      type: 'reminder' as const,
       description: case_.description
     }] : [])
   ]);
