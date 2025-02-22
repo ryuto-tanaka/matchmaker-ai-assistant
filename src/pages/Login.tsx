@@ -4,9 +4,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardHeader, CardContent, CardFooter } from "@/components/ui/card";
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, User, Building2, GraduationCap } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthContext } from '@/contexts/AuthContext';
+import { UserRole } from '@/types/user';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -15,11 +16,11 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleLoginAsType = async (userType: UserRole) => {
     setLoading(true);
     try {
       await signIn(email, password);
+      navigate(`/dashboard/${userType}`);
     } finally {
       setLoading(false);
     }
@@ -45,7 +46,7 @@ const Login = () => {
             </p>
           </CardHeader>
           <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-6">
+            <form className="space-y-6">
               <div className="space-y-2">
                 <Label htmlFor="email">メールアドレス</Label>
                 <Input
@@ -68,9 +69,37 @@ const Login = () => {
                   required
                 />
               </div>
-              <Button type="submit" className="w-full" disabled={loading}>
-                {loading ? 'ログイン中...' : 'ログイン'}
-              </Button>
+              <div className="space-y-4">
+                <Button 
+                  type="button"
+                  className="w-full flex items-center justify-center gap-2"
+                  onClick={() => handleLoginAsType(UserRole.APPLICANT)}
+                  disabled={loading}
+                >
+                  <User className="h-4 w-4" />
+                  申請者としてログイン
+                </Button>
+                <Button 
+                  type="button"
+                  variant="secondary"
+                  className="w-full flex items-center justify-center gap-2"
+                  onClick={() => handleLoginAsType(UserRole.PROVIDER)}
+                  disabled={loading}
+                >
+                  <Building2 className="h-4 w-4" />
+                  サービス提供者としてログイン
+                </Button>
+                <Button 
+                  type="button"
+                  variant="outline"
+                  className="w-full flex items-center justify-center gap-2"
+                  onClick={() => handleLoginAsType(UserRole.EXPERT)}
+                  disabled={loading}
+                >
+                  <GraduationCap className="h-4 w-4" />
+                  専門家としてログイン
+                </Button>
+              </div>
             </form>
           </CardContent>
           <CardFooter className="flex flex-col space-y-4">
