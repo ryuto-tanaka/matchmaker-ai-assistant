@@ -5,6 +5,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
+  DialogDescription,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Building, FileText, Users, Phone } from 'lucide-react';
@@ -15,7 +16,7 @@ import { useToast } from "@/components/ui/use-toast";
 
 interface ProviderClientDetailsModalProps {
   client: {
-    id: string; // Changed from number to string to match Supabase types
+    id: string;
     name: string;
     industry: string;
     activeProjects: number;
@@ -28,6 +29,7 @@ interface ProviderClientDetailsModalProps {
 }
 
 export function ProviderClientDetailsModal({ client }: ProviderClientDetailsModalProps) {
+  const [open, setOpen] = useState(false);
   const [memo, setMemo] = useState(client.memo || '');
   const { toast } = useToast();
 
@@ -40,8 +42,7 @@ export function ProviderClientDetailsModal({ client }: ProviderClientDetailsModa
           contact_name: client.contactPerson,
           phone: client.phone,
           company_name: client.name,
-          // We'll store the memo in an existing field since we can't add new columns
-          address: value // Using address field to store memo temporarily
+          address: value
         })
         .eq('id', client.id);
 
@@ -62,13 +63,16 @@ export function ProviderClientDetailsModal({ client }: ProviderClientDetailsModa
   };
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button variant="outline">詳細</Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[600px]">
         <DialogHeader>
           <DialogTitle>クライアント詳細</DialogTitle>
+          <DialogDescription>
+            クライアントの詳細情報を確認・編集できます。
+          </DialogDescription>
         </DialogHeader>
         <div className="space-y-6">
           <div className="flex items-center space-x-4">
