@@ -29,7 +29,6 @@ interface ProviderClientDetailsModalProps {
 }
 
 export function ProviderClientDetailsModal({ client }: ProviderClientDetailsModalProps) {
-  const [isOpen, setIsOpen] = useState(false);
   const [memo, setMemo] = useState(client.memo || '');
   const { toast } = useToast();
 
@@ -63,7 +62,7 @@ export function ProviderClientDetailsModal({ client }: ProviderClientDetailsModa
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+    <Dialog>
       <DialogTrigger asChild>
         <Button variant="outline">詳細</Button>
       </DialogTrigger>
