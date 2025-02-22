@@ -1,15 +1,14 @@
 
+import React, { useState } from 'react';
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
   DialogDescription,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Building, FileText, Users, Phone } from 'lucide-react';
-import { useState } from 'react';
 import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
@@ -29,6 +28,7 @@ interface ProviderClientDetailsModalProps {
 }
 
 export function ProviderClientDetailsModal({ client }: ProviderClientDetailsModalProps) {
+  const [isOpen, setIsOpen] = useState(false);
   const [memo, setMemo] = useState(client.memo || '');
   const { toast } = useToast();
 
@@ -62,10 +62,8 @@ export function ProviderClientDetailsModal({ client }: ProviderClientDetailsModa
   };
 
   return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <Button variant="outline">詳細</Button>
-      </DialogTrigger>
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      <Button variant="outline" onClick={() => setIsOpen(true)}>詳細</Button>
       <DialogContent className="sm:max-w-[600px]">
         <DialogHeader>
           <DialogTitle>クライアント詳細</DialogTitle>
