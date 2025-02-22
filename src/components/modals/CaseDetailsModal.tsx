@@ -7,21 +7,23 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { FileText, Calendar, DollarSign, Building, Users } from 'lucide-react';
+import { FileText, Calendar, DollarSign, Building, Bell } from 'lucide-react';
+import { Input } from "@/components/ui/input";
+import { useState } from "react";
+import { Case } from "@/types/client";
 
 interface CaseDetailsModalProps {
-  caseData: {
-    id: number;
-    client: string;
-    type: string;
-    status: string;
-    amount: string;
-    deadline: string;
-    description?: string;
-  };
+  caseData: Case;
 }
 
 export function CaseDetailsModal({ caseData }: CaseDetailsModalProps) {
+  const [reminder, setReminder] = useState(caseData.reminder || '');
+
+  const handleReminderChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setReminder(event.target.value);
+    // Here you would typically update the case data in your backend
+  };
+
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -39,6 +41,9 @@ export function CaseDetailsModal({ caseData }: CaseDetailsModalProps) {
             <div>
               <h3 className="font-semibold text-lg">{caseData.client}</h3>
               <p className="text-sm text-gray-500">{caseData.type}</p>
+              {caseData.industry && (
+                <p className="text-sm text-gray-500">業種: {caseData.industry}</p>
+              )}
             </div>
           </div>
 
@@ -60,16 +65,49 @@ export function CaseDetailsModal({ caseData }: CaseDetailsModalProps) {
           </div>
 
           <div>
+            <h4 className="font-semibold mb-2">リマインダー設定</h4>
+            <div className="flex items-center space-x-2">
+              <Bell className="h-4 w-4 text-gray-400" />
+              <Input
+                type="date"
+                value={reminder}
+                onChange={handleReminderChange}
+                className="flex-1"
+              />
+            </div>
+          </div>
+
+          <div>
             <h4 className="font-semibold mb-2">申請状況</h4>
             <div className="p-3 bg-blue-50 rounded-lg">
               <span className="text-blue-700">{caseData.status}</span>
             </div>
           </div>
 
-          {caseData.description && (
+          {caseData.timeline && (
             <div>
-              <h4 className="font-semibold mb-2">案件詳細</h4>
-              <p className="text-gray-600">{caseData.description}</p>
+              <h4 className="font-semibold mb-2">タイムライン</h4>
+              <div className="space-y-4">
+                {caseData.timeline.map((event) => (
+                  <div
+                    key={event.id}
+                    className="flex items-start space-x-3 p-3 bg-gray-50 rounded-lg"
+                  >
+                    <div className={`p-2 rounded-full ${
+                      event.type === 'meeting' ? 'bg-blue-100' :
+                      event.type === 'document' ? 'bg-green-100' :
+                      event.type === 'status_change' ? 'bg-yellow-100' :
+                      'bg-gray-100'
+                    }`}>
+                      <FileText className="h-4 w-4" />
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-500">{event.date}</p>
+                      <p className="font-medium">{event.description}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           )}
         </div>

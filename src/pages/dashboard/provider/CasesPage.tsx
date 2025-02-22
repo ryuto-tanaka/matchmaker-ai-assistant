@@ -1,23 +1,33 @@
-
 import React, { useState } from 'react';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { FileText, Calendar, DollarSign, MessageSquare } from 'lucide-react';
+import { FileText, Calendar, DollarSign, MessageSquare, Bell } from 'lucide-react';
 import { CaseDetailsModal } from '@/components/modals/CaseDetailsModal';
+import { Case } from '@/types/client';
+import { CaseFilters } from '@/components/provider/cases/CaseFilters';
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from '@dnd-kit/core';
+import {
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
+import { Calendar as CalendarComponent } from '@/components/ui/calendar';
+import type { CalendarEvent } from '@/components/ui/calendar';
 
 const CasesPage = () => {
   const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [industryFilter, setIndustryFilter] = useState<string>('all');
   const [deadlineFilter, setDeadlineFilter] = useState<string>('');
-
-  const cases = [
+  
+  const [cases, setCases] = useState<Case[]>([
     {
       id: 1,
       client: '株式会社ABC',
@@ -26,6 +36,22 @@ const CasesPage = () => {
       amount: '450万円',
       deadline: '2024/03/31',
       description: 'クラウドシステムの開発案件',
+      industry: 'IT・通信',
+      reminder: '2024/03/20',
+      timeline: [
+        {
+          id: 1,
+          date: '2024/03/15',
+          type: 'meeting',
+          description: '初回ヒアリング実施'
+        },
+        {
+          id: 2,
+          date: '2024/03/16',
+          type: 'document',
+          description: '見積書送付'
+        }
+      ]
     },
     {
       id: 2,
@@ -35,6 +61,22 @@ const CasesPage = () => {
       amount: '120万円',
       deadline: '2024/04/15',
       description: 'デジタル戦略策定支援',
+      industry: '製造業',
+      reminder: '2024/04/10',
+      timeline: [
+        {
+          id: 3,
+          date: '2024/04/01',
+          type: 'meeting',
+          description: '2回目の打ち合わせ'
+        },
+        {
+          id: 4,
+          date: '2024/04/05',
+          type: 'document',
+          description: '提案書提出'
+        }
+      ]
     },
     {
       id: 3,
@@ -44,14 +86,65 @@ const CasesPage = () => {
       amount: '80万円',
       deadline: '2024/05/01',
       description: '基幹システムの保守運用サービス',
+      industry: 'サービス業',
+      reminder: '2024/04/25',
+      timeline: [
+        {
+          id: 5,
+          date: '2024/04/20',
+          type: 'meeting',
+          description: '契約内容の最終確認'
+        },
+        {
+          id: 6,
+          date: '2024/04/28',
+          type: 'document',
+          description: '契約書締結'
+        }
+      ]
     },
-  ];
+  ]);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
 
   const filteredCases = cases.filter(case_ => {
     const matchesStatus = statusFilter === 'all' || case_.status === statusFilter;
+    const matchesIndustry = industryFilter === 'all' || case_.industry === industryFilter;
     const matchesDeadline = !deadlineFilter || case_.deadline === deadlineFilter;
-    return matchesStatus && matchesDeadline;
+    return matchesStatus && matchesIndustry && matchesDeadline;
   });
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (active.id !== over?.id) {
+      const updatedCases = [...cases];
+      const caseIndex = updatedCases.findIndex(c => c.id === active.id);
+      if (caseIndex !== -1) {
+        updatedCases[caseIndex].status = over?.id as string;
+        setCases(updatedCases);
+      }
+    }
+  };
+
+  const calendarEvents: CalendarEvent[] = cases.flatMap(case_ => [
+    {
+      date: new Date(case_.deadline),
+      title: `期限: ${case_.client}`,
+      type: 'deadline',
+      description: case_.description
+    },
+    ...(case_.reminder ? [{
+      date: new Date(case_.reminder),
+      title: `リマインダー: ${case_.client}`,
+      type: 'reminder',
+      description: case_.description
+    }] : [])
+  ]);
 
   const stats = [
     { icon: FileText, label: '進行中の案件', value: '4件' },
@@ -70,29 +163,14 @@ const CasesPage = () => {
           </div>
         </div>
 
-        <div className="flex gap-4 mb-6">
-          <div className="w-48">
-            <Select onValueChange={setStatusFilter} defaultValue="all">
-              <SelectTrigger>
-                <SelectValue placeholder="ステータス" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">すべて</SelectItem>
-                <SelectItem value="見積依頼中">見積依頼中</SelectItem>
-                <SelectItem value="商談中">商談中</SelectItem>
-                <SelectItem value="受注確定">受注確定</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="w-48">
-            <Input
-              type="date"
-              value={deadlineFilter}
-              onChange={(e) => setDeadlineFilter(e.target.value)}
-              className="w-full"
-            />
-          </div>
-        </div>
+        <CaseFilters
+          statusFilter={statusFilter}
+          industryFilter={industryFilter}
+          deadlineFilter={deadlineFilter}
+          onStatusFilterChange={setStatusFilter}
+          onIndustryFilterChange={setIndustryFilter}
+          onDeadlineFilterChange={setDeadlineFilter}
+        />
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
           {stats.map((stat, index) => (
@@ -112,53 +190,75 @@ const CasesPage = () => {
           ))}
         </div>
 
-        <Card className="mb-6">
-          <CardHeader>
-            <CardTitle className="text-lg">進行中の案件</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {filteredCases.map((case_) => (
-                <div
-                  key={case_.id}
-                  className="p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2">
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">案件管理</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <DndContext
+                  sensors={sensors}
+                  collisionDetection={closestCenter}
+                  onDragEnd={handleDragEnd}
                 >
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-4">
-                      <div className="p-2 bg-primary/10 rounded-lg">
-                        <FileText className="h-5 w-5 text-primary" />
+                  <div className="grid grid-cols-3 gap-4">
+                    {['見積依頼中', '商談中', '受注確定'].map(status => (
+                      <div key={status} className="space-y-4">
+                        <h3 className="font-semibold text-center p-2 bg-gray-100 rounded-lg">
+                          {status}
+                        </h3>
+                        <SortableContext
+                          items={filteredCases.filter(c => c.status === status).map(c => c.id)}
+                          strategy={verticalListSortingStrategy}
+                        >
+                          {filteredCases
+                            .filter(case_ => case_.status === status)
+                            .map((case_) => (
+                              <div
+                                key={case_.id}
+                                className="p-4 bg-white rounded-lg border hover:shadow-md transition-shadow"
+                              >
+                                <div className="flex justify-between items-start">
+                                  <div>
+                                    <h4 className="font-semibold">{case_.client}</h4>
+                                    <p className="text-sm text-gray-500">{case_.type}</p>
+                                    {case_.reminder && (
+                                      <div className="flex items-center mt-2 text-yellow-600">
+                                        <Bell className="h-4 w-4 mr-1" />
+                                        <span className="text-sm">
+                                          リマインダー: {case_.reminder}
+                                        </span>
+                                      </div>
+                                    )}
+                                  </div>
+                                  <CaseDetailsModal caseData={case_} />
+                                </div>
+                              </div>
+                            ))}
+                        </SortableContext>
                       </div>
-                      <div>
-                        <h3 className="font-semibold">{case_.client}</h3>
-                        <p className="text-sm text-gray-500">{case_.type}</p>
-                        <div className="flex items-center mt-2 space-x-4">
-                          <div className="flex items-center">
-                            <DollarSign className="h-4 w-4 text-gray-400 mr-1" />
-                            <span className="text-sm">見積金額: {case_.amount}</span>
-                          </div>
-                          <div className="flex items-center">
-                            <Calendar className="h-4 w-4 text-gray-400 mr-1" />
-                            <span className="text-sm">納期: {case_.deadline}</span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <span className={`px-3 py-1 text-sm rounded-full ${
-                        case_.status === '商談中' ? 'bg-yellow-100 text-yellow-700' :
-                        case_.status === '受注確定' ? 'bg-green-100 text-green-700' :
-                        'bg-blue-100 text-blue-700'
-                      }`}>
-                        {case_.status}
-                      </span>
-                      <CaseDetailsModal caseData={case_} />
-                    </div>
+                    ))}
                   </div>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+                </DndContext>
+              </CardContent>
+            </Card>
+          </div>
+
+          <div>
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">スケジュール</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <CalendarComponent
+                  className="rounded-md border"
+                  events={calendarEvents}
+                />
+              </CardContent>
+            </Card>
+          </div>
+        </div>
       </div>
     </DashboardLayout>
   );
