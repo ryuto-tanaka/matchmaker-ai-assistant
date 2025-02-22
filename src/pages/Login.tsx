@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -97,7 +96,7 @@ const Login = () => {
               <div className="space-y-4">
                 <Button 
                   type="button"
-                  className="w-full flex items-center justify-center gap-2 hover:bg-primary/80 transition-colors duration-200"
+                  className="w-full flex items-center justify-center gap-2 bg-primary/90 hover:bg-primary transition-colors"
                   onClick={() => handleLoginAsType(UserRole.APPLICANT)}
                   disabled={loading}
                 >
@@ -106,8 +105,7 @@ const Login = () => {
                 </Button>
                 <Button 
                   type="button"
-                  variant="secondary"
-                  className="w-full flex items-center justify-center gap-2 hover:bg-secondary/70 transition-colors duration-200"
+                  className="w-full flex items-center justify-center gap-2 bg-primary/90 hover:bg-primary transition-colors"
                   onClick={() => handleLoginAsType(UserRole.PROVIDER)}
                   disabled={loading}
                 >
@@ -116,8 +114,7 @@ const Login = () => {
                 </Button>
                 <Button 
                   type="button"
-                  variant="outline"
-                  className="w-full flex items-center justify-center gap-2 hover:bg-accent/80 transition-colors duration-200"
+                  className="w-full flex items-center justify-center gap-2 bg-primary/90 hover:bg-primary transition-colors"
                   onClick={() => handleLoginAsType(UserRole.EXPERT)}
                   disabled={loading}
                 >
