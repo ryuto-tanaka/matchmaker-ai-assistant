@@ -6,11 +6,15 @@ import { DashboardFilters } from '@/components/dashboard/provider/DashboardFilte
 import { RecentProjectsList } from '@/components/dashboard/provider/RecentProjectsList';
 import { InquiriesList } from '@/components/dashboard/provider/InquiriesList';
 import { MonthlyChart } from '@/components/dashboard/provider/MonthlyChart';
+import { useOnlineStatus } from '@/hooks/useOnlineStatus';
+import { Badge } from "@/components/ui/badge";
+import { Wifi, WifiOff } from 'lucide-react';
 
 const ProviderDashboard = () => {
   const [openDialogs, setOpenDialogs] = useState<{ [key: number]: boolean }>({});
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [dateFilter, setDateFilter] = useState<string>('');
+  const isOnline = useOnlineStatus();
 
   const handleOpenChange = (index: number, open: boolean) => {
     setOpenDialogs(prev => ({ ...prev, [index]: open }));
@@ -18,7 +22,17 @@ const ProviderDashboard = () => {
 
   return (
     <DashboardLayout userType="provider" userName="株式会社〇〇" secondaryTypes={['expert']}>
-      <h1 className="text-2xl font-bold mb-6">サービス提供者ダッシュボード</h1>
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-2xl font-bold">サービス提供者ダッシュボード</h1>
+        <Badge 
+          variant={isOnline ? "default" : "destructive"}
+          className="flex items-center gap-2"
+          aria-live="polite"
+        >
+          {isOnline ? <Wifi className="h-4 w-4" /> : <WifiOff className="h-4 w-4" />}
+          {isOnline ? "オンライン" : "オフライン"}
+        </Badge>
+      </div>
       
       <DashboardStats 
         openDialogs={openDialogs}
