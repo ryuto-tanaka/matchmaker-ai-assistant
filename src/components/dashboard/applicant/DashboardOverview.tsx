@@ -1,13 +1,21 @@
-
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { FileText, Users, Clock, CheckCircle, ChevronDown, Sparkles } from 'lucide-react';
+import { 
+  FileText, 
+  Users, 
+  Clock, 
+  CheckCircle, 
+  ChevronDown, 
+  Sparkles,
+  AlertCircle
+} from 'lucide-react';
 import { useToast } from "@/components/ui/use-toast";
 import { BusinessPlanSurveyModal } from '@/components/modals/BusinessPlanSurveyModal';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Progress } from "@/components/ui/progress";
+import { cn } from "@/lib/utils";
 
 const DashboardOverview = () => {
   const navigate = useNavigate();
@@ -19,53 +27,6 @@ const DashboardOverview = () => {
   const validRoutes = [
     '/dashboard/messages/1',
     '/dashboard/messages/2'
-  ];
-
-  const stats = [
-    { 
-      icon: FileText, 
-      label: '申請中の補助金', 
-      value: '3件',
-      color: 'bg-blue-50',
-      iconColor: 'text-blue-600',
-      details: [
-        { text: '小規模事業者持続化補助金', path: '/dashboard/applicant/applications/1' },
-        { text: 'IT導入補助金', path: '/dashboard/applicant/applications/2' },
-        { text: '事業再構築補助金', path: '/dashboard/applicant/applications/3' }
-      ]
-    },
-    { 
-      icon: Users, 
-      label: '相談中の専門家', 
-      value: '2名',
-      color: 'bg-purple-50',
-      iconColor: 'text-purple-600',
-      details: [
-        { text: '山田太郎（中小企業診断士）', path: '/dashboard/messages/1' },
-        { text: '佐藤花子（税理士）', path: '/dashboard/messages/2' }
-      ]
-    },
-    { 
-      icon: Clock, 
-      label: '審査待ち', 
-      value: '1件',
-      color: 'bg-amber-50',
-      iconColor: 'text-amber-600',
-      details: [
-        { text: 'ものづくり補助金（一次審査中）', path: '/dashboard/applicant/applications/4' }
-      ]
-    },
-    { 
-      icon: CheckCircle, 
-      label: '承認済み', 
-      value: '2件',
-      color: 'bg-green-50',
-      iconColor: 'text-green-600',
-      details: [
-        { text: '小規模事業者持続化補助金（50万円）', path: '/dashboard/applicant/applications/5' },
-        { text: 'IT導入補助金（70万円）', path: '/dashboard/applicant/applications/6' }
-      ]
-    },
   ];
 
   const handleAIBusinessPlanClick = () => {
@@ -105,6 +66,82 @@ const DashboardOverview = () => {
   };
 
   const isValidRoute = (path: string) => validRoutes.includes(path);
+
+  const stats = [
+    { 
+      icon: FileText, 
+      label: '申請中の補助金', 
+      value: '3件',
+      color: 'bg-blue-50',
+      iconColor: 'text-blue-600',
+      progress: 75, // 進捗率
+      details: [
+        { 
+          text: '小規模事業者持続化補助金', 
+          path: '/dashboard/applicant/applications/1',
+          progress: 80,
+          dueDate: '2024-03-31',
+          status: '書類確認中'
+        },
+        { 
+          text: 'IT導入補助金', 
+          path: '/dashboard/applicant/applications/2',
+          progress: 60,
+          dueDate: '2024-04-15',
+          status: '申請書作成中',
+          urgent: true
+        },
+        { 
+          text: '事業再構築補助金', 
+          path: '/dashboard/applicant/applications/3',
+          progress: 30,
+          dueDate: '2024-05-30',
+          status: '準備中'
+        }
+      ]
+    },
+    { 
+      icon: Users, 
+      label: '相談中の専門家', 
+      value: '2名',
+      color: 'bg-purple-50',
+      iconColor: 'text-purple-600',
+      details: [
+        { text: '山田太郎（中小企業診断士）', path: '/dashboard/messages/1' },
+        { text: '佐藤花子（税理士）', path: '/dashboard/messages/2' }
+      ]
+    },
+    { 
+      icon: Clock, 
+      label: '審査待ち', 
+      value: '1件',
+      color: 'bg-amber-50',
+      iconColor: 'text-amber-600',
+      details: [
+        { text: 'ものづくり補助金（一次審査中）', path: '/dashboard/applicant/applications/4' }
+      ]
+    },
+    { 
+      icon: CheckCircle, 
+      label: '承認済み', 
+      value: '2件',
+      color: 'bg-green-50',
+      iconColor: 'text-green-600',
+      details: [
+        { text: '小規模事業者持続化補助金（50万円）', path: '/dashboard/applicant/applications/5' },
+        { text: 'IT導入補助金（70万円）', path: '/dashboard/applicant/applications/6' }
+      ]
+    },
+  ];
+
+  // 締切日までの残り日数を計算
+  const getDaysUntil = (dateString: string) => {
+    const today = new Date();
+    const dueDate = new Date(dateString);
+    const diffTime = dueDate.getTime() - today.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays;
+  };
 
   return (
     <div className="space-y-6">
@@ -168,23 +205,60 @@ const DashboardOverview = () => {
                       }`}
                     />
                   </div>
+                  {stat.progress !== undefined && (
+                    <div className="mt-4">
+                      <Progress value={stat.progress} className="h-2" />
+                      <p className="text-xs text-right mt-1 text-gray-500">
+                        全体の進捗: {stat.progress}%
+                      </p>
+                    </div>
+                  )}
                 </CardContent>
               </CollapsibleTrigger>
               <CollapsibleContent className="animate-accordion-down">
                 <div className="px-6 pb-6 pt-0 space-y-2">
-                  {stat.details.map((detail, detailIndex) => (
-                    <div
-                      key={detailIndex}
-                      className={`p-3 rounded-lg text-sm transition-colors duration-200 ${
-                        isValidRoute(detail.path)
-                          ? 'bg-white/50 cursor-pointer hover:bg-white'
-                          : 'bg-gray-100/50 text-gray-500'
-                      }`}
-                      onClick={(e) => isValidRoute(detail.path) && handleDetailClick(detail.path, e)}
-                    >
-                      {detail.text}
-                    </div>
-                  ))}
+                  {stat.details.map((detail, detailIndex) => {
+                    const daysLeft = detail.dueDate ? getDaysUntil(detail.dueDate) : null;
+                    const isUrgent = daysLeft !== null && daysLeft <= 7;
+
+                    return (
+                      <div
+                        key={detailIndex}
+                        className={cn(
+                          "p-4 rounded-lg text-sm transition-colors duration-200",
+                          isValidRoute(detail.path)
+                            ? 'bg-white/50 cursor-pointer hover:bg-white'
+                            : 'bg-gray-100/50 text-gray-500',
+                          detail.urgent && 'border-2 border-red-500'
+                        )}
+                        onClick={(e) => isValidRoute(detail.path) && handleDetailClick(detail.path, e)}
+                      >
+                        <div className="flex justify-between items-start mb-2">
+                          <span className="font-medium">{detail.text}</span>
+                          {detail.urgent && (
+                            <AlertCircle className="h-5 w-5 text-red-500 animate-pulse" />
+                          )}
+                        </div>
+                        {detail.progress !== undefined && (
+                          <div className="space-y-1">
+                            <div className="flex justify-between text-xs text-gray-500">
+                              <span>{detail.status}</span>
+                              <span>{detail.progress}%</span>
+                            </div>
+                            <Progress value={detail.progress} className="h-1.5" />
+                          </div>
+                        )}
+                        {daysLeft !== null && (
+                          <p className={cn(
+                            "text-xs mt-2",
+                            isUrgent ? "text-red-500 font-medium" : "text-gray-500"
+                          )}>
+                            締切まで: {daysLeft}日
+                          </p>
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
               </CollapsibleContent>
             </Card>
