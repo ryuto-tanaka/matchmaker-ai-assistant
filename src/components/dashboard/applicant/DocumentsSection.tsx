@@ -13,25 +13,25 @@ interface Document {
 }
 
 const DocumentsSection = () => {
-  const handleDownload = async (document: Document) => {
+  const handleDownload = async (doc: Document) => {
     try {
       const { data, error } = await supabase.storage
         .from('documents')
-        .download(document.file_path);
+        .download(doc.file_path);
 
       if (error) {
         throw error;
       }
 
-      // ブラウザでファイルをダウンロード
+      // Create download link and trigger download
       const url = window.URL.createObjectURL(data);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = document.title;
-      document.body.appendChild(a);
-      a.click();
+      const link = window.document.createElement('a');
+      link.href = url;
+      link.download = doc.title;
+      window.document.body.appendChild(link);
+      link.click();
       window.URL.revokeObjectURL(url);
-      document.body.removeChild(a);
+      window.document.body.removeChild(link);
 
       toast.success("ダウンロードを開始しました");
     } catch (error) {
