@@ -62,7 +62,7 @@ export function ProviderClientDetailsModal({ client }: ProviderClientDetailsModa
   };
 
   return (
-    <Dialog modal={false}>
+    <Dialog>
       <DialogTrigger asChild>
         <Button variant="outline">詳細</Button>
       </DialogTrigger>

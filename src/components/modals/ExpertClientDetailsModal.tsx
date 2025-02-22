@@ -29,11 +29,10 @@ export function ExpertClientDetailsModal({ client }: ExpertClientDetailsModalPro
   const [memo, setMemo] = useState<string>('');
 
   useEffect(() => {
-    // Load memo from Supabase when the modal opens
     const loadMemo = async () => {
       const { data, error } = await supabase
         .from('profiles')
-        .select('address')  // Temporarily using address field to store memo
+        .select('address')
         .eq('id', client.id.toString())
         .single();
 
@@ -54,7 +53,7 @@ export function ExpertClientDetailsModal({ client }: ExpertClientDetailsModalPro
         .update({
           contact_name: client.name,
           company_name: client.industry,
-          address: value  // Temporarily using address field to store memo
+          address: value
         })
         .eq('id', client.id.toString());
 
