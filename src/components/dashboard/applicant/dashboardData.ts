@@ -21,47 +21,61 @@ export interface DashboardStat {
   details: StatDetail[];
 }
 
+// 期限切れかどうかを判断する関数を追加
+const isExpired = (dueDate?: string): boolean => {
+  if (!dueDate) return false;
+  const today = new Date();
+  const due = new Date(dueDate);
+  return due < today;
+};
+
+// 申請データを期限切れかどうかで分類
+const applications = [
+  { 
+    text: 'IT導入補助金', 
+    path: '/dashboard/applicant/applications/2',
+    progress: 60,
+    dueDate: '2024-04-15',
+    status: '申請書作成中',
+    urgent: true
+  },
+  { 
+    text: '事業再構築補助金', 
+    path: '/dashboard/applicant/applications/3',
+    progress: 30,
+    dueDate: '2024-05-30',
+    status: '準備中'
+  },
+  { 
+    text: '小規模事業者持続化補助金', 
+    path: '/dashboard/applicant/applications/1',
+    progress: 80,
+    dueDate: '2024-03-31',
+    status: '期限切れ'
+  }
+];
+
+// 現在進行中の申請と期限切れの申請を分類
+const activeApplications = applications.filter(app => !isExpired(app.dueDate));
+const expiredApplications = applications.filter(app => isExpired(app.dueDate));
+
 export const dashboardStats: DashboardStat[] = [
   { 
     icon: FileText, 
     label: '申請中の補助金', 
-    value: '2件',
+    value: `${activeApplications.length}件`,
     color: 'bg-blue-50',
     iconColor: 'text-blue-600',
     progress: 75,
-    details: [
-      { 
-        text: 'IT導入補助金', 
-        path: '/dashboard/applicant/applications/2',
-        progress: 60,
-        dueDate: '2024-04-15',
-        status: '申請書作成中',
-        urgent: true
-      },
-      { 
-        text: '事業再構築補助金', 
-        path: '/dashboard/applicant/applications/3',
-        progress: 30,
-        dueDate: '2024-05-30',
-        status: '準備中'
-      }
-    ]
+    details: activeApplications
   },
   { 
     icon: Archive, 
     label: '過去の申請補助金', 
-    value: '1件',
+    value: `${expiredApplications.length}件`,
     color: 'bg-gray-50',
     iconColor: 'text-gray-600',
-    details: [
-      { 
-        text: '小規模事業者持続化補助金', 
-        path: '/dashboard/applicant/applications/1',
-        progress: 80,
-        dueDate: '2024-03-31',
-        status: '期限切れ'
-      }
-    ]
+    details: expiredApplications
   },
   { 
     icon: Users, 
