@@ -1,4 +1,5 @@
 
+import { useState, useEffect } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -8,6 +9,9 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Building, MessageSquare, Clock, CheckCircle } from 'lucide-react';
+import { Textarea } from "@/components/ui/textarea";
+import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 interface ExpertClientDetailsModalProps {
   client: {
@@ -21,6 +25,55 @@ interface ExpertClientDetailsModalProps {
 }
 
 export function ExpertClientDetailsModal({ client }: ExpertClientDetailsModalProps) {
+  const { toast } = useToast();
+  const [memo, setMemo] = useState<string>('');
+
+  useEffect(() => {
+    // Load memo from Supabase when the modal opens
+    const loadMemo = async () => {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('address')  // Temporarily using address field to store memo
+        .eq('id', client.id.toString())
+        .single();
+
+      if (!error && data) {
+        setMemo(data.address || '');
+      }
+    };
+
+    loadMemo();
+  }, [client.id]);
+
+  const handleMemoChange = async (value: string) => {
+    setMemo(value);
+
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .update({
+          contact_name: client.name,
+          company_name: client.industry,
+          address: value  // Temporarily using address field to store memo
+        })
+        .eq('id', client.id.toString());
+
+      if (error) throw error;
+
+      toast({
+        title: "メモを保存しました",
+        duration: 3000,
+      });
+    } catch (error) {
+      toast({
+        title: "メモの保存に失敗しました",
+        variant: "destructive",
+        duration: 3000,
+      });
+      console.error('Error saving memo:', error);
+    }
+  };
+
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -67,6 +120,16 @@ export function ExpertClientDetailsModal({ client }: ExpertClientDetailsModalPro
             }`}>
               <span>{client.status}</span>
             </div>
+          </div>
+
+          <div>
+            <h4 className="text-sm font-semibold text-gray-500">メモ</h4>
+            <Textarea
+              value={memo}
+              onChange={(e) => handleMemoChange(e.target.value)}
+              placeholder="クライアントに関するメモを入力"
+              className="mt-1 min-h-[100px]"
+            />
           </div>
         </div>
       </DialogContent>
