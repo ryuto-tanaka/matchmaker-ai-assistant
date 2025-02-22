@@ -8,13 +8,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
-
-interface DashboardFiltersProps {
-  statusFilter: string;
-  dateFilter: string;
-  onStatusFilterChange: (value: string) => void;
-  onDateFilterChange: (value: string) => void;
-}
+import { DashboardFiltersProps } from '@/types/providerDashboard';
 
 export const DashboardFilters = ({
   statusFilter,
@@ -48,3 +42,4 @@ export const DashboardFilters = ({
     </div>
   );
 };
+

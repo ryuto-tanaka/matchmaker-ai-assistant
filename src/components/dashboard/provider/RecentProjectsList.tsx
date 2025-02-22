@@ -1,11 +1,7 @@
 
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-
-interface RecentProjectsListProps {
-  statusFilter: string;
-  dateFilter: string;
-}
+import { RecentProjectsListProps } from '@/types/providerDashboard';
 
 export const RecentProjectsList = ({ statusFilter, dateFilter }: RecentProjectsListProps) => {
   const filterProjects = (projects: any[]) => {
@@ -39,3 +35,4 @@ export const RecentProjectsList = ({ statusFilter, dateFilter }: RecentProjectsL
     </Card>
   );
 };
+

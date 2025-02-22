@@ -3,21 +3,8 @@ import React from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { FileText, Users, TrendingUp, DollarSign } from 'lucide-react';
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
-import { LucideIcon } from 'lucide-react';
 import { StatDetailsModal } from "@/components/modals/StatDetailsModal";
-
-type StatLabel = '進行中の案件' | '契約クライアント' | '今月の成約率' | '今月の売上';
-
-interface DashboardStat {
-  icon: LucideIcon;
-  label: StatLabel;
-  value: string;
-}
-
-interface DashboardStatsProps {
-  openDialogs: { [key: number]: boolean };
-  onOpenChange: (index: number, open: boolean) => void;
-}
+import { DashboardStat, DashboardStatsProps } from '@/types/providerDashboard';
 
 export const DashboardStats = ({ openDialogs, onOpenChange }: DashboardStatsProps) => {
   const stats: DashboardStat[] = [
@@ -57,3 +44,4 @@ export const DashboardStats = ({ openDialogs, onOpenChange }: DashboardStatsProp
     </div>
   );
 };
+
