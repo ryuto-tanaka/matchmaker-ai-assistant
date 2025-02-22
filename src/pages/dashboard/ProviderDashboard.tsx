@@ -22,41 +22,56 @@ const ProviderDashboard = () => {
 
   return (
     <DashboardLayout userType="provider" userName="株式会社〇〇" secondaryTypes={['expert']}>
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex justify-between items-center mb-6" role="banner">
         <h1 className="text-2xl font-bold">サービス提供者ダッシュボード</h1>
         <Badge 
           variant={isOnline ? "default" : "destructive"}
           className="flex items-center gap-2"
           aria-live="polite"
+          role="status"
         >
-          {isOnline ? <Wifi className="h-4 w-4" /> : <WifiOff className="h-4 w-4" />}
+          {isOnline ? (
+            <Wifi className="h-4 w-4" aria-hidden="true" />
+          ) : (
+            <WifiOff className="h-4 w-4" aria-hidden="true" />
+          )}
           {isOnline ? "オンライン" : "オフライン"}
         </Badge>
       </div>
       
-      <DashboardStats 
-        openDialogs={openDialogs}
-        onOpenChange={handleOpenChange}
-      />
+      <main role="main" aria-label="ダッシュボードの概要">
+        <div role="region" aria-label="ダッシュボードの統計">
+          <DashboardStats 
+            openDialogs={openDialogs}
+            onOpenChange={handleOpenChange}
+          />
+        </div>
 
-      <DashboardFilters
-        statusFilter={statusFilter}
-        dateFilter={dateFilter}
-        onStatusFilterChange={setStatusFilter}
-        onDateFilterChange={setDateFilter}
-      />
+        <div role="region" aria-label="フィルターオプション">
+          <DashboardFilters
+            statusFilter={statusFilter}
+            dateFilter={dateFilter}
+            onStatusFilterChange={setStatusFilter}
+            onDateFilterChange={setDateFilter}
+          />
+        </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <RecentProjectsList 
-          statusFilter={statusFilter}
-          dateFilter={dateFilter}
-        />
-        <InquiriesList />
-      </div>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div role="region" aria-label="最近の案件一覧">
+            <RecentProjectsList 
+              statusFilter={statusFilter}
+              dateFilter={dateFilter}
+            />
+          </div>
+          <div role="region" aria-label="新規問い合わせ一覧">
+            <InquiriesList />
+          </div>
+        </div>
 
-      <div className="mt-8">
-        <MonthlyChart />
-      </div>
+        <div className="mt-8" role="region" aria-label="月間データチャート">
+          <MonthlyChart />
+        </div>
+      </main>
     </DashboardLayout>
   );
 };

@@ -18,14 +18,24 @@ export const RecentProjectsList = ({ statusFilter, dateFilter }: RecentProjectsL
         <CardTitle>最近の案件</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="space-y-4">
+        <div className="space-y-4" role="list" aria-label="最近の案件リスト">
           {[1, 2, 3].map((_, index) => (
-            <div key={index} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+            <div 
+              key={index} 
+              className="flex items-center justify-between p-4 bg-gray-50 rounded-lg"
+              role="listitem"
+            >
               <div>
                 <p className="font-medium">IT導入支援</p>
-                <p className="text-sm text-gray-500">クライアント: 株式会社ABC</p>
+                <p className="text-sm text-gray-500" aria-label="クライアント名">
+                  クライアント: 株式会社ABC
+                </p>
               </div>
-              <span className="px-3 py-1 text-sm bg-yellow-100 text-yellow-700 rounded-full">
+              <span 
+                className="px-3 py-1 text-sm bg-yellow-100 text-yellow-700 rounded-full"
+                role="status"
+                aria-label="案件のステータス"
+              >
                 進行中
               </span>
             </div>
@@ -35,4 +45,3 @@ export const RecentProjectsList = ({ statusFilter, dateFilter }: RecentProjectsL
     </Card>
   );
 };
-

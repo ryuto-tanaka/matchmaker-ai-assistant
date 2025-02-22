@@ -17,9 +17,13 @@ export const DashboardFilters = ({
   onDateFilterChange,
 }: DashboardFiltersProps) => {
   return (
-    <div className="flex gap-4 mb-6">
+    <div className="flex gap-4 mb-6" role="search" aria-label="案件フィルター">
       <div className="w-48">
-        <Select onValueChange={onStatusFilterChange} defaultValue={statusFilter}>
+        <Select 
+          onValueChange={onStatusFilterChange} 
+          defaultValue={statusFilter}
+          aria-label="ステータスでフィルター"
+        >
           <SelectTrigger>
             <SelectValue placeholder="ステータス" />
           </SelectTrigger>
@@ -37,9 +41,9 @@ export const DashboardFilters = ({
           value={dateFilter}
           onChange={(e) => onDateFilterChange(e.target.value)}
           className="w-full"
+          aria-label="日付でフィルター"
         />
       </div>
     </div>
   );
 };
-
