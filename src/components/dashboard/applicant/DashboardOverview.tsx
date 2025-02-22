@@ -9,7 +9,8 @@ import {
   CheckCircle, 
   ChevronDown, 
   Sparkles,
-  AlertCircle
+  AlertCircle,
+  Archive
 } from 'lucide-react';
 import { useToast } from "@/components/ui/use-toast";
 import { BusinessPlanSurveyModal } from '@/components/modals/BusinessPlanSurveyModal';
@@ -36,7 +37,6 @@ const DashboardOverview = () => {
   const handleSurveySubmit = async (data: any) => {
     console.log('Survey data:', data);
     setIsBusinessPlanModalOpen(false);
-    // AIの進捗状況をシミュレート
     setAiProgress(0);
     toast({
       title: "アンケート送信完了",
@@ -67,22 +67,24 @@ const DashboardOverview = () => {
 
   const isValidRoute = (path: string) => validRoutes.includes(path);
 
+  // 締切日までの残り日数を計算
+  const getDaysUntil = (dateString: string) => {
+    const today = new Date();
+    const dueDate = new Date(dateString);
+    const diffTime = dueDate.getTime() - today.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays;
+  };
+
   const stats = [
     { 
       icon: FileText, 
       label: '申請中の補助金', 
-      value: '3件',
+      value: '2件',
       color: 'bg-blue-50',
       iconColor: 'text-blue-600',
-      progress: 75, // 進捗率
+      progress: 75,
       details: [
-        { 
-          text: '小規模事業者持続化補助金', 
-          path: '/dashboard/applicant/applications/1',
-          progress: 80,
-          dueDate: '2024-03-31',
-          status: '書類確認中'
-        },
         { 
           text: 'IT導入補助金', 
           path: '/dashboard/applicant/applications/2',
@@ -97,6 +99,22 @@ const DashboardOverview = () => {
           progress: 30,
           dueDate: '2024-05-30',
           status: '準備中'
+        }
+      ]
+    },
+    { 
+      icon: Archive, 
+      label: '過去の申請補助金', 
+      value: '1件',
+      color: 'bg-gray-50',
+      iconColor: 'text-gray-600',
+      details: [
+        { 
+          text: '小規模事業者持続化補助金', 
+          path: '/dashboard/applicant/applications/1',
+          progress: 80,
+          dueDate: '2024-03-31',
+          status: '期限切れ'
         }
       ]
     },
@@ -133,15 +151,6 @@ const DashboardOverview = () => {
       ]
     },
   ];
-
-  // 締切日までの残り日数を計算
-  const getDaysUntil = (dateString: string) => {
-    const today = new Date();
-    const dueDate = new Date(dateString);
-    const diffTime = dueDate.getTime() - today.getTime();
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    return diffDays;
-  };
 
   return (
     <div className="space-y-6">
@@ -219,7 +228,8 @@ const DashboardOverview = () => {
                 <div className="px-6 pb-6 pt-0 space-y-2">
                   {stat.details.map((detail, detailIndex) => {
                     const daysLeft = detail.dueDate ? getDaysUntil(detail.dueDate) : null;
-                    const isUrgent = daysLeft !== null && daysLeft <= 7;
+                    const isUrgent = daysLeft !== null && daysLeft <= 7 && daysLeft > 0;
+                    const isExpired = daysLeft !== null && daysLeft <= 0;
 
                     return (
                       <div
@@ -228,14 +238,15 @@ const DashboardOverview = () => {
                           "p-4 rounded-lg text-sm transition-colors duration-200",
                           isValidRoute(detail.path)
                             ? 'bg-white/50 cursor-pointer hover:bg-white'
-                            : 'bg-gray-100/50 text-gray-500',
-                          detail.urgent && 'border-2 border-red-500'
+                            : 'bg-gray-100/50',
+                          detail.urgent && 'border-2 border-red-500',
+                          isExpired && 'opacity-75'
                         )}
                         onClick={(e) => isValidRoute(detail.path) && handleDetailClick(detail.path, e)}
                       >
                         <div className="flex justify-between items-start mb-2">
                           <span className="font-medium">{detail.text}</span>
-                          {detail.urgent && (
+                          {isUrgent && !isExpired && (
                             <AlertCircle className="h-5 w-5 text-red-500 animate-pulse" />
                           )}
                         </div>
@@ -251,9 +262,10 @@ const DashboardOverview = () => {
                         {daysLeft !== null && (
                           <p className={cn(
                             "text-xs mt-2",
+                            isExpired ? "text-gray-500" :
                             isUrgent ? "text-red-500 font-medium" : "text-gray-500"
                           )}>
-                            締切まで: {daysLeft}日
+                            {isExpired ? "期限切れ" : `締切まで: ${daysLeft}日`}
                           </p>
                         )}
                       </div>
