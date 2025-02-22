@@ -27,7 +27,7 @@ export const CaseCalendar = ({ cases }: CaseCalendarProps) => {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-lg">スケジュール</CardTitle>
+        <CardTitle className="text-lg">カレンダー</CardTitle>
       </CardHeader>
       <CardContent>
         <Calendar
