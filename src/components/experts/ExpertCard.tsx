@@ -1,11 +1,16 @@
 
 import React from 'react';
-import { User, Star, MessageSquare, AlertCircle } from 'lucide-react';
+import { User, Star, MessageSquare, AlertCircle, Heart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Expert } from '@/types/expert';
+import { useNavigate } from 'react-router-dom';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/hooks/useAuth';
+import { useToast } from '@/components/ui/use-toast';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 
 interface LoadingExpertCardProps {
   isLoading: true;
@@ -31,6 +36,72 @@ interface NormalExpertCardProps {
 type ExpertCardProps = LoadingExpertCardProps | ErrorExpertCardProps | NormalExpertCardProps;
 
 export const ExpertCard = ({ expert, isLoading, error, onConsultationRequest }: ExpertCardProps) => {
+  const navigate = useNavigate();
+  const { user } = useAuth();
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+
+  // Fetch favorite status
+  const { data: isFavorite } = useQuery({
+    queryKey: ['favorites', expert?.id, user?.id],
+    queryFn: async () => {
+      if (!user?.id || !expert?.id) return false;
+      const { data } = await supabase
+        .from('favorite_experts')
+        .select('id')
+        .eq('user_id', user.id)
+        .eq('expert_id', expert.id)
+        .single();
+      return !!data;
+    },
+    enabled: !!user?.id && !!expert?.id,
+  });
+
+  const handleFavoriteToggle = async () => {
+    if (!user?.id || !expert?.id) return;
+
+    try {
+      if (isFavorite) {
+        // Remove from favorites
+        await supabase
+          .from('favorite_experts')
+          .delete()
+          .eq('user_id', user.id)
+          .eq('expert_id', expert.id);
+        
+        toast({
+          description: "お気に入りから削除しました",
+        });
+      } else {
+        // Add to favorites
+        await supabase
+          .from('favorite_experts')
+          .insert({
+            user_id: user.id,
+            expert_id: expert.id,
+          });
+        
+        toast({
+          description: "お気に入りに追加しました",
+        });
+      }
+      // Invalidate favorites query to refresh the UI
+      queryClient.invalidateQueries({ queryKey: ['favorites', expert.id, user.id] });
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "エラーが発生しました",
+        description: "お気に入りの更新に失敗しました。",
+      });
+    }
+  };
+
+  const handleMessageClick = () => {
+    if (expert) {
+      navigate(`/dashboard/messages/${expert.id}`);
+    }
+  };
+
   if (isLoading) {
     return (
       <Card>
@@ -51,7 +122,11 @@ export const ExpertCard = ({ expert, isLoading, error, onConsultationRequest }: 
                 </div>
               </div>
             </div>
-            <Skeleton className="h-9 w-20" />
+            <div className="space-x-2">
+              <Skeleton className="h-9 w-24" />
+              <Skeleton className="h-9 w-24" />
+              <Skeleton className="h-9 w-24" />
+            </div>
           </div>
         </CardContent>
       </Card>
@@ -104,9 +179,30 @@ export const ExpertCard = ({ expert, isLoading, error, onConsultationRequest }: 
               </div>
             </div>
           </div>
-          <Button onClick={() => onConsultationRequest(expert.id, expert.name)}>
-            相談する
-          </Button>
+          <div className="flex items-center space-x-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleFavoriteToggle}
+              className={isFavorite ? "text-red-500" : "text-gray-500"}
+            >
+              <Heart className={`h-4 w-4 ${isFavorite ? "fill-current" : ""}`} />
+              {isFavorite ? "お気に入り済み" : "お気に入り"}
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleMessageClick}
+            >
+              <MessageSquare className="h-4 w-4 mr-1" />
+              メッセージ
+            </Button>
+            <Button 
+              onClick={() => onConsultationRequest(expert.id, expert.name)}
+            >
+              相談する
+            </Button>
+          </div>
         </div>
       </CardContent>
     </Card>
