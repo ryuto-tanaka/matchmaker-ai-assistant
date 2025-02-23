@@ -29,10 +29,51 @@ const DocumentsSection = () => {
   const [uploading, setUploading] = useState(false);
   
   useEffect(() => {
+    // Initial data fetch
     Promise.all([
       fetchDocuments(),
       fetchPendingApplications()
     ]).finally(() => setLoading(false));
+
+    // Set up real-time subscription for documents
+    const channel = supabase
+      .channel('document-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'documents'
+        },
+        async (payload) => {
+          console.log('Document change received:', payload);
+          if (payload.eventType === 'INSERT') {
+            setDocuments(prev => [payload.new as Document, ...prev]);
+          } else if (payload.eventType === 'UPDATE') {
+            setDocuments(prev =>
+              prev.map(doc =>
+                doc.id === payload.new.id ? (payload.new as Document) : doc
+              )
+            );
+          } else if (payload.eventType === 'DELETE') {
+            setDocuments(prev =>
+              prev.filter(doc => doc.id !== payload.old.id)
+            );
+          }
+          // Show toast notification for document updates
+          toast.info(
+            payload.eventType === 'INSERT' ? "新しい書類が追加されました" :
+            payload.eventType === 'UPDATE' ? "書類が更新されました" :
+            "書類が削除されました"
+          );
+        }
+      )
+      .subscribe();
+
+    // Cleanup subscription
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   const fetchDocuments = async () => {
