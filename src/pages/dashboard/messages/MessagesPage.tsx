@@ -22,7 +22,7 @@ const MessagesPage = () => {
     queryFn: async () => {
       if (!user?.id) throw new Error('User not authenticated');
 
-      // First, get all messages where the user is either sender or receiver
+      // Get all messages where the user is either sender or receiver
       const { data: messages, error: messagesError } = await supabase
         .from('messages')
         .select(`
@@ -31,7 +31,8 @@ const MessagesPage = () => {
           created_at,
           sender_id,
           receiver_id,
-          experts!inner (
+          expert_id,
+          experts:expert_id (
             id,
             name,
             title
@@ -46,8 +47,9 @@ const MessagesPage = () => {
       const conversationMap = new Map();
       messages?.forEach((message) => {
         const expert = message.experts;
-        const expertId = expert.id;
+        if (!expert) return; // Skip if no expert is linked
         
+        const expertId = expert.id;
         if (!conversationMap.has(expertId) || 
             new Date(message.created_at) > new Date(conversationMap.get(expertId).timestamp)) {
           conversationMap.set(expertId, {
@@ -115,4 +117,3 @@ const MessagesPage = () => {
 };
 
 export default MessagesPage;
-

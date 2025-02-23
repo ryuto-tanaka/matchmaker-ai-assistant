@@ -356,6 +356,7 @@ export type Database = {
         Row: {
           content: string
           created_at: string
+          expert_id: string | null
           file_attachments: Json[] | null
           id: string
           read_at: string | null
@@ -366,6 +367,7 @@ export type Database = {
         Insert: {
           content: string
           created_at?: string
+          expert_id?: string | null
           file_attachments?: Json[] | null
           id?: string
           read_at?: string | null
@@ -376,6 +378,7 @@ export type Database = {
         Update: {
           content?: string
           created_at?: string
+          expert_id?: string | null
           file_attachments?: Json[] | null
           id?: string
           read_at?: string | null
@@ -383,7 +386,15 @@ export type Database = {
           sender_id?: string
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "messages_expert_id_fkey"
+            columns: ["expert_id"]
+            isOneToOne: false
+            referencedRelation: "experts"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       profiles: {
         Row: {
