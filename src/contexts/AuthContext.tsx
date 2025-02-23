@@ -1,9 +1,10 @@
 
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from '@/components/ui/use-toast';
 import { UserProfile } from '@/types/auth';
 import { UserRole } from '@/types/user';
+import { supabase } from '@/integrations/supabase/client';
 
 const MOCK_USER_ID = 'f47ac10b-58cc-4372-a567-0e02b2c3d479';
 
@@ -20,9 +21,68 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const navigate = useNavigate();
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<{ id: string; email: string; role?: UserRole } | null>(null);
   const [profile, setProfile] = useState<UserProfile | null>(null);
+
+  useEffect(() => {
+    // セッションの初期チェック
+    const initializeAuth = async () => {
+      try {
+        const { data: { session }, error } = await supabase.auth.getSession();
+        if (error) throw error;
+        
+        if (session?.user) {
+          setUser({
+            id: session.user.id,
+            email: session.user.email!,
+            role: UserRole.APPLICANT
+          });
+          // プロファイル情報も取得
+          const { data: profileData } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', session.user.id)
+            .single();
+          
+          setProfile(profileData);
+        }
+      } catch (error) {
+        console.error('Auth initialization error:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    initializeAuth();
+
+    // 認証状態の変更を監視
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (session?.user) {
+        setUser({
+          id: session.user.id,
+          email: session.user.email!,
+          role: UserRole.APPLICANT
+        });
+        // プロファイル情報も更新
+        const { data: profileData } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', session.user.id)
+          .single();
+        
+        setProfile(profileData);
+      } else {
+        setUser(null);
+        setProfile(null);
+      }
+      setLoading(false);
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
 
   const signIn = async (email: string, password: string) => {
     if (!email || !password) {
@@ -79,13 +139,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const signOut = async () => {
     setLoading(true);
     try {
+      await supabase.auth.signOut();
       setUser(null);
       setProfile(null);
       toast({
         title: "ログアウト完了",
         description: "ログアウトしました",
       });
-      navigate('/'); // Changed from '/login' to '/' to redirect to top page
+      navigate('/');
     } catch (error: any) {
       toast({
         title: "エラー",
