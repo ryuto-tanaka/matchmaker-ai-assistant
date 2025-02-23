@@ -7,25 +7,24 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Expert } from '@/types/expert';
 
-// Separate interfaces for different states
 interface LoadingExpertCardProps {
   isLoading: true;
-  expert?: never;
-  error?: never;
-  onConsultationRequest?: never;
+  expert?: undefined;
+  error?: undefined;
+  onConsultationRequest?: undefined;
 }
 
 interface ErrorExpertCardProps {
+  isLoading?: undefined;
+  expert?: undefined;
   error: string;
-  isLoading?: never;
-  expert?: never;
-  onConsultationRequest?: never;
+  onConsultationRequest?: undefined;
 }
 
 interface NormalExpertCardProps {
+  isLoading?: undefined;
   expert: Expert;
-  isLoading?: never;
-  error?: never;
+  error?: undefined;
   onConsultationRequest: (expertId: string, expertName: string) => void;
 }
 
@@ -70,10 +69,6 @@ export const ExpertCard = ({ expert, isLoading, error, onConsultationRequest }: 
         </CardContent>
       </Card>
     );
-  }
-
-  if (!expert) {
-    return null;
   }
 
   return (

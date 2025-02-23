@@ -95,8 +95,6 @@ const ExpertsPage = () => {
       <ExpertCard
         key={expert.id}
         expert={expert}
-        isLoading={isLoading}
-        error={error?.message}
         onConsultationRequest={handleConsultationRequest}
       />
     );
@@ -112,7 +110,7 @@ const ExpertsPage = () => {
             searchQuery={searchQuery}
             onSearchChange={setSearchQuery}
             sortOption={sortOption}
-            onSortChange={(value) => setSortOption(value)}
+            onSortChange={(value) => setSortOption(value as SortOption)}
           />
 
           <ExpertCategoryFilter
@@ -125,7 +123,7 @@ const ExpertsPage = () => {
           {isLoading && !experts.length && (
             <div className="grid gap-6">
               {[...Array(6)].map((_, index) => (
-                <ExpertCard key={`loading-${index}`} isLoading />
+                <ExpertCard key={`loading-${index}`} isLoading={true} />
               ))}
             </div>
           )}
@@ -133,7 +131,7 @@ const ExpertsPage = () => {
           {/* Show error state if there's an error and no data */}
           {error && !experts.length && (
             <div className="grid gap-6">
-              <ExpertCard error={error.message} onConsultationRequest={() => {}} />
+              <ExpertCard error={error.message} />
             </div>
           )}
 
