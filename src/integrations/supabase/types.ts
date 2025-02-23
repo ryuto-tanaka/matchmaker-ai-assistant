@@ -227,6 +227,45 @@ export type Database = {
         }
         Relationships: []
       }
+      experts: {
+        Row: {
+          consultations: number | null
+          id: string
+          joined_at: string | null
+          name: string
+          rating: number | null
+          recommendation_score: number | null
+          specialties: string[]
+          status: Database["public"]["Enums"]["expert_status"] | null
+          title: string
+          user_id: string
+        }
+        Insert: {
+          consultations?: number | null
+          id?: string
+          joined_at?: string | null
+          name: string
+          rating?: number | null
+          recommendation_score?: number | null
+          specialties: string[]
+          status?: Database["public"]["Enums"]["expert_status"] | null
+          title: string
+          user_id: string
+        }
+        Update: {
+          consultations?: number | null
+          id?: string
+          joined_at?: string | null
+          name?: string
+          rating?: number | null
+          recommendation_score?: number | null
+          specialties?: string[]
+          status?: Database["public"]["Enums"]["expert_status"] | null
+          title?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       grant_applications: {
         Row: {
           created_at: string
@@ -416,6 +455,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
+      expert_status: "active" | "inactive"
       user_type: "applicant" | "provider" | "expert"
     }
     CompositeTypes: {

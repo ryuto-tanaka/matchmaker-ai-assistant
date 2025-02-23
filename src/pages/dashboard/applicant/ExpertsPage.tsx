@@ -1,6 +1,7 @@
 
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import { Card, CardContent } from "@/components/ui/card";
 import { User, Star, MessageSquare, Search } from 'lucide-react';
@@ -14,6 +15,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { supabase } from '@/integrations/supabase/client';
+import { Expert } from '@/types/expert';
+import LoadingCard from '@/components/ui/loading-card';
+import ErrorCard from '@/components/ui/error-card';
+import { toast } from 'sonner';
 
 const categories = [
   'IT導入補助金',
@@ -25,49 +31,35 @@ const categories = [
 
 type SortOption = 'rating-desc' | 'rating-asc' | 'consultations-desc' | 'consultations-asc' | 'newest' | 'recommended';
 
+const fetchExperts = async (): Promise<Expert[]> => {
+  const { data, error } = await supabase
+    .from('experts')
+    .select('*')
+    .eq('status', 'active');
+
+  if (error) {
+    console.error('Error fetching experts:', error);
+    throw new Error('専門家データの取得に失敗しました');
+  }
+
+  return data || [];
+};
+
 const ExpertsPage = () => {
   const navigate = useNavigate();
   const [isConsultationModalOpen, setIsConsultationModalOpen] = useState(false);
-  const [selectedExpertId, setSelectedExpertId] = useState<number | null>(null);
+  const [selectedExpertId, setSelectedExpertId] = useState<string | null>(null);
   const [selectedExpertName, setSelectedExpertName] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [sortOption, setSortOption] = useState<SortOption>('rating-desc');
-  
-  const experts = [
-    { 
-      id: 1, 
-      name: '山田太郎',
-      title: '中小企業診断士',
-      specialties: ['IT導入補助金', '事業再構築補助金'],
-      rating: 4.8,
-      consultations: 156,
-      joinedAt: '2024-01-15',
-      recommendationScore: 92
-    },
-    { 
-      id: 2, 
-      name: '鈴木花子',
-      title: '税理士',
-      specialties: ['小規模事業者持続化補助金', 'ものづくり補助金'],
-      rating: 4.9,
-      consultations: 243,
-      joinedAt: '2024-02-20',
-      recommendationScore: 95
-    },
-    { 
-      id: 3, 
-      name: '佐藤一郎',
-      title: '行政書士',
-      specialties: ['事業再構築補助金', '省エネ補助金'],
-      rating: 4.7,
-      consultations: 128,
-      joinedAt: '2024-03-01',
-      recommendationScore: 88
-    },
-  ];
 
-  const handleConsultationRequest = (expertId: number, expertName: string) => {
+  const { data: experts = [], isLoading, error } = useQuery({
+    queryKey: ['experts'],
+    queryFn: fetchExperts,
+  });
+
+  const handleConsultationRequest = (expertId: string, expertName: string) => {
     setSelectedExpertId(expertId);
     setSelectedExpertName(expertName);
     setIsConsultationModalOpen(true);
@@ -119,14 +111,23 @@ const ExpertsPage = () => {
         case 'consultations-asc':
           return a.consultations - b.consultations;
         case 'newest':
-          return new Date(b.joinedAt).getTime() - new Date(a.joinedAt).getTime();
+          return new Date(b.joined_at).getTime() - new Date(a.joined_at).getTime();
         case 'recommended':
-          return b.recommendationScore - a.recommendationScore;
+          return b.recommendation_score - a.recommendation_score;
         default:
           return 0;
       }
     });
   };
+
+  if (error) {
+    toast.error("専門家データの取得に失敗しました");
+    return <ErrorCard title="専門家検索" error={error.message} />;
+  }
+
+  if (isLoading) {
+    return <LoadingCard title="専門家を探しています..." />;
+  }
 
   return (
     <DashboardLayout userType="applicant" userName="申請者">
