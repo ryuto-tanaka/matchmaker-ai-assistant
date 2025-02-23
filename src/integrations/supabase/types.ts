@@ -530,34 +530,46 @@ export type Database = {
       }
       services: {
         Row: {
+          available_hours: Json | null
           category: string
+          completed_projects: number | null
           created_at: string
           description: string
           id: string
           name: string
           price_range: string | null
+          service_area: string[] | null
+          start_date: string | null
           status: Database["public"]["Enums"]["service_status"] | null
           updated_at: string
           user_id: string
         }
         Insert: {
+          available_hours?: Json | null
           category: string
+          completed_projects?: number | null
           created_at?: string
           description: string
           id?: string
           name: string
           price_range?: string | null
+          service_area?: string[] | null
+          start_date?: string | null
           status?: Database["public"]["Enums"]["service_status"] | null
           updated_at?: string
           user_id: string
         }
         Update: {
+          available_hours?: Json | null
           category?: string
+          completed_projects?: number | null
           created_at?: string
           description?: string
           id?: string
           name?: string
           price_range?: string | null
+          service_area?: string[] | null
+          start_date?: string | null
           status?: Database["public"]["Enums"]["service_status"] | null
           updated_at?: string
           user_id?: string
