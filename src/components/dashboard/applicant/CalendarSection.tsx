@@ -116,7 +116,7 @@ const CalendarSection = () => {
   };
 
   return (
-    <Card className="w-full max-w-[1200px] mx-auto bg-white shadow-lg">
+    <Card className="w-full max-w-[1200px] mx-auto bg-white shadow-lg overflow-hidden">
       <CalendarHeader
         isGoogleCalendarConnected={isGoogleCalendarConnected}
         onGoogleCalendarConnect={handleGoogleCalendarConnect}

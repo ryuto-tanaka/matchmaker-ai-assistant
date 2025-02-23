@@ -28,10 +28,10 @@ const CalendarContent: React.FC<CalendarContentProps> = ({
   setExpandedEventIndex,
 }) => {
   return (
-    <CardContent className="p-6 space-y-6">
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2">
-          <div className="border rounded-lg p-6 bg-white shadow-sm hover:shadow-md transition-shadow">
+    <CardContent className="p-4 md:p-6 space-y-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
+        <div className="lg:col-span-2 min-h-[500px] md:min-h-[600px]">
+          <div className="border rounded-lg p-2 md:p-6 bg-white shadow-sm hover:shadow-md transition-shadow h-full">
             <Calendar
               mode="single"
               selected={date}
@@ -44,7 +44,7 @@ const CalendarContent: React.FC<CalendarContentProps> = ({
           </div>
         </div>
 
-        <div className="space-y-4">
+        <div className="space-y-4 min-h-[300px] md:min-h-[400px]">
           <EventList
             events={events}
             isUpcomingEventsOpen={isUpcomingEventsOpen}
