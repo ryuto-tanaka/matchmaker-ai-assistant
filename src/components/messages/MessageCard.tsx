@@ -15,7 +15,7 @@ interface ConversationProject {
 }
 
 interface MessageCardProps {
-  id: number;
+  id: string;  // Changed from number to string to match UUID
   expertName: string;
   title: string;
   lastMessage: string;
