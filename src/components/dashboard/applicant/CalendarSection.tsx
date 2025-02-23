@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CalendarDays } from 'lucide-react';
 import { Button } from "@/components/ui/button";
@@ -8,11 +8,15 @@ import { useToast } from "@/hooks/use-toast";
 import { ja } from "date-fns/locale";
 import EventList from './calendar/EventList';
 import EventDialogs from './calendar/EventDialogs';
-import type { EventDetails } from './calendar/types';
+import type { EventDetails, CalendarEventDB } from './calendar/types';
+import { useAuthContext } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
 
 const CalendarSection = () => {
   const { toast } = useToast();
+  const { user } = useAuthContext();
   const [date, setDate] = useState<Date | undefined>(new Date());
+  const [events, setEvents] = useState<EventDetails[]>([]);
   const [isReminderDialogOpen, setIsReminderDialogOpen] = useState(false);
   const [isEventDetailsOpen, setIsEventDetailsOpen] = useState(false);
   const [isGoogleCalendarConnected, setIsGoogleCalendarConnected] = useState(false);
@@ -21,27 +25,57 @@ const CalendarSection = () => {
   const [isUpcomingEventsOpen, setIsUpcomingEventsOpen] = useState(true);
   const [expandedEventIndex, setExpandedEventIndex] = useState<number | null>(null);
 
-  const today = new Date();
-  const events = [
-    {
-      date: today,
-      title: 'IT導入補助金申請期限',
-      type: 'deadline' as const,
-      description: '申請書類の提出期限です。締切までに必要書類を全て揃えて提出してください。'
-    },
-    {
-      date: new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1),
-      title: '専門家相談',
-      type: 'consultation' as const,
-      description: '山田先生との相談予約。IT導入補助金の申請内容について詳細な確認を行います。'
-    },
-    {
-      date: new Date(today.getFullYear(), today.getMonth(), today.getDate() + 2),
-      title: '書類確認リマインダー',
-      type: 'reminder' as const,
-      description: '事業計画書の最終確認。特に収支計画と導入スケジュールの部分を重点的に確認してください。'
-    }
-  ];
+  useEffect(() => {
+    if (!user) return;
+
+    // Initial fetch
+    const fetchEvents = async () => {
+      const { data, error } = await supabase
+        .from('calendar_events')
+        .select('*')
+        .eq('user_id', user.id);
+
+      if (error) {
+        console.error('Error fetching events:', error);
+        return;
+      }
+
+      const transformedEvents: EventDetails[] = (data as CalendarEventDB[]).map(event => ({
+        id: event.id,
+        date: new Date(event.event_date),
+        title: event.title,
+        type: event.event_type,
+        description: event.description || undefined,
+        user_id: event.user_id
+      }));
+
+      setEvents(transformedEvents);
+    };
+
+    fetchEvents();
+
+    // Set up real-time subscription
+    const subscription = supabase
+      .channel('calendar_events')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'calendar_events',
+          filter: `user_id=eq.${user.id}`
+        },
+        async (payload) => {
+          // Fetch all events again to ensure consistency
+          await fetchEvents();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [user]);
 
   const handleGoogleCalendarConnect = () => {
     toast({
@@ -56,11 +90,28 @@ const CalendarSection = () => {
     setIsEventDetailsOpen(true);
   };
 
-  const handleReminderSave = () => {
-    if (selectedEvent) {
+  const handleReminderSave = async () => {
+    if (!selectedEvent || !user) return;
+
+    try {
+      const { error } = await supabase
+        .from('calendar_events')
+        .update({ description: `Reminder set for: ${reminderTime}` })
+        .eq('id', selectedEvent.id)
+        .eq('user_id', user.id);
+
+      if (error) throw error;
+
       toast({
         title: "リマインダー設定完了",
         description: `${selectedEvent.title}のリマインダーを設定しました。`,
+      });
+    } catch (error) {
+      console.error('Error setting reminder:', error);
+      toast({
+        title: "エラー",
+        description: "リマインダーの設定に失敗しました。",
+        variant: "destructive"
       });
     }
     setIsReminderDialogOpen(false);
@@ -90,8 +141,6 @@ const CalendarSection = () => {
                 selected={date}
                 onSelect={setDate}
                 locale={ja}
-                events={events}
-                onEventClick={handleEventClick}
                 className="w-full"
               />
             </div>
