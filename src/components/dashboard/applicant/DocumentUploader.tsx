@@ -2,14 +2,9 @@
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Upload } from 'lucide-react';
-import { createClient } from '@supabase/supabase-js';
+import { supabase } from '@/integrations/supabase/client';
 import { toast } from "sonner";
 import { useAuthContext } from '@/contexts/AuthContext';
-
-const supabase = createClient(
-  import.meta.env.VITE_SUPABASE_URL || '',
-  import.meta.env.VITE_SUPABASE_ANON_KEY || ''
-);
 
 interface DocumentUploaderProps {
   onUploadComplete: () => void;
