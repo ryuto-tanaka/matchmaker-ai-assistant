@@ -7,25 +7,10 @@ import { Store, Star, MessageSquare, MapPin, Calendar, Clock } from 'lucide-reac
 import { useNavigate } from 'react-router-dom';
 import { useFavoriteService } from '@/hooks/useFavoriteService';
 import { format } from 'date-fns';
+import { Service } from '@/types/service';
 
 interface ServiceCardProps {
-  service: {
-    id: string;
-    name: string;
-    description: string;
-    price: number;
-    category: string;
-    provider_name: string;
-    provider_id: string;
-    rating?: number;
-    service_area?: string[];
-    completed_projects?: number;
-    start_date?: string;
-    available_hours?: {
-      weekdays: string[];
-      hours: string[];
-    };
-  };
+  service: Service;
 }
 
 const ServiceCard = ({ service }: ServiceCardProps) => {
@@ -106,8 +91,14 @@ const ServiceCard = ({ service }: ServiceCardProps) => {
             )}
           </div>
 
-          <div className="flex items-center gap-2">
-            <Badge variant="secondary">{service.category}</Badge>
+          <div className="flex flex-wrap items-center gap-2">
+            <Badge variant="secondary">{service.industry_categories.large_category}</Badge>
+            {service.industry_categories.medium_category && (
+              <Badge variant="outline">{service.industry_categories.medium_category}</Badge>
+            )}
+            {service.industry_categories.small_category && (
+              <Badge variant="outline">{service.industry_categories.small_category}</Badge>
+            )}
             <Badge variant="outline">¥{service.price.toLocaleString()}</Badge>
           </div>
         </div>

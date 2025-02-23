@@ -5,6 +5,7 @@ import { supabase } from '@/integrations/supabase/client';
 import ServiceCard from './ServiceCard';
 import { Card } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Service } from '@/types/service';
 
 // Define interface for available hours structure
 interface AvailableHours {
@@ -40,7 +41,10 @@ const ServicesList = () => {
           *,
           provider:profiles!services_user_id_fkey(
             id,
-            company_name
+            company_name,
+            industry,
+            industry_subcategory,
+            industry_detail
           )
         `)
         .order('created_at', { ascending: false });
@@ -50,6 +54,11 @@ const ServicesList = () => {
       // Transform the data to match ServiceCard props
       return data.map(service => {
         const availableHours = parseAvailableHours(service.available_hours);
+        const industryData = {
+          large_category: service.provider?.industry?.name || '',
+          medium_category: service.provider?.industry_subcategory?.name,
+          small_category: service.provider?.industry_detail?.name
+        };
         
         return {
           id: service.id,
@@ -57,6 +66,7 @@ const ServicesList = () => {
           description: service.description,
           price: extractPrice(service.price_range),
           category: service.category,
+          industry_categories: industryData,
           provider_name: service.provider?.company_name || '企業名なし',
           provider_id: service.provider?.id || '',
           rating: 4.5, // TODO: Implement actual rating system
@@ -101,4 +111,3 @@ const ServicesList = () => {
 };
 
 export default ServicesList;
-
