@@ -68,12 +68,11 @@ supabase.from = function(table: keyof Database['public']['Tables']) {
 
 // エラーハンドリングの設定
 supabase.auth.onAuthStateChange((event) => {
-  if (event === 'SIGNED_OUT' || event === 'USER_DELETED') {
-    console.error('Supabase auth error:', event);
-    Sentry.captureMessage('Supabase auth error', {
-      level: 'error',
+  if (event === 'SIGNED_OUT') {
+    console.error('Authentication state changed:', event);
+    Sentry.captureMessage('User signed out', {
+      level: 'info',
       extra: { event }
     });
   }
 });
-
