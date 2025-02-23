@@ -227,6 +227,47 @@ export type Database = {
         }
         Relationships: []
       }
+      expert_bids: {
+        Row: {
+          amount: number | null
+          created_at: string
+          expert_id: string
+          id: string
+          message: string | null
+          status: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          amount?: number | null
+          created_at?: string
+          expert_id: string
+          id?: string
+          message?: string | null
+          status?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number | null
+          created_at?: string
+          expert_id?: string
+          id?: string
+          message?: string | null
+          status?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "expert_bids_expert_id_fkey"
+            columns: ["expert_id"]
+            isOneToOne: false
+            referencedRelation: "experts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       experts: {
         Row: {
           consultations: number | null
@@ -265,6 +306,35 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      favorite_experts: {
+        Row: {
+          created_at: string
+          expert_id: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          expert_id: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          expert_id?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "favorite_experts_expert_id_fkey"
+            columns: ["expert_id"]
+            isOneToOne: false
+            referencedRelation: "experts"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       grant_applications: {
         Row: {

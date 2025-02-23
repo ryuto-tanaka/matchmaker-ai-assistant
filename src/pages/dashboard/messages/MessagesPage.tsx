@@ -29,7 +29,6 @@ const MessagesPage = () => {
     queryFn: async () => {
       if (!user?.id) throw new Error('User not authenticated');
 
-      // Get all messages where the user is either sender or receiver
       const { data: messages, error: messagesError } = await supabase
         .from('messages')
         .select(`
@@ -40,7 +39,7 @@ const MessagesPage = () => {
           receiver_id,
           read_at,
           expert_id,
-          experts:expert_id (
+          experts (
             id,
             name,
             title
