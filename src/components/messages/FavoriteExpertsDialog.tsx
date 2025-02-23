@@ -12,9 +12,10 @@ import { useAuth } from '@/hooks/useAuth';
 interface FavoriteExpertsDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  onSelectExpert: (expertId: string) => void;
 }
 
-const FavoriteExpertsDialog = ({ open, onOpenChange }: FavoriteExpertsDialogProps) => {
+const FavoriteExpertsDialog = ({ open, onOpenChange, onSelectExpert }: FavoriteExpertsDialogProps) => {
   const navigate = useNavigate();
   const { user } = useAuth();
 
@@ -42,11 +43,6 @@ const FavoriteExpertsDialog = ({ open, onOpenChange }: FavoriteExpertsDialogProp
     },
     enabled: !!user?.id,
   });
-
-  const handleMessageClick = (expertId: string) => {
-    onOpenChange(false);
-    navigate(`/messages/${expertId}`);
-  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -86,7 +82,7 @@ const FavoriteExpertsDialog = ({ open, onOpenChange }: FavoriteExpertsDialogProp
                       </div>
                     </div>
                     <Button
-                      onClick={() => handleMessageClick(expert.id)}
+                      onClick={() => onSelectExpert(expert.id)}
                       variant="outline"
                       size="sm"
                     >
@@ -105,3 +101,4 @@ const FavoriteExpertsDialog = ({ open, onOpenChange }: FavoriteExpertsDialogProp
 };
 
 export default FavoriteExpertsDialog;
+
