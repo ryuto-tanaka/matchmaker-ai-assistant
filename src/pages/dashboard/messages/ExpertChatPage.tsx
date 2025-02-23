@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
@@ -18,7 +17,7 @@ const ExpertChatPage = () => {
   const [newMessage, setNewMessage] = React.useState("");
   const [showVideoCallDialog, setShowVideoCallDialog] = React.useState(false);
 
-  const { data: expertData, isLoading: isLoadingExpert } = useQuery({
+  const { data: expertData: rawExpertData, isLoading: isLoadingExpert } = useQuery({
     queryKey: ['expert', expertId],
     queryFn: async () => {
       if (!expertId) throw new Error('Expert ID is required');
@@ -34,7 +33,7 @@ const ExpertChatPage = () => {
     enabled: !!expertId,
   });
 
-  const { data: messages = [], isLoading: isLoadingMessages } = useQuery({
+  const { data: rawMessages = [], isLoading: isLoadingMessages } = useQuery({
     queryKey: ['messages', user?.id, expertId],
     queryFn: async () => {
       if (!user?.id || !expertId) throw new Error('User ID and Expert ID are required');
@@ -50,6 +49,30 @@ const ExpertChatPage = () => {
     },
     enabled: !!user?.id && !!expertId,
   });
+
+  // Transform messages to match the expected format
+  const messages = rawMessages.map(msg => ({
+    id: Number(msg.id),
+    content: msg.content,
+    sender: msg.sender_id === user?.id ? "user" as const : "expert" as const,
+    timestamp: msg.created_at,
+    files: msg.file_attachments ? msg.file_attachments.map((file: any) => ({
+      name: file.name,
+      size: file.size || "",
+      status: file.status || undefined,
+      receivedAt: file.receivedAt,
+    })) : [],
+  }));
+
+  // Transform expert data to match the ExpertInfo component's expected format
+  const expertData = rawExpertData ? {
+    id: rawExpertData.id,
+    name: rawExpertData.name,
+    title: rawExpertData.title,
+    specialties: rawExpertData.specialties,
+    experience: `${rawExpertData.consultations || 0}件の相談実績`, // Convert consultations to experience string
+    profile: `評価: ${rawExpertData.rating || 5.0}/5.0 - ${rawExpertData.recommendation_score || 90}%の推奨率`,
+  } : null;
 
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
