@@ -10,6 +10,8 @@ import ChatMessages from '@/components/messages/ChatMessages';
 import MessageInput from '@/components/messages/MessageInput';
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
+import { Button } from "@/components/ui/button";
+import { Video } from "lucide-react";
 
 const ExpertChatPage = () => {
   const { expertId } = useParams();
@@ -163,6 +165,14 @@ const ExpertChatPage = () => {
 
         <div className="w-80 space-y-4">
           <ExpertInfo expertData={expertData} />
+          <Button
+            variant="secondary"
+            className="w-full"
+            onClick={() => setShowVideoCallDialog(true)}
+          >
+            <Video className="mr-2 h-4 w-4" />
+            ビデオ通話を予約
+          </Button>
           <VideoCallDialog
             open={showVideoCallDialog}
             onOpenChange={setShowVideoCallDialog}
@@ -176,4 +186,3 @@ const ExpertChatPage = () => {
 };
 
 export default ExpertChatPage;
-
