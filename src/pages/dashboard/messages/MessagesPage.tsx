@@ -1,10 +1,11 @@
 
 import React from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import MessageCard from '@/components/messages/MessageCard';
 import ProjectDetailsDialog from '@/components/messages/ProjectDetailsDialog';
+import FavoriteExpertsDialog from '@/components/messages/FavoriteExpertsDialog';
 import { UserType } from '@/types/dashboard';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
@@ -15,10 +16,10 @@ import { Button } from '@/components/ui/button';
 
 const MessagesPage = () => {
   const [showDetails, setShowDetails] = React.useState(false);
+  const [showFavorites, setShowFavorites] = React.useState(false);
   const [selectedConversation, setSelectedConversation] = React.useState<number | null>(null);
   const [searchQuery, setSearchQuery] = React.useState('');
   const location = useLocation();
-  const navigate = useNavigate();
   const { user } = useAuth();
 
   // Extract user type from URL path and ensure it's a valid UserType
@@ -107,7 +108,7 @@ const MessagesPage = () => {
   }, [conversations, searchQuery]);
 
   const handleCreateNew = () => {
-    navigate(`/dashboard/${userType}/experts`);
+    setShowFavorites(true);
   };
 
   const userName = user?.email || '';
@@ -188,6 +189,11 @@ const MessagesPage = () => {
             deliveryDate: "",
             details: ""
           }}
+        />
+
+        <FavoriteExpertsDialog
+          open={showFavorites}
+          onOpenChange={setShowFavorites}
         />
       </div>
     </DashboardLayout>
