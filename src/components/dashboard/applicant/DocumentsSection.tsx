@@ -8,6 +8,7 @@ import { useDocuments } from './hooks/useDocuments';
 import { usePendingApplications } from './hooks/usePendingApplications';
 import { toast } from "sonner";
 import ErrorCard from '@/components/ui/error-card';
+import LoadingCard from '@/components/ui/loading-card';
 
 const DocumentsSection = () => {
   const { documents, loading, error, setError, setLoading, fetchDocuments } = useDocuments();
@@ -39,6 +40,10 @@ const DocumentsSection = () => {
     return <ErrorCard title="書類管理" error={error} />;
   }
 
+  if (loading) {
+    return <LoadingCard title="書類管理" />;
+  }
+
   return (
     <div className="space-y-6">
       <PendingApplicationsCard applications={pendingApplications} />
@@ -53,13 +58,7 @@ const DocumentsSection = () => {
           />
         </CardHeader>
         <CardContent>
-          {loading ? (
-            <div className="flex items-center justify-center py-8">
-              <p className="text-gray-500">読み込み中...</p>
-            </div>
-          ) : (
-            <DocumentList documents={documents} />
-          )}
+          <DocumentList documents={documents} />
         </CardContent>
       </Card>
     </div>
@@ -67,3 +66,4 @@ const DocumentsSection = () => {
 };
 
 export default DocumentsSection;
+
