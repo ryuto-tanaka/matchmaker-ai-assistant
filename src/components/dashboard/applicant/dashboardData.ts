@@ -38,9 +38,8 @@ export const fetchDashboardStats = async () => {
       .eq('status', 'expired'),
     supabase
       .from('messages')
-      .select('receiver_id, sender_id')
-      .or(`receiver_id.eq.${user.id},sender_id.eq.${user.id}`)
-      .select('receiver_id, sender_id', { count: 'exact', head: true }), // Changed to proper distinct count
+      .select('distinct receiver_id, sender_id')
+      .or(`receiver_id.eq.${user.id},sender_id.eq.${user.id}`),
     supabase
       .from('grant_applications')
       .select('*')
@@ -52,6 +51,16 @@ export const fetchDashboardStats = async () => {
       .eq('user_id', user.id)
       .eq('status', 'approved')
   ]);
+
+  // Get unique expert IDs by filtering out duplicates
+  const uniqueExpertIds = new Set<string>();
+  consultationExperts?.forEach(msg => {
+    if (msg.sender_id === user.id) {
+      uniqueExpertIds.add(msg.receiver_id);
+    } else {
+      uniqueExpertIds.add(msg.sender_id);
+    }
+  });
 
   return [
     {
@@ -82,12 +91,12 @@ export const fetchDashboardStats = async () => {
     {
       icon: Users,
       label: '相談中の専門家',
-      value: `${consultationExperts?.length || 0}名`,
+      value: `${uniqueExpertIds.size}名`,
       color: 'bg-purple-50',
       iconColor: 'text-purple-600',
-      details: consultationExperts?.map((expert, index) => ({
+      details: Array.from(uniqueExpertIds).map((expertId, index) => ({
         text: `専門家 ${index + 1}`,
-        path: `/dashboard/messages/${expert.id}`
+        path: `/dashboard/messages/${expertId}`
       })) || []
     },
     {
