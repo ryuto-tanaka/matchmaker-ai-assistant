@@ -1,4 +1,5 @@
 
+import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
@@ -94,3 +95,4 @@ export const useMessages = () => {
 
   return { conversations, unreadCount, isLoading };
 };
+
