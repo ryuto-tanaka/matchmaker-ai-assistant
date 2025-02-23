@@ -117,7 +117,120 @@ export const targetIndustries: Industry[] = [
         ]
       }
     ]
+  },
+  {
+    name: "金融・保険",
+    subcategories: [
+      {
+        name: "銀行・金融",
+        subcategories: [
+          { name: "銀行" },
+          { name: "証券" },
+          { name: "投資" },
+          { name: "フィンテック" }
+        ]
+      },
+      {
+        name: "保険",
+        subcategories: [
+          { name: "生命保険" },
+          { name: "損害保険" },
+          { name: "保険代理店" }
+        ]
+      }
+    ]
+  },
+  {
+    name: "建設・不動産",
+    subcategories: [
+      {
+        name: "建設",
+        subcategories: [
+          { name: "建築" },
+          { name: "土木" },
+          { name: "設備工事" },
+          { name: "リフォーム" }
+        ]
+      },
+      {
+        name: "不動産",
+        subcategories: [
+          { name: "不動産売買" },
+          { name: "不動産賃貸" },
+          { name: "不動産管理" },
+          { name: "不動産開発" }
+        ]
+      }
+    ]
+  },
+  {
+    name: "医療・福祉",
+    subcategories: [
+      {
+        name: "医療",
+        subcategories: [
+          { name: "病院" },
+          { name: "診療所" },
+          { name: "歯科医院" },
+          { name: "薬局" }
+        ]
+      },
+      {
+        name: "福祉",
+        subcategories: [
+          { name: "介護施設" },
+          { name: "デイサービス" },
+          { name: "障害者支援" },
+          { name: "保育所" }
+        ]
+      }
+    ]
+  },
+  {
+    name: "教育",
+    subcategories: [
+      {
+        name: "学校教育",
+        subcategories: [
+          { name: "小中学校" },
+          { name: "高校" },
+          { name: "専門学校" },
+          { name: "大学" }
+        ]
+      },
+      {
+        name: "その他教育",
+        subcategories: [
+          { name: "塾・予備校" },
+          { name: "語学学校" },
+          { name: "職業訓練" },
+          { name: "オンライン教育" }
+        ]
+      }
+    ]
+  },
+  {
+    name: "運輸・物流",
+    subcategories: [
+      {
+        name: "運輸",
+        subcategories: [
+          { name: "陸上運送" },
+          { name: "海上運送" },
+          { name: "航空運送" },
+          { name: "旅客運送" }
+        ]
+      },
+      {
+        name: "物流",
+        subcategories: [
+          { name: "倉庫" },
+          { name: "配送センター" },
+          { name: "宅配便" },
+          { name: "3PL" }
+        ]
+      }
+    ]
   }
-  // ... 残りのカテゴリーも同様の階層構造で整理
 ];
 
