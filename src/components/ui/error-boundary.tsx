@@ -3,6 +3,7 @@ import React from "react";
 import { AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { toast } from "sonner";
 
 interface ErrorBoundaryProps {
   children: React.ReactNode;
@@ -28,6 +29,27 @@ export class ErrorBoundary extends React.Component<
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
     console.error("ErrorBoundary caught an error:", error, errorInfo);
+    
+    // エラーの報告
+    this.reportError(error, errorInfo);
+    
+    // ユーザーへの通知
+    toast.error("エラーが発生しました", {
+      description: "システム管理者に通知しました。",
+    });
+  }
+
+  private reportError(error: Error, errorInfo: React.ErrorInfo) {
+    // エラー報告のロジックをここに実装
+    // 例: エラーログの送信など
+    console.error({
+      error: error.message,
+      stack: error.stack,
+      componentStack: errorInfo.componentStack,
+      timestamp: new Date().toISOString(),
+      userAgent: navigator.userAgent,
+      url: window.location.href
+    });
   }
 
   render() {
