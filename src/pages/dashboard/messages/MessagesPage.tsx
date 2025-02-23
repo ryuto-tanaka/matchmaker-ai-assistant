@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import MessageCard from '@/components/messages/MessageCard';
@@ -9,14 +9,16 @@ import { UserType } from '@/types/dashboard';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { Input } from '@/components/ui/input';
-import { Search, Mail } from 'lucide-react';
+import { Search, Mail, Plus } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 
 const MessagesPage = () => {
   const [showDetails, setShowDetails] = React.useState(false);
   const [selectedConversation, setSelectedConversation] = React.useState<number | null>(null);
   const [searchQuery, setSearchQuery] = React.useState('');
   const location = useLocation();
+  const navigate = useNavigate();
   const { user } = useAuth();
 
   // Extract user type from URL path and ensure it's a valid UserType
@@ -105,6 +107,10 @@ const MessagesPage = () => {
     );
   }, [conversations, searchQuery]);
 
+  const handleCreateNew = () => {
+    navigate(`/dashboard/${userType}/experts`);
+  };
+
   const userName = user?.email || '';
 
   if (isLoading) {
@@ -132,6 +138,13 @@ const MessagesPage = () => {
               <span>{unreadCount}</span>
             </Badge>
           </div>
+          <Button
+            onClick={handleCreateNew}
+            className="bg-green-500 hover:bg-green-600"
+          >
+            <Plus className="w-4 h-4 mr-2" />
+            作成を開始する
+          </Button>
         </div>
 
         <div className="relative">
