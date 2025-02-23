@@ -93,6 +93,104 @@ export type Database = {
         }
         Relationships: []
       }
+      cases: {
+        Row: {
+          amount: number | null
+          client_id: string | null
+          created_at: string
+          deadline: string | null
+          description: string | null
+          id: string
+          industry: string | null
+          reminder: string | null
+          status: string | null
+          type: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          amount?: number | null
+          client_id?: string | null
+          created_at?: string
+          deadline?: string | null
+          description?: string | null
+          id?: string
+          industry?: string | null
+          reminder?: string | null
+          status?: string | null
+          type: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number | null
+          client_id?: string | null
+          created_at?: string
+          deadline?: string | null
+          description?: string | null
+          id?: string
+          industry?: string | null
+          reminder?: string | null
+          status?: string | null
+          type?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cases_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      clients: {
+        Row: {
+          active_projects: number | null
+          contact_person: string | null
+          created_at: string
+          id: string
+          industry: string | null
+          memo: string | null
+          name: string
+          phone: string | null
+          priority: string | null
+          status: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          active_projects?: number | null
+          contact_person?: string | null
+          created_at?: string
+          id?: string
+          industry?: string | null
+          memo?: string | null
+          name: string
+          phone?: string | null
+          priority?: string | null
+          status?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          active_projects?: number | null
+          contact_person?: string | null
+          created_at?: string
+          id?: string
+          industry?: string | null
+          memo?: string | null
+          name?: string
+          phone?: string | null
+          priority?: string | null
+          status?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       documents: {
         Row: {
           created_at: string
