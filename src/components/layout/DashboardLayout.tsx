@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import {
@@ -7,6 +8,7 @@ import {
   MessageSquare,
   ChevronLeft,
   ChevronRight,
+  Store,
 } from 'lucide-react';
 import { NavigationMenu } from './NavigationMenu';
 import { NotificationsMenu } from './NotificationsMenu';
@@ -62,6 +64,7 @@ const DashboardLayout = ({
     applicant: [
       { icon: LayoutGrid, label: 'ダッシュボード', path: '/dashboard/applicant' },
       { icon: FileText, label: '補助金申請', path: '/dashboard/applicant/applications' },
+      { icon: Store, label: 'サービスを探す', path: '/dashboard/applicant/services' },
       { icon: Users, label: '専門家に相談', path: '/dashboard/applicant/experts' },
       { icon: MessageSquare, label: 'メッセージ', path: '/dashboard/applicant/messages' },
     ],
