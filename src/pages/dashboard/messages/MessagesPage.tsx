@@ -14,7 +14,7 @@ import { useMessages } from '@/hooks/useMessages';
 const MessagesPage = () => {
   const [showDetails, setShowDetails] = React.useState(false);
   const [showFavorites, setShowFavorites] = React.useState(false);
-  const [selectedConversation, setSelectedConversation] = React.useState<number | null>(null);
+  const [selectedConversation, setSelectedConversation] = React.useState<string | null>(null);  // Changed from number to string
   const [searchQuery, setSearchQuery] = React.useState('');
   const location = useLocation();
   const { user } = useAuth();

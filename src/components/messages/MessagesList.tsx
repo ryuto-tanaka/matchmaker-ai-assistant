@@ -5,7 +5,7 @@ import type { Conversation } from '@/hooks/useMessages';
 
 interface MessagesListProps {
   conversations: Conversation[];
-  onDetailsClick: (conversationId: number) => void;
+  onDetailsClick: (conversationId: string) => void;  // Changed from number to string
 }
 
 const MessagesList = ({ conversations, onDetailsClick }: MessagesListProps) => {
