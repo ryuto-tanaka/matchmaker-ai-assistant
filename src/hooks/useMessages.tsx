@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 
@@ -19,13 +19,29 @@ export interface Conversation {
   };
 }
 
+interface Message {
+  id: number;
+  content: string;
+  created_at: string;
+  sender_id: string;
+  receiver_id: string;
+  read_at: string | null;
+  expert_id: number;
+  experts: {
+    id: number;
+    name: string;
+    title: string;
+  } | null;
+}
+
 export const useMessages = () => {
   const { user } = useAuth();
+  const queryClient = useQueryClient();
 
   const { data: messagesData = [], isLoading } = useQuery({
     queryKey: ['messages', user?.id],
-    queryFn: async () => {
-      if (!user?.id) throw new Error('User not authenticated');
+    queryFn: async (): Promise<Message[]> => {
+      if (!user?.id) throw new Error('認証が必要です');
 
       const { data: messages, error: messagesError } = await supabase
         .from('messages')
@@ -46,15 +62,42 @@ export const useMessages = () => {
         .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`)
         .order('created_at', { ascending: false });
 
-      if (messagesError) throw messagesError;
+      if (messagesError) {
+        throw new Error('メッセージの取得に失敗しました');
+      }
 
       return messages || [];
     },
     enabled: !!user?.id,
+    staleTime: 1000 * 60 * 5, // 5分間キャッシュを保持
+    cacheTime: 1000 * 60 * 30, // 30分間キャッシュを維持
   });
 
+  // メッセージの既読状態を更新する関数
+  const markMessageAsRead = React.useCallback(async (messageId: number) => {
+    if (!user?.id) return;
+
+    const { error } = await supabase
+      .from('messages')
+      .update({ read_at: new Date().toISOString() })
+      .eq('id', messageId)
+      .eq('receiver_id', user.id);
+
+    if (!error) {
+      // キャッシュを更新
+      queryClient.setQueryData(['messages', user.id], (oldData: Message[] | undefined) => {
+        if (!oldData) return [];
+        return oldData.map(message => 
+          message.id === messageId 
+            ? { ...message, read_at: new Date().toISOString() }
+            : message
+        );
+      });
+    }
+  }, [user?.id, queryClient]);
+
   const { conversations, unreadCount } = React.useMemo(() => {
-    const conversationMap = new Map();
+    const conversationMap = new Map<number, Conversation>();
     let unreadMessages = 0;
 
     messagesData.forEach((message) => {
@@ -69,7 +112,7 @@ export const useMessages = () => {
       }
 
       if (!conversationMap.has(expertId) || 
-          new Date(message.created_at) > new Date(conversationMap.get(expertId).timestamp)) {
+          new Date(message.created_at) > new Date(conversationMap.get(expertId)!.timestamp)) {
         conversationMap.set(expertId, {
           id: expertId,
           expertName: expert.name,
@@ -93,6 +136,10 @@ export const useMessages = () => {
     };
   }, [messagesData, user?.id]);
 
-  return { conversations, unreadCount, isLoading };
+  return { 
+    conversations, 
+    unreadCount, 
+    isLoading,
+    markMessageAsRead 
+  };
 };
-

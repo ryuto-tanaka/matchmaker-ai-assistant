@@ -9,12 +9,25 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuthContext } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/components/ui/use-toast';
+import { z } from "zod";
+
+// バリデーションスキーマの定義
+const profileSchema = z.object({
+  company_name: z.string().min(1, "会社名を入力してください"),
+  contact_name: z.string().min(1, "担当者名を入力してください"),
+  phone: z.string()
+    .min(1, "電話番号を入力してください")
+    .regex(/^(0\d{1,4}-?\d{1,4}-?\d{4})$/, "正しい電話番号の形式で入力してください"),
+  address: z.string().min(1, "住所を入力してください"),
+});
 
 const ProfileSetup = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { user, profile } = useAuthContext();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
+  
   const [formData, setFormData] = useState({
     company_name: profile?.company_name || '',
     contact_name: profile?.contact_name || '',
@@ -26,11 +39,15 @@ const ProfileSetup = () => {
     const checkAuth = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) {
+        toast({
+          title: "セッションエラー",
+          description: "ログインが必要です",
+          variant: "destructive",
+        });
         navigate('/login');
         return;
       }
       
-      // プロフィールが既に設定済みの場合は適切なダッシュボードへリダイレクト
       if (profile?.company_name && profile?.primary_type) {
         navigate(`/dashboard/${profile.primary_type}`);
       }
@@ -38,6 +55,25 @@ const ProfileSetup = () => {
 
     checkAuth();
   }, [user, profile, navigate]);
+
+  const validateForm = () => {
+    try {
+      profileSchema.parse(formData);
+      setValidationErrors({});
+      return true;
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        const errors: Record<string, string> = {};
+        error.errors.forEach((err) => {
+          if (err.path[0]) {
+            errors[err.path[0] as string] = err.message;
+          }
+        });
+        setValidationErrors(errors);
+      }
+      return false;
+    }
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
@@ -49,6 +85,8 @@ const ProfileSetup = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!validateForm()) return;
+
     if (!user) {
       toast({
         title: "エラー",
@@ -122,8 +160,11 @@ const ProfileSetup = () => {
                   placeholder="株式会社〇〇"
                   value={formData.company_name}
                   onChange={handleChange}
-                  required
+                  aria-invalid={!!validationErrors.company_name}
                 />
+                {validationErrors.company_name && (
+                  <p className="text-sm text-red-500">{validationErrors.company_name}</p>
+                )}
               </div>
 
               <div className="space-y-2">
@@ -133,8 +174,11 @@ const ProfileSetup = () => {
                   placeholder="山田 太郎"
                   value={formData.contact_name}
                   onChange={handleChange}
-                  required
+                  aria-invalid={!!validationErrors.contact_name}
                 />
+                {validationErrors.contact_name && (
+                  <p className="text-sm text-red-500">{validationErrors.contact_name}</p>
+                )}
               </div>
 
               <div className="space-y-2">
@@ -145,8 +189,11 @@ const ProfileSetup = () => {
                   placeholder="03-xxxx-xxxx"
                   value={formData.phone}
                   onChange={handleChange}
-                  required
+                  aria-invalid={!!validationErrors.phone}
                 />
+                {validationErrors.phone && (
+                  <p className="text-sm text-red-500">{validationErrors.phone}</p>
+                )}
               </div>
 
               <div className="space-y-2">
@@ -156,8 +203,11 @@ const ProfileSetup = () => {
                   placeholder="東京都〇〇区..."
                   value={formData.address}
                   onChange={handleChange}
-                  required
+                  aria-invalid={!!validationErrors.address}
                 />
+                {validationErrors.address && (
+                  <p className="text-sm text-red-500">{validationErrors.address}</p>
+                )}
               </div>
             </div>
 
