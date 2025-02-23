@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
@@ -17,7 +18,7 @@ const ProviderChatPage = () => {
   const [newMessage, setNewMessage] = React.useState("");
   const [showVideoCallDialog, setShowVideoCallDialog] = React.useState(false);
 
-  const { data: expertData: rawExpertData, isLoading: isLoadingExpert } = useQuery({
+  const { data: rawExpertData, isLoading: isLoadingExpert } = useQuery({
     queryKey: ['expert', expertId],
     queryFn: async () => {
       if (!expertId) throw new Error('Expert ID is required');
@@ -175,3 +176,4 @@ const ProviderChatPage = () => {
 };
 
 export default ProviderChatPage;
+

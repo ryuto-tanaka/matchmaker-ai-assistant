@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
@@ -17,7 +18,7 @@ const ExpertChatPage = () => {
   const [newMessage, setNewMessage] = React.useState("");
   const [showVideoCallDialog, setShowVideoCallDialog] = React.useState(false);
 
-  const { data: expertData: rawExpertData, isLoading: isLoadingExpert } = useQuery({
+  const { data: rawExpertData, isLoading: isLoadingExpert } = useQuery({
     queryKey: ['expert', expertId],
     queryFn: async () => {
       if (!expertId) throw new Error('Expert ID is required');
@@ -70,7 +71,7 @@ const ExpertChatPage = () => {
     name: rawExpertData.name,
     title: rawExpertData.title,
     specialties: rawExpertData.specialties,
-    experience: `${rawExpertData.consultations || 0}件の相談実績`, // Convert consultations to experience string
+    experience: `${rawExpertData.consultations || 0}件の相談実績`,
     profile: `評価: ${rawExpertData.rating || 5.0}/5.0 - ${rawExpertData.recommendation_score || 90}%の推奨率`,
   } : null;
 
@@ -175,3 +176,4 @@ const ExpertChatPage = () => {
 };
 
 export default ExpertChatPage;
+
