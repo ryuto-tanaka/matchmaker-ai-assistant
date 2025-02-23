@@ -9,7 +9,6 @@ import { Skeleton } from '@/components/ui/skeleton';
 // Helper function to extract price number from price_range string
 const extractPrice = (priceRange: string | null): number => {
   if (!priceRange) return 0;
-  // Assuming price_range format is like "¥10000" or "10000"
   const match = priceRange.match(/\d+/);
   return match ? parseInt(match[0], 10) : 0;
 };
@@ -22,7 +21,10 @@ const ServicesList = () => {
         .from('services')
         .select(`
           *,
-          provider:profiles!services_user_id_fkey(company_name)
+          provider:profiles!services_user_id_fkey(
+            id,
+            company_name
+          )
         `)
         .order('created_at', { ascending: false });
       
@@ -35,7 +37,13 @@ const ServicesList = () => {
         description: service.description,
         price: extractPrice(service.price_range),
         category: service.category,
-        provider_name: service.provider?.company_name || '企業名なし', // Default if no company name
+        provider_name: service.provider?.company_name || '企業名なし',
+        provider_id: service.provider?.id || '',
+        rating: 4.5, // TODO: Implement actual rating system
+        service_area: service.service_area,
+        completed_projects: service.completed_projects,
+        start_date: service.start_date,
+        available_hours: service.available_hours
       }));
     },
   });
