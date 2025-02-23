@@ -30,7 +30,7 @@ const DashboardOverview = () => {
         <AIBusinessPlanCard />
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {[1, 2, 3, 4].map((_, index) => (
-            <div key={index} className="h-32 bg-gray-100 animate-pulse rounded-lg" />
+            <div key={index} className="h-32 bg-white shadow-sm border border-gray-100 animate-pulse rounded-lg" />
           ))}
         </div>
       </div>
