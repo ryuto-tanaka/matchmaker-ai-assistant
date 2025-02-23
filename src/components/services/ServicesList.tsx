@@ -22,9 +22,7 @@ const ServicesList = () => {
         .from('services')
         .select(`
           *,
-          profiles:user_id (
-            company_name
-          )
+          provider:profiles!services_user_id_fkey(company_name)
         `)
         .order('created_at', { ascending: false });
       
@@ -37,7 +35,7 @@ const ServicesList = () => {
         description: service.description,
         price: extractPrice(service.price_range),
         category: service.category,
-        provider_name: service.profiles?.company_name || '企業名なし', // Default if no company name
+        provider_name: service.provider?.company_name || '企業名なし', // Default if no company name
       }));
     },
   });
