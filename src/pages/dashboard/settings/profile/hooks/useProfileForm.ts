@@ -38,9 +38,9 @@ export const useProfileForm = (user: any, profile: any) => {
     
     setIsSubmitting(true);
     try {
-      const industryData: IndustryData | null = selectedIndustry ? { name: selectedIndustry } : null;
-      const subcategoryData: IndustryData | null = selectedSubcategory ? { name: selectedSubcategory } : null;
-      const detailData: IndustryData | null = data.industry_detail ? { name: data.industry_detail } : null;
+      const industryData: Record<string, any> | null = selectedIndustry ? { name: selectedIndustry } : null;
+      const subcategoryData: Record<string, any> | null = selectedSubcategory ? { name: selectedSubcategory } : null;
+      const detailData: Record<string, any> | null = data.industry_detail ? { name: data.industry_detail } : null;
 
       const { error } = await supabase
         .from('profiles')

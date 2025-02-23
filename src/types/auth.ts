@@ -1,4 +1,8 @@
 
+export interface IndustryData {
+  name: string;
+}
+
 export interface UserProfile {
   id: string;
   company_name: string | null;
@@ -6,7 +10,7 @@ export interface UserProfile {
   phone: string | null;
   address: string | null;
   primary_type: string | null;
-  industry?: string | null;
-  industry_subcategory?: string | null;
-  industry_detail?: string | null;
+  industry?: IndustryData | null;
+  industry_subcategory?: IndustryData | null;
+  industry_detail?: IndustryData | null;
 }
