@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
@@ -27,11 +26,9 @@ const ProfileSettings = () => {
 
   React.useEffect(() => {
     if (profile?.industry) {
-      const industryData = JSON.parse(profile.industry as string);
-      setSelectedIndustry(industryData.name || '');
+      setSelectedIndustry(profile.industry.name);
       if (profile.industry_subcategory) {
-        const subcategoryData = JSON.parse(profile.industry_subcategory as string);
-        setSelectedSubcategory(subcategoryData.name || '');
+        setSelectedSubcategory(profile.industry_subcategory.name);
       }
     }
   }, [profile, setSelectedIndustry, setSelectedSubcategory]);

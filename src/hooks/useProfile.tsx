@@ -3,7 +3,17 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/components/ui/use-toast';
-import { UserProfile } from '@/types/auth';
+import { UserProfile, IndustryData } from '@/types/auth';
+
+const parseIndustryData = (data: any): IndustryData | null => {
+  if (!data) return null;
+  try {
+    const parsed = typeof data === 'string' ? JSON.parse(data) : data;
+    return parsed?.name ? { name: parsed.name } : null;
+  } catch {
+    return null;
+  }
+};
 
 export const useProfile = () => {
   const navigate = useNavigate();
@@ -18,8 +28,23 @@ export const useProfile = () => {
         .maybeSingle();
 
       if (error) throw error;
-      setProfile(data);
-      return data;
+      
+      if (data) {
+        const transformedData: UserProfile = {
+          id: data.id,
+          company_name: data.company_name,
+          contact_name: data.contact_name,
+          phone: data.phone,
+          address: data.address,
+          primary_type: data.primary_type,
+          industry: parseIndustryData(data.industry),
+          industry_subcategory: parseIndustryData(data.industry_subcategory),
+          industry_detail: parseIndustryData(data.industry_detail),
+        };
+        setProfile(transformedData);
+        return transformedData;
+      }
+      return null;
     } catch (error: any) {
       console.error('Error fetching profile:', error);
       toast({
