@@ -25,15 +25,30 @@ const DocumentsSection = () => {
   const navigate = useNavigate();
   const [documents, setDocuments] = useState<Document[]>([]);
   const [pendingApplications, setPendingApplications] = useState<GrantApplication[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   
   useEffect(() => {
-    // Initial data fetch
-    Promise.all([
-      fetchDocuments(),
-      fetchPendingApplications()
-    ]).finally(() => setLoading(false));
+    const fetchData = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        // Initial data fetch
+        await Promise.all([
+          fetchDocuments(),
+          fetchPendingApplications()
+        ]);
+      } catch (error) {
+        console.error('Error fetching initial data:', error);
+        setError('データの取得に失敗しました');
+        toast.error("データの取得に失敗しました");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
 
     // Set up real-time subscription for documents
     const channel = supabase
@@ -88,7 +103,7 @@ const DocumentsSection = () => {
       setDocuments(data || []);
     } catch (error) {
       console.error('Error fetching documents:', error);
-      toast.error("書類の取得に失敗しました");
+      throw error;
     }
   };
 
@@ -124,20 +139,21 @@ const DocumentsSection = () => {
       setPendingApplications(formattedApplications);
     } catch (error) {
       console.error('Error fetching pending applications:', error);
-      toast.error("申請情報の取得に失敗しました");
+      throw error;
     }
   };
 
-  if (loading) {
+  if (error) {
     return (
       <Card>
         <CardHeader>
           <CardTitle>書類管理</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="flex items-center justify-center p-4">
-            <p className="text-gray-500">読み込み中...</p>
-          </div>
+          <Alert variant="destructive">
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
         </CardContent>
       </Card>
     );
@@ -187,7 +203,13 @@ const DocumentsSection = () => {
           />
         </CardHeader>
         <CardContent>
-          <DocumentList documents={documents} />
+          {loading ? (
+            <div className="flex items-center justify-center p-4">
+              <p className="text-gray-500">読み込み中...</p>
+            </div>
+          ) : (
+            <DocumentList documents={documents} />
+          )}
         </CardContent>
       </Card>
     </div>
