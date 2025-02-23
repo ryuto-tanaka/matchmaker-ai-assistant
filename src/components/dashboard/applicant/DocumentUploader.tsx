@@ -2,9 +2,14 @@
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Upload } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { createClient } from '@supabase/supabase-js';
 import { toast } from "sonner";
 import { useAuthContext } from '@/contexts/AuthContext';
+
+const supabase = createClient(
+  import.meta.env.VITE_SUPABASE_URL || '',
+  import.meta.env.VITE_SUPABASE_ANON_KEY || ''
+);
 
 interface DocumentUploaderProps {
   onUploadComplete: () => void;
@@ -28,24 +33,33 @@ const DocumentUploader = ({ onUploadComplete, uploading, setUploading }: Documen
 
       setUploading(true);
       const file = event.target.files[0];
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${crypto.randomUUID()}.${fileExt}`;
       
+      // ファイル名をサニタイズ
+      const sanitizedFileName = file.name.replace(/[^\x00-\x7F]/g, '');
+      const fileExt = sanitizedFileName.split('.').pop();
+      const fileName = `${crypto.randomUUID()}.${fileExt}`;
+
+      // ファイルをアップロード
       const { error: uploadError } = await supabase.storage
         .from('documents')
-        .upload(fileName, file);
+        .upload(fileName, file, {
+          cacheControl: '3600',
+          upsert: false
+        });
 
       if (uploadError) throw uploadError;
 
+      // メタデータをデータベースに保存
       const { error: dbError } = await supabase
         .from('documents')
-        .insert({
+        .insert([{
           title: file.name,
           file_path: fileName,
           status: '審査待ち',
           document_type: fileExt?.toUpperCase() || '不明',
-          user_id: user.id
-        });
+          user_id: user.id,
+          created_at: new Date().toISOString()
+        }]);
 
       if (dbError) throw dbError;
 
@@ -67,15 +81,19 @@ const DocumentUploader = ({ onUploadComplete, uploading, setUploading }: Documen
         className="hidden"
         onChange={handleFileUpload}
         disabled={uploading}
+        accept=".pdf,.doc,.docx,.txt"
       />
       <label htmlFor="file-upload">
         <Button 
           variant="outline" 
           className="gap-2 cursor-pointer"
           disabled={uploading}
+          asChild
         >
-          <Upload className="h-4 w-4" />
-          {uploading ? 'アップロード中...' : '書類をアップロード'}
+          <span>
+            <Upload className="h-4 w-4" />
+            {uploading ? 'アップロード中...' : '書類をアップロード'}
+          </span>
         </Button>
       </label>
     </div>
