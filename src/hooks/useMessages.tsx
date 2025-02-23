@@ -5,7 +5,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 
 export interface Conversation {
-  id: number;
+  id: string; // Changed from number to string to match Supabase UUID type
   expertName: string;
   title: string;
   lastMessage: string;
@@ -20,15 +20,15 @@ export interface Conversation {
 }
 
 interface Message {
-  id: number;
+  id: string; // Changed from number to string to match Supabase UUID type
   content: string;
   created_at: string;
   sender_id: string;
   receiver_id: string;
   read_at: string | null;
-  expert_id: number;
+  expert_id: string; // Changed from number to string
   experts: {
-    id: number;
+    id: string; // Changed from number to string
     name: string;
     title: string;
   } | null;
@@ -70,11 +70,11 @@ export const useMessages = () => {
     },
     enabled: !!user?.id,
     staleTime: 1000 * 60 * 5, // 5分間キャッシュを保持
-    cacheTime: 1000 * 60 * 30, // 30分間キャッシュを維持
+    gcTime: 1000 * 60 * 30, // Changed from cacheTime to gcTime - 30分間キャッシュを維持
   });
 
   // メッセージの既読状態を更新する関数
-  const markMessageAsRead = React.useCallback(async (messageId: number) => {
+  const markMessageAsRead = React.useCallback(async (messageId: string) => { // Changed from number to string
     if (!user?.id) return;
 
     const { error } = await supabase
@@ -97,7 +97,7 @@ export const useMessages = () => {
   }, [user?.id, queryClient]);
 
   const { conversations, unreadCount } = React.useMemo(() => {
-    const conversationMap = new Map<number, Conversation>();
+    const conversationMap = new Map<string, Conversation>(); // Changed from number to string
     let unreadMessages = 0;
 
     messagesData.forEach((message) => {
