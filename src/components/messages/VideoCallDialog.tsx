@@ -25,6 +25,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Video } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
+import { useAuth } from "@/hooks/useAuth";
 
 const formSchema = z.object({
   scheduledAt: z.string().min(1, "予約日時を選択してください"),
@@ -45,6 +46,8 @@ const VideoCallDialog = ({
   expertId 
 }: VideoCallDialogProps) => {
   const { toast } = useToast();
+  const { user } = useAuth();
+  
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -54,11 +57,21 @@ const VideoCallDialog = ({
   });
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    if (!user) {
+      toast({
+        variant: "destructive",
+        title: "エラーが発生しました",
+        description: "ログインが必要です。",
+      });
+      return;
+    }
+
     try {
       const { error } = await supabase
         .from('video_calls')
         .insert({
           expert_id: expertId,
+          user_id: user.id,
           scheduled_at: new Date(values.scheduledAt).toISOString(),
           topic: values.topic,
           status: 'scheduled'

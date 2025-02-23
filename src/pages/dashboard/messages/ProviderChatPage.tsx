@@ -7,18 +7,20 @@ import ExpertInfo from '@/components/messages/ExpertInfo';
 import VideoCallDialog from '@/components/messages/VideoCallDialog';
 import ChatMessages from '@/components/messages/ChatMessages';
 import MessageInput from '@/components/messages/MessageInput';
+import { useAuth } from "@/hooks/useAuth";
 
 const ProviderChatPage = () => {
   const { expertId } = useParams();
   const { toast } = useToast();
+  const { user } = useAuth();
   const [newMessage, setNewMessage] = React.useState("");
   const [showVideoCallDialog, setShowVideoCallDialog] = React.useState(false);
 
   const userName = "株式会社〇〇";
 
-  // 仮のクライアントデータ
+  // 仮の専門家データ
   const expertData = {
-    id: expertId,
+    id: expertId || '',
     name: "山田太郎",
     title: "中小企業診断士",
     specialties: ["IT導入補助金", "事業再構築補助金", "経営革新計画"],
@@ -69,12 +71,10 @@ const ProviderChatPage = () => {
   };
 
   const handleVideoCallSchedule = () => {
-    toast({
-      title: "ビデオ通話が予約されました",
-      description: "予約日時: 2024年3月1日 15:00",
-    });
     setShowVideoCallDialog(false);
   };
+
+  if (!expertId) return null;
 
   return (
     <DashboardLayout userType="provider" userName={userName} secondaryTypes={['expert']}>
@@ -95,6 +95,7 @@ const ProviderChatPage = () => {
             open={showVideoCallDialog}
             onOpenChange={setShowVideoCallDialog}
             onSchedule={handleVideoCallSchedule}
+            expertId={expertId}
           />
         </div>
       </div>
@@ -103,4 +104,3 @@ const ProviderChatPage = () => {
 };
 
 export default ProviderChatPage;
-
