@@ -25,7 +25,7 @@ const DocumentsSection = () => {
   const navigate = useNavigate();
   const [documents, setDocuments] = useState<Document[]>([]);
   const [pendingApplications, setPendingApplications] = useState<GrantApplication[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   
@@ -204,7 +204,7 @@ const DocumentsSection = () => {
         </CardHeader>
         <CardContent>
           {loading ? (
-            <div className="flex items-center justify-center p-4">
+            <div className="flex items-center justify-center py-8">
               <p className="text-gray-500">読み込み中...</p>
             </div>
           ) : (
