@@ -40,7 +40,7 @@ export const fetchDashboardStats = async () => {
       .from('messages')
       .select('receiver_id, sender_id')
       .or(`receiver_id.eq.${user.id},sender_id.eq.${user.id}`)
-      .distinct(),
+      .select('receiver_id, sender_id', { count: 'exact', head: true }), // Changed to proper distinct count
     supabase
       .from('grant_applications')
       .select('*')
