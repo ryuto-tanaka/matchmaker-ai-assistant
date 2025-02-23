@@ -19,12 +19,6 @@ export const fetchDashboardStats = async () => {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return null;
 
-  // Type for message data
-  interface MessageData {
-    sender_id: string;
-    receiver_id: string;
-  }
-
   const [
     { data: activeApplications },
     { data: expiredApplications },
@@ -44,7 +38,7 @@ export const fetchDashboardStats = async () => {
       .eq('status', 'expired'),
     supabase
       .from('messages')
-      .select<'messages', MessageData>('receiver_id, sender_id')
+      .select('*')
       .or(`receiver_id.eq.${user.id},sender_id.eq.${user.id}`),
     supabase
       .from('grant_applications')
@@ -61,7 +55,7 @@ export const fetchDashboardStats = async () => {
   // Get unique expert IDs by filtering out duplicates
   const uniqueExpertIds = new Set<string>();
   if (consultationExperts) {
-    consultationExperts.forEach((msg: MessageData) => {
+    consultationExperts.forEach((msg) => {
       if (msg.sender_id === user.id) {
         uniqueExpertIds.add(msg.receiver_id);
       } else {
