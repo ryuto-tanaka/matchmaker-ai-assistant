@@ -502,6 +502,9 @@ export type Database = {
           contact_name: string | null
           created_at: string
           id: string
+          industry: Json | null
+          industry_detail: Json | null
+          industry_subcategory: Json | null
           phone: string | null
           primary_type: Database["public"]["Enums"]["user_type"]
           updated_at: string
@@ -512,6 +515,9 @@ export type Database = {
           contact_name?: string | null
           created_at?: string
           id: string
+          industry?: Json | null
+          industry_detail?: Json | null
+          industry_subcategory?: Json | null
           phone?: string | null
           primary_type: Database["public"]["Enums"]["user_type"]
           updated_at?: string
@@ -522,6 +528,9 @@ export type Database = {
           contact_name?: string | null
           created_at?: string
           id?: string
+          industry?: Json | null
+          industry_detail?: Json | null
+          industry_subcategory?: Json | null
           phone?: string | null
           primary_type?: Database["public"]["Enums"]["user_type"]
           updated_at?: string
