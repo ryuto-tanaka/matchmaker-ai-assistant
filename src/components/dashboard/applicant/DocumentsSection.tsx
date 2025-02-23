@@ -2,9 +2,10 @@
 import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Download, File } from 'lucide-react';
+import { Download, File, Upload } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from "sonner";
+import { useAuthContext } from '@/contexts/AuthContext';
 
 interface Document {
   id: string;
@@ -18,7 +19,9 @@ interface Document {
 const DocumentsSection = () => {
   const [documents, setDocuments] = useState<Document[]>([]);
   const [loading, setLoading] = useState(true);
-
+  const [uploading, setUploading] = useState(false);
+  const { user } = useAuthContext();
+  
   useEffect(() => {
     fetchDocuments();
   }, []);
@@ -41,37 +44,68 @@ const DocumentsSection = () => {
     }
   };
 
+  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    try {
+      if (!event.target.files || event.target.files.length === 0) {
+        return;
+      }
+
+      setUploading(true);
+      const file = event.target.files[0];
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${crypto.randomUUID()}.${fileExt}`;
+      
+      // Upload file to Supabase Storage
+      const { error: uploadError } = await supabase.storage
+        .from('documents')
+        .upload(fileName, file);
+
+      if (uploadError) throw uploadError;
+
+      // Create document record in the database
+      const { error: dbError } = await supabase
+        .from('documents')
+        .insert({
+          title: file.name,
+          file_path: fileName,
+          status: '審査待ち',
+          document_type: fileExt?.toUpperCase() || '不明',
+        });
+
+      if (dbError) throw dbError;
+
+      toast.success("書類がアップロードされました");
+      fetchDocuments(); // Refresh the documents list
+    } catch (error) {
+      console.error('Upload error:', error);
+      toast.error("アップロードに失敗しました");
+    } finally {
+      setUploading(false);
+    }
+  };
+
   const handleDownload = async (doc: Document) => {
     try {
       if (!doc.file_path) {
         throw new Error('ファイルパスが見つかりません');
       }
 
-      const { data, error } = await supabase.storage
+      const { data, error: downloadError } = await supabase.storage
         .from('documents')
         .download(doc.file_path);
 
-      if (error) {
-        throw error;
-      }
+      if (downloadError) throw downloadError;
 
-      // Create a blob URL directly
+      // Create a blob URL and trigger download
       const blob = new Blob([data]);
       const url = URL.createObjectURL(blob);
-      
-      // Create and click a hidden download link
       const link = document.createElement('a');
-      link.style.display = 'none';
       link.href = url;
       link.download = doc.title;
       document.body.appendChild(link);
       link.click();
-      
-      // Clean up
-      setTimeout(() => {
-        document.body.removeChild(link);
-        URL.revokeObjectURL(url);
-      }, 100);
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
 
       toast.success("ダウンロードを開始しました");
     } catch (error) {
@@ -97,8 +131,27 @@ const DocumentsSection = () => {
 
   return (
     <Card>
-      <CardHeader>
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle>書類管理</CardTitle>
+        <div className="relative">
+          <input
+            type="file"
+            id="file-upload"
+            className="hidden"
+            onChange={handleFileUpload}
+            disabled={uploading}
+          />
+          <label htmlFor="file-upload">
+            <Button 
+              variant="outline" 
+              className="gap-2 cursor-pointer"
+              disabled={uploading}
+            >
+              <Upload className="h-4 w-4" />
+              {uploading ? 'アップロード中...' : '書類をアップロード'}
+            </Button>
+          </label>
+        </div>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
