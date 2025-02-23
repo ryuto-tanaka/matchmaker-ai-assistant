@@ -11,6 +11,8 @@ interface DocumentListProps {
 }
 
 const DocumentList = ({ documents }: DocumentListProps) => {
+  console.log('DocumentList rendered with documents:', documents);
+
   const handleDownload = async (doc: Document) => {
     try {
       if (!doc.file_path) {
@@ -41,6 +43,7 @@ const DocumentList = ({ documents }: DocumentListProps) => {
   };
 
   if (!documents || documents.length === 0) {
+    console.log('No documents condition met, showing empty state');
     return (
       <div className="flex items-center justify-center py-8">
         <p className="text-gray-500">書類がありません</p>
@@ -82,4 +85,3 @@ const DocumentList = ({ documents }: DocumentListProps) => {
 };
 
 export default DocumentList;
-
