@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -17,17 +17,6 @@ const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    const checkAuth = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session) {
-        // ユーザーが既にログインしている場合は適切なダッシュボードにリダイレクト
-        navigate('/dashboard/applicant');
-      }
-    };
-    checkAuth();
-  }, [navigate]);
 
   const validateForm = () => {
     if (!email || !password) {
