@@ -40,10 +40,13 @@ const ServicesList = () => {
         provider_name: service.provider?.company_name || '企業名なし',
         provider_id: service.provider?.id || '',
         rating: 4.5, // TODO: Implement actual rating system
-        service_area: service.service_area,
-        completed_projects: service.completed_projects,
-        start_date: service.start_date,
-        available_hours: service.available_hours
+        service_area: service.service_area || [],
+        completed_projects: service.completed_projects || 0,
+        start_date: service.start_date || null,
+        available_hours: service.available_hours ? {
+          weekdays: service.available_hours.weekdays || [],
+          hours: service.available_hours.hours || []
+        } : { weekdays: [], hours: [] }
       }));
     },
   });
