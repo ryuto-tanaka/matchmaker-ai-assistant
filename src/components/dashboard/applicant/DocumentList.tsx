@@ -40,7 +40,7 @@ const DocumentList = ({ documents }: DocumentListProps) => {
     }
   };
 
-  if (documents.length === 0) {
+  if (!documents || documents.length === 0) {
     return (
       <div className="flex items-center justify-center py-8">
         <p className="text-gray-500">書類がありません</p>
@@ -82,3 +82,4 @@ const DocumentList = ({ documents }: DocumentListProps) => {
 };
 
 export default DocumentList;
+
