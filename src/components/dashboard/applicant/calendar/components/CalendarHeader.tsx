@@ -16,8 +16,8 @@ const CalendarHeader: React.FC<CalendarHeaderProps> = ({
   onOpenTodoDialog,
 }) => {
   return (
-    <CardHeader className="flex flex-row items-center justify-between border-b pb-4">
-      <CardTitle className="text-xl md:text-2xl font-bold text-gray-800 tracking-tight leading-none bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent">
+    <CardHeader className="flex flex-row items-center justify-between border-b pb-4 writing-horizontal">
+      <CardTitle className="text-xl md:text-2xl font-bold text-gray-800 tracking-tight leading-none bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent whitespace-nowrap">
         スケジュール管理
       </CardTitle>
       <div className="flex gap-2">
@@ -43,4 +43,3 @@ const CalendarHeader: React.FC<CalendarHeaderProps> = ({
 };
 
 export default CalendarHeader;
-
