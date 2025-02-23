@@ -1,19 +1,88 @@
 
 import React from 'react';
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { 
+  Dialog, 
+  DialogContent, 
+  DialogHeader, 
+  DialogTitle, 
+  DialogTrigger,
+  DialogFooter
+} from "@/components/ui/dialog";
+import { 
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage 
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Video } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/components/ui/use-toast";
+
+const formSchema = z.object({
+  scheduledAt: z.string().min(1, "予約日時を選択してください"),
+  topic: z.string().min(1, "相談内容を入力してください"),
+});
 
 interface VideoCallDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSchedule: () => void;
+  expertId: string;
 }
 
-const VideoCallDialog = ({ open, onOpenChange, onSchedule }: VideoCallDialogProps) => {
+const VideoCallDialog = ({ 
+  open, 
+  onOpenChange, 
+  onSchedule,
+  expertId 
+}: VideoCallDialogProps) => {
+  const { toast } = useToast();
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      scheduledAt: "",
+      topic: "",
+    },
+  });
+
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    try {
+      const { error } = await supabase
+        .from('video_calls')
+        .insert({
+          expert_id: expertId,
+          scheduled_at: new Date(values.scheduledAt).toISOString(),
+          topic: values.topic,
+          status: 'scheduled'
+        });
+
+      if (error) throw error;
+
+      toast({
+        title: "ビデオ通話を予約しました",
+        description: `予約日時: ${new Date(values.scheduledAt).toLocaleString()}`,
+      });
+
+      form.reset();
+      onSchedule();
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "エラーが発生しました",
+        description: "ビデオ通話の予約に失敗しました。もう一度お試しください。",
+      });
+      console.error("Video call scheduling error:", error);
+    }
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogTrigger asChild>
@@ -26,19 +95,48 @@ const VideoCallDialog = ({ open, onOpenChange, onSchedule }: VideoCallDialogProp
         <DialogHeader>
           <DialogTitle>ビデオ通話の予約</DialogTitle>
         </DialogHeader>
-        <div className="space-y-4 py-4">
-          <div className="space-y-2">
-            <Label>予約日時</Label>
-            <Input type="datetime-local" />
-          </div>
-          <div className="space-y-2">
-            <Label>相談内容</Label>
-            <Textarea placeholder="相談したい内容を記入してください" />
-          </div>
-          <Button onClick={onSchedule} className="w-full">
-            予約を確定する
-          </Button>
-        </div>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <FormField
+              control={form.control}
+              name="scheduledAt"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>予約日時</FormLabel>
+                  <FormControl>
+                    <Input 
+                      type="datetime-local" 
+                      {...field}
+                      min={new Date().toISOString().slice(0, 16)}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="topic"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>相談内容</FormLabel>
+                  <FormControl>
+                    <Textarea 
+                      placeholder="相談したい内容を記入してください"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <DialogFooter>
+              <Button type="submit" className="w-full">
+                予約を確定する
+              </Button>
+            </DialogFooter>
+          </form>
+        </Form>
       </DialogContent>
     </Dialog>
   );

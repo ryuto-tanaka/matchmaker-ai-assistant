@@ -69,12 +69,10 @@ const ApplicantChatPage = () => {
   };
 
   const handleVideoCallSchedule = () => {
-    toast({
-      title: "ビデオ通話が予約されました",
-      description: "予約日時: 2024年3月1日 15:00",
-    });
     setShowVideoCallDialog(false);
   };
+
+  if (!expertId) return null;
 
   return (
     <DashboardLayout userType="applicant" userName={userName}>
@@ -95,6 +93,7 @@ const ApplicantChatPage = () => {
             open={showVideoCallDialog}
             onOpenChange={setShowVideoCallDialog}
             onSchedule={handleVideoCallSchedule}
+            expertId={expertId}
           />
         </div>
       </div>
