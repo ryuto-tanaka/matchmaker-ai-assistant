@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -21,16 +20,13 @@ import ProfileSettings from "./pages/dashboard/settings/profile/ProfileSettings"
 import NotificationSettings from "./pages/dashboard/settings/notifications/NotificationSettings";
 import SecuritySettings from "./pages/dashboard/settings/security/SecuritySettings";
 import LocaleSettings from "./pages/dashboard/settings/locale/LocaleSettings";
-
-// 新規追加ページのインポート
 import ApplicationsPage from "./pages/dashboard/applicant/ApplicationsPage";
 import ExpertsPage from "./pages/dashboard/applicant/ExpertsPage";
+import ServicesPage from "./pages/dashboard/applicant/ServicesPage";
 import CasesPage from "./pages/dashboard/provider/CasesPage";
 import ProviderClientsPage from "./pages/dashboard/provider/ClientsPage";
 import ConsultationsPage from "./pages/dashboard/expert/ConsultationsPage";
 import ExpertClientsPage from "./pages/dashboard/expert/ClientsPage";
-
-// 新規追加
 import MessagesPage from "./pages/dashboard/messages/MessagesPage";
 import ApplicantChatPage from "./pages/dashboard/messages/ApplicantChatPage";
 import ProviderChatPage from "./pages/dashboard/messages/ProviderChatPage";
@@ -60,6 +56,7 @@ const App = () => (
               {/* 申請者関連のルート */}
               <Route path="/dashboard/applicant" element={<ApplicantDashboard />} />
               <Route path="/dashboard/applicant/applications" element={<ApplicationsPage />} />
+              <Route path="/dashboard/applicant/services" element={<ServicesPage />} />
               <Route path="/dashboard/applicant/experts" element={<ExpertsPage />} />
               <Route path="/dashboard/applicant/messages" element={<MessagesPage />} />
               <Route path="/dashboard/applicant/messages/:expertId" element={<ApplicantChatPage />} />
