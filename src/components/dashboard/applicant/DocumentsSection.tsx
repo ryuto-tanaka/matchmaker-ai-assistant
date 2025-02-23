@@ -69,7 +69,18 @@ const DocumentsSection = () => {
 
       if (error) throw error;
 
-      setPendingApplications(data || []);
+      // Map the response data to match our interface
+      const formattedApplications: GrantApplication[] = (data || []).map(app => ({
+        id: app.id,
+        status: app.status,
+        created_at: app.created_at,
+        grant: {
+          name: app.grants.name,
+          max_amount: app.grants.max_amount
+        }
+      }));
+
+      setPendingApplications(formattedApplications);
     } catch (error) {
       console.error('Error fetching pending applications:', error);
       toast.error("申請情報の取得に失敗しました");
