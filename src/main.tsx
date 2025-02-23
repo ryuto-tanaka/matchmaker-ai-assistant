@@ -2,8 +2,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import * as Sentry from "@sentry/react";
-import { BrowserTracing } from "@sentry/tracing";
-import { Replay } from "@sentry/browser";
+import { BrowserTracing } from "@sentry/react";
 import App from './App';
 import './index.css';
 import { Toaster } from "@/components/ui/toaster";
@@ -16,7 +15,7 @@ if (import.meta.env.PROD) {
       new BrowserTracing({
         tracePropagationTargets: ["localhost", /^https:\/\/yourdomain\.com/],
       }),
-      new Replay(),
+      new Sentry.Replay(),
     ],
     tracesSampleRate: 1.0,
     replaysSessionSampleRate: 0.1,
