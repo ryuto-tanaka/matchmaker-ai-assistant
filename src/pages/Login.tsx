@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -9,6 +9,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuthContext } from '@/contexts/AuthContext';
 import { UserRole } from '@/types/user';
 import { toast } from "@/components/ui/use-toast";
+import { supabase } from '@/integrations/supabase/client';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -16,6 +17,17 @@ const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        // ユーザーが既にログインしている場合は適切なダッシュボードにリダイレクト
+        navigate('/dashboard/applicant');
+      }
+    };
+    checkAuth();
+  }, [navigate]);
 
   const validateForm = () => {
     if (!email || !password) {
@@ -34,17 +46,36 @@ const Login = () => {
     
     setLoading(true);
     try {
-      await signIn(email, password);
-      navigate(`/dashboard/${userType}`);
-      toast({
-        title: "ログイン成功",
-        description: "ダッシュボードに移動します",
-        duration: 3000, // 3秒後に自動的に消えるように設定
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password
       });
-    } catch (error) {
+
+      if (error) throw error;
+
+      if (data.user) {
+        // プロフィール情報を取得
+        const { data: profileData } = await supabase
+          .from('profiles')
+          .select('primary_type')
+          .eq('id', data.user.id)
+          .single();
+
+        if (profileData && profileData.primary_type !== userType) {
+          throw new Error('選択したユーザータイプが一致しません');
+        }
+
+        navigate(`/dashboard/${userType}`);
+        toast({
+          title: "ログイン成功",
+          description: "ダッシュボードに移動します",
+          duration: 3000,
+        });
+      }
+    } catch (error: any) {
       toast({
         title: "ログインエラー",
-        description: "認証に失敗しました。入力内容を確認してください。",
+        description: error.message || "認証に失敗しました。入力内容を確認してください。",
         variant: "destructive",
       });
     } finally {
