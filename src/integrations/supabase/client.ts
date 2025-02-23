@@ -18,19 +18,21 @@ supabase.auth.onAuthStateChange((event, session) => {
     console.log('User signed out');
   } else if (event === 'SIGNED_IN') {
     console.log('User signed in');
-  } else if (event === 'USER_DELETED') {
-    console.log('User deleted');
   } else if (event === 'USER_UPDATED') {
     console.log('User updated');
+  } else if (event === 'TOKEN_REFRESHED') {
+    console.log('Token refreshed');
+  } else if (event === 'INITIAL_SESSION') {
+    console.log('Initial session loaded');
   }
 });
 
 // パフォーマンスモニタリングの追加
-const originalQuery = supabase.from('').select;
-supabase.from = function(...args: any[]) {
+const originalFrom = supabase.from;
+supabase.from = function(table: keyof Database['public']['Tables']) {
   const start = performance.now();
-  const result = originalQuery.apply(this, args);
+  const result = originalFrom(table);
   const end = performance.now();
-  console.log(`Query execution time: ${end - start}ms`);
+  console.log(`Query execution time for ${table}: ${end - start}ms`);
   return result;
 } as typeof supabase.from;
