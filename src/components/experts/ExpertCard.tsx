@@ -1,18 +1,35 @@
 
 import React from 'react';
-import { User, Star, MessageSquare, AlertCircle, Loader2 } from 'lucide-react';
+import { User, Star, MessageSquare, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Expert } from '@/types/expert';
 
-interface ExpertCardProps {
-  expert?: Expert;
-  isLoading?: boolean;
-  error?: string;
+// Separate interfaces for different states
+interface LoadingExpertCardProps {
+  isLoading: true;
+  expert?: never;
+  error?: never;
+  onConsultationRequest?: never;
+}
+
+interface ErrorExpertCardProps {
+  error: string;
+  isLoading?: never;
+  expert?: never;
+  onConsultationRequest?: never;
+}
+
+interface NormalExpertCardProps {
+  expert: Expert;
+  isLoading?: never;
+  error?: never;
   onConsultationRequest: (expertId: string, expertName: string) => void;
 }
+
+type ExpertCardProps = LoadingExpertCardProps | ErrorExpertCardProps | NormalExpertCardProps;
 
 export const ExpertCard = ({ expert, isLoading, error, onConsultationRequest }: ExpertCardProps) => {
   if (isLoading) {
