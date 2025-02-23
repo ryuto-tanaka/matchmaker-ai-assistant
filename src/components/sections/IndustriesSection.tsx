@@ -7,9 +7,12 @@ import { targetIndustries } from "@/data/industries";
 export const IndustriesSection = () => {
   const [showAllIndustries, setShowAllIndustries] = useState(false);
   const initialDisplayCount = 24;
-  const displayedIndustries = showAllIndustries 
-    ? targetIndustries 
-    : targetIndustries.slice(0, initialDisplayCount);
+
+  // Extract just the industry names
+  const industryNames = targetIndustries.map(industry => industry.name);
+  const displayedIndustryNames = showAllIndustries 
+    ? industryNames 
+    : industryNames.slice(0, initialDisplayCount);
 
   return (
     <div className="py-20 bg-white">
@@ -34,12 +37,12 @@ export const IndustriesSection = () => {
             対応業種一覧
           </h3>
           <div className="flex flex-wrap gap-3">
-            {displayedIndustries.map((industry, i) => (
+            {displayedIndustryNames.map((industryName, i) => (
               <span
                 key={i}
                 className="inline-flex items-center px-4 py-2 bg-gray-50 text-gray-700 rounded-full text-sm font-medium border border-gray-200 hover:border-primary/30 hover:bg-primary/5 transition-colors duration-200"
               >
-                {industry}
+                {industryName}
               </span>
             ))}
           </div>

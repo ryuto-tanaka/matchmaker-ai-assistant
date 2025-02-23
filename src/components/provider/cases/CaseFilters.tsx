@@ -19,6 +19,9 @@ export const CaseFilters = ({
   onIndustryFilterChange,
   onDeadlineFilterChange,
 }: CaseFiltersProps) => {
+  // Extract just the industry names from the complex objects
+  const industryNames = targetIndustries.map(industry => industry.name);
+
   return (
     <div className="flex flex-wrap gap-4 mb-6">
       <div className="w-48">
@@ -42,9 +45,9 @@ export const CaseFilters = ({
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">すべて</SelectItem>
-            {targetIndustries.map((industry) => (
-              <SelectItem key={industry} value={industry}>
-                {industry}
+            {industryNames.map((industryName) => (
+              <SelectItem key={industryName} value={industryName}>
+                {industryName}
               </SelectItem>
             ))}
           </SelectContent>
