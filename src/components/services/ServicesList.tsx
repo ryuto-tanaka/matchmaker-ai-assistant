@@ -6,17 +6,39 @@ import ServiceCard from './ServiceCard';
 import { Card } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 
+// Helper function to extract price number from price_range string
+const extractPrice = (priceRange: string | null): number => {
+  if (!priceRange) return 0;
+  // Assuming price_range format is like "¥10000" or "10000"
+  const match = priceRange.match(/\d+/);
+  return match ? parseInt(match[0], 10) : 0;
+};
+
 const ServicesList = () => {
   const { data: services, isLoading } = useQuery({
     queryKey: ['services'],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('services')
-        .select('*')
+        .select(`
+          *,
+          profiles:user_id (
+            company_name
+          )
+        `)
         .order('created_at', { ascending: false });
       
       if (error) throw error;
-      return data;
+
+      // Transform the data to match ServiceCard props
+      return data.map(service => ({
+        id: service.id,
+        name: service.name,
+        description: service.description,
+        price: extractPrice(service.price_range),
+        category: service.category,
+        provider_name: service.profiles?.company_name || '企業名なし', // Default if no company name
+      }));
     },
   });
 
