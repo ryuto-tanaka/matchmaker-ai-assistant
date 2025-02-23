@@ -1,3 +1,4 @@
+
 import React, { useState, useMemo } from 'react';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import { Card, CardContent } from "@/components/ui/card";
@@ -121,7 +122,7 @@ const ApplicationsPage = () => {
       <div className="space-y-8">
         <h1 className="text-2xl font-bold">補助金情報</h1>
 
-        <Card className="bg-white/50 backdrop-blur-sm">
+        <Card className="bg-white">
           <CardContent className="p-6 space-y-6">
             <ApplicationFilters
               searchQuery={searchQuery}
@@ -153,3 +154,4 @@ const ApplicationsPage = () => {
 };
 
 export default ApplicationsPage;
+
