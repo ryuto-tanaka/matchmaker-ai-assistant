@@ -13,6 +13,12 @@ interface AvailableHours {
   hours: string[];
 }
 
+interface IndustryJson {
+  name: string;
+  id?: string;
+  // Add other potential fields
+}
+
 // Helper function to extract price number from price_range string
 const extractPrice = (priceRange: string | null): number => {
   if (!priceRange) return 0;
@@ -29,6 +35,14 @@ const parseAvailableHours = (hours: unknown): AvailableHours => {
     };
   }
   return { weekdays: [], hours: [] };
+};
+
+// Helper function to safely get industry name
+const getIndustryName = (industry: unknown): string => {
+  if (industry && typeof industry === 'object' && 'name' in industry) {
+    return (industry as IndustryJson).name;
+  }
+  return '';
 };
 
 const ServicesList = () => {
@@ -55,9 +69,9 @@ const ServicesList = () => {
       return data.map(service => {
         const availableHours = parseAvailableHours(service.available_hours);
         const industryData = {
-          large_category: service.provider?.industry?.name || '',
-          medium_category: service.provider?.industry_subcategory?.name,
-          small_category: service.provider?.industry_detail?.name
+          large_category: getIndustryName(service.provider?.industry),
+          medium_category: getIndustryName(service.provider?.industry_subcategory),
+          small_category: getIndustryName(service.provider?.industry_detail)
         };
         
         return {
