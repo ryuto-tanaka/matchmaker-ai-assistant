@@ -6,11 +6,28 @@ import ServiceCard from './ServiceCard';
 import { Card } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 
+// Define interface for available hours structure
+interface AvailableHours {
+  weekdays: string[];
+  hours: string[];
+}
+
 // Helper function to extract price number from price_range string
 const extractPrice = (priceRange: string | null): number => {
   if (!priceRange) return 0;
   const match = priceRange.match(/\d+/);
   return match ? parseInt(match[0], 10) : 0;
+};
+
+// Helper function to safely parse available hours
+const parseAvailableHours = (hours: unknown): AvailableHours => {
+  if (hours && typeof hours === 'object' && 'weekdays' in hours && 'hours' in hours) {
+    return {
+      weekdays: Array.isArray((hours as AvailableHours).weekdays) ? (hours as AvailableHours).weekdays : [],
+      hours: Array.isArray((hours as AvailableHours).hours) ? (hours as AvailableHours).hours : []
+    };
+  }
+  return { weekdays: [], hours: [] };
 };
 
 const ServicesList = () => {
@@ -31,23 +48,27 @@ const ServicesList = () => {
       if (error) throw error;
 
       // Transform the data to match ServiceCard props
-      return data.map(service => ({
-        id: service.id,
-        name: service.name,
-        description: service.description,
-        price: extractPrice(service.price_range),
-        category: service.category,
-        provider_name: service.provider?.company_name || '企業名なし',
-        provider_id: service.provider?.id || '',
-        rating: 4.5, // TODO: Implement actual rating system
-        service_area: service.service_area || [],
-        completed_projects: service.completed_projects || 0,
-        start_date: service.start_date || null,
-        available_hours: service.available_hours ? {
-          weekdays: service.available_hours.weekdays || [],
-          hours: service.available_hours.hours || []
-        } : { weekdays: [], hours: [] }
-      }));
+      return data.map(service => {
+        const availableHours = parseAvailableHours(service.available_hours);
+        
+        return {
+          id: service.id,
+          name: service.name,
+          description: service.description,
+          price: extractPrice(service.price_range),
+          category: service.category,
+          provider_name: service.provider?.company_name || '企業名なし',
+          provider_id: service.provider?.id || '',
+          rating: 4.5, // TODO: Implement actual rating system
+          service_area: service.service_area || [],
+          completed_projects: service.completed_projects || 0,
+          start_date: service.start_date || null,
+          available_hours: {
+            weekdays: availableHours.weekdays,
+            hours: availableHours.hours
+          }
+        };
+      });
     },
   });
 
@@ -80,3 +101,4 @@ const ServicesList = () => {
 };
 
 export default ServicesList;
+
