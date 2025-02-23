@@ -50,6 +50,11 @@ const DocumentsSection = () => {
         return;
       }
 
+      if (!user?.id) {
+        toast.error("ユーザー情報が見つかりません");
+        return;
+      }
+
       setUploading(true);
       const file = event.target.files[0];
       const fileExt = file.name.split('.').pop();
@@ -70,6 +75,7 @@ const DocumentsSection = () => {
           file_path: fileName,
           status: '審査待ち',
           document_type: fileExt?.toUpperCase() || '不明',
+          user_id: user.id  // Add the user_id field
         });
 
       if (dbError) throw dbError;
