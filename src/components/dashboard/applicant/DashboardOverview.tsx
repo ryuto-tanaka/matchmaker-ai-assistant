@@ -24,7 +24,43 @@ const DashboardOverview = () => {
 
   const isValidRoute = (path: string) => validRoutes.includes(path);
 
-  if (isLoading || !stats) {
+  // データがロード中または存在しない場合でもカードを表示する
+  const displayStats = stats || [
+    {
+      icon: null,
+      label: '申請中の補助金',
+      value: '0件',
+      color: 'bg-blue-50',
+      iconColor: 'text-blue-600',
+      details: []
+    },
+    {
+      icon: null,
+      label: '過去の申請補助金',
+      value: '0件',
+      color: 'bg-gray-50',
+      iconColor: 'text-gray-600',
+      details: []
+    },
+    {
+      icon: null,
+      label: '相談中の専門家',
+      value: '0名',
+      color: 'bg-purple-50',
+      iconColor: 'text-purple-600',
+      details: []
+    },
+    {
+      icon: null,
+      label: '承認済み',
+      value: '0件',
+      color: 'bg-green-50',
+      iconColor: 'text-green-600',
+      details: []
+    }
+  ];
+
+  if (isLoading) {
     return (
       <div className="space-y-6">
         <AIBusinessPlanCard />
@@ -42,7 +78,7 @@ const DashboardOverview = () => {
       <AIBusinessPlanCard />
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        {stats.map((stat, index) => (
+        {displayStats.map((stat, index) => (
           <StatCard
             key={index}
             stat={stat}
