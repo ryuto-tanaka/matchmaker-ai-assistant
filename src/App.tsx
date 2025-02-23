@@ -39,14 +39,11 @@ import ExpertChatPage from "./pages/dashboard/messages/ExpertChatPage";
 const queryClient = new QueryClient();
 
 const App = () => (
-  <ErrorBoundary>
-    <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <OfflineBanner />
-        <BrowserRouter>
-          <AuthProvider>
+  <QueryClientProvider client={queryClient}>
+    <ErrorBoundary>
+      <BrowserRouter>
+        <AuthProvider>
+          <TooltipProvider>
             <Routes>
               <Route path="/" element={<Index />} />
               
@@ -90,11 +87,14 @@ const App = () => (
               
               <Route path="*" element={<NotFound />} />
             </Routes>
-          </AuthProvider>
-        </BrowserRouter>
-      </TooltipProvider>
-    </QueryClientProvider>
-  </ErrorBoundary>
+            <Toaster />
+            <Sonner />
+            <OfflineBanner />
+          </TooltipProvider>
+        </AuthProvider>
+      </BrowserRouter>
+    </ErrorBoundary>
+  </QueryClientProvider>
 );
 
 export default App;
