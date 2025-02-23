@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import DashboardLayout from '@/components/layout/DashboardLayout';
@@ -7,9 +6,6 @@ import { ExpertSearchBar } from '@/components/experts/ExpertSearchBar';
 import { ExpertCategoryFilter } from '@/components/experts/ExpertCategoryFilter';
 import { ExpertCard } from '@/components/experts/ExpertCard';
 import { useExperts } from '@/hooks/useExperts';
-import LoadingCard from '@/components/ui/loading-card';
-import ErrorCard from '@/components/ui/error-card';
-import { toast } from 'sonner';
 import { Expert } from '@/types/expert';
 
 const categories = [
@@ -94,14 +90,17 @@ const ExpertsPage = () => {
     });
   };
 
-  if (error) {
-    toast.error("専門家データの取得に失敗しました");
-    return <ErrorCard title="専門家検索" error={error.message} />;
-  }
-
-  if (isLoading) {
-    return <LoadingCard title="専門家を探しています..." />;
-  }
+  const renderExpertCard = (expert: Expert) => {
+    return (
+      <ExpertCard
+        key={expert.id}
+        expert={expert}
+        isLoading={isLoading}
+        error={error?.message}
+        onConsultationRequest={handleConsultationRequest}
+      />
+    );
+  };
 
   return (
     <DashboardLayout userType="applicant" userName="申請者">
@@ -122,15 +121,28 @@ const ExpertsPage = () => {
             onToggleCategory={toggleCategory}
           />
 
-          <div className="grid gap-6">
-            {getSortedExperts(experts).map((expert) => (
-              <ExpertCard
-                key={expert.id}
-                expert={expert}
-                onConsultationRequest={handleConsultationRequest}
-              />
-            ))}
-          </div>
+          {/* Show loading state for initial load */}
+          {isLoading && !experts.length && (
+            <div className="grid gap-6">
+              {[...Array(6)].map((_, index) => (
+                <ExpertCard key={`loading-${index}`} isLoading />
+              ))}
+            </div>
+          )}
+
+          {/* Show error state if there's an error and no data */}
+          {error && !experts.length && (
+            <div className="grid gap-6">
+              <ExpertCard error={error.message} onConsultationRequest={() => {}} />
+            </div>
+          )}
+
+          {/* Show expert cards if we have data */}
+          {experts.length > 0 && (
+            <div className="grid gap-6">
+              {getSortedExperts(experts).map(renderExpertCard)}
+            </div>
+          )}
         </div>
 
         <ConsultationRequestModal
