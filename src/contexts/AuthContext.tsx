@@ -85,7 +85,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         title: "ログアウト完了",
         description: "ログアウトしました",
       });
-      navigate('/login');
+      navigate('/'); // Changed from '/login' to '/' to redirect to top page
     } catch (error: any) {
       toast({
         title: "エラー",
