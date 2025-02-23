@@ -21,6 +21,15 @@ interface ProjectDetailsDialogProps {
 }
 
 const ProjectDetailsDialog = ({ open, onOpenChange, project }: ProjectDetailsDialogProps) => {
+  // Always ensure we have a valid project object with default values
+  const safeProject = {
+    title: project?.title || "相談内容",
+    budget: project?.budget || "見積り希望",
+    deadline: project?.deadline || "未定",
+    deliveryDate: project?.deliveryDate || "未定",
+    details: project?.details || "",
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-3xl">
@@ -32,7 +41,7 @@ const ProjectDetailsDialog = ({ open, onOpenChange, project }: ProjectDetailsDia
         </DialogHeader>
         <div className="space-y-6">
           <div>
-            <h3 className="text-lg font-semibold mb-4">{project.title}</h3>
+            <h3 className="text-lg font-semibold mb-4">{safeProject.title}</h3>
             <div className="bg-green-600 text-white p-4 rounded-lg mb-6">
               <div className="font-bold mb-2">【やりたいこと】IT導入補助金について</div>
               <div className="text-sm">
@@ -43,15 +52,15 @@ const ProjectDetailsDialog = ({ open, onOpenChange, project }: ProjectDetailsDia
             <div className="grid grid-cols-2 gap-4 mb-6">
               <div>
                 <p className="text-sm text-muted-foreground">予算</p>
-                <p>{project.budget}</p>
+                <p>{safeProject.budget}</p>
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">提案期限</p>
-                <p>{project.deadline}</p>
+                <p>{safeProject.deadline}</p>
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">納品希望日</p>
-                <p>{project.deliveryDate}</p>
+                <p>{safeProject.deliveryDate}</p>
               </div>
             </div>
           </div>

@@ -11,6 +11,7 @@ import { supabase } from '@/integrations/supabase/client';
 
 const MessagesPage = () => {
   const [showDetails, setShowDetails] = React.useState(false);
+  const [selectedConversation, setSelectedConversation] = React.useState<number | null>(null);
   const location = useLocation();
   const { user } = useAuth();
 
@@ -101,7 +102,10 @@ const MessagesPage = () => {
               title={conversation.title}
               lastMessage={conversation.lastMessage}
               timestamp={conversation.timestamp}
-              onDetailsClick={() => setShowDetails(true)}
+              onDetailsClick={() => {
+                setSelectedConversation(conversation.id);
+                setShowDetails(true);
+              }}
             />
           ))}
         </div>
@@ -109,7 +113,13 @@ const MessagesPage = () => {
         <ProjectDetailsDialog
           open={showDetails}
           onOpenChange={setShowDetails}
-          project={conversations[0]?.project}
+          project={conversations.find(c => c.id === selectedConversation)?.project || {
+            title: "",
+            budget: "",
+            deadline: "",
+            deliveryDate: "",
+            details: ""
+          }}
         />
       </div>
     </DashboardLayout>
