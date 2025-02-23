@@ -3,14 +3,11 @@ import React from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Expert } from '@/types/expert';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from '@/hooks/useAuth';
-import { useToast } from '@/components/ui/use-toast';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { ExpertCardSkeleton } from './ExpertCardSkeleton';
 import { ExpertCardError } from './ExpertCardError';
 import { ExpertInfo } from './ExpertInfo';
 import { ExpertActions } from './ExpertActions';
+import { useExpertFavorite } from '@/hooks/useExpertFavorite';
 
 interface LoadingExpertCardProps {
   isLoading: true;
@@ -37,60 +34,8 @@ type ExpertCardProps = LoadingExpertCardProps | ErrorExpertCardProps | NormalExp
 
 export const ExpertCard = ({ expert, isLoading, error, onConsultationRequest }: ExpertCardProps) => {
   const navigate = useNavigate();
-  const { user } = useAuth();
-  const { toast } = useToast();
-  const queryClient = useQueryClient();
 
-  const { data: isFavorite } = useQuery({
-    queryKey: ['favorites', expert?.id, user?.id],
-    queryFn: async () => {
-      if (!user?.id || !expert?.id) return false;
-      const { data } = await supabase
-        .from('favorite_experts')
-        .select('id')
-        .eq('user_id', user.id)
-        .eq('expert_id', expert.id)
-        .single();
-      return !!data;
-    },
-    enabled: !!user?.id && !!expert?.id,
-  });
-
-  const handleFavoriteToggle = async () => {
-    if (!user?.id || !expert?.id) return;
-
-    try {
-      if (isFavorite) {
-        await supabase
-          .from('favorite_experts')
-          .delete()
-          .eq('user_id', user.id)
-          .eq('expert_id', expert.id);
-        
-        toast({
-          description: "お気に入りから削除しました",
-        });
-      } else {
-        await supabase
-          .from('favorite_experts')
-          .insert({
-            user_id: user.id,
-            expert_id: expert.id,
-          });
-        
-        toast({
-          description: "お気に入りに追加しました",
-        });
-      }
-      queryClient.invalidateQueries({ queryKey: ['favorites', expert.id, user.id] });
-    } catch (error) {
-      toast({
-        variant: "destructive",
-        title: "エラーが発生しました",
-        description: "お気に入りの更新に失敗しました。",
-      });
-    }
-  };
+  const { isFavorite, toggleFavorite } = useExpertFavorite(expert?.id || '');
 
   const handleMessageClick = () => {
     if (expert) {
@@ -112,8 +57,8 @@ export const ExpertCard = ({ expert, isLoading, error, onConsultationRequest }: 
         <div className="flex items-start justify-between">
           <ExpertInfo expert={expert} />
           <ExpertActions
-            isFavorite={isFavorite || false}
-            onFavoriteToggle={handleFavoriteToggle}
+            isFavorite={isFavorite}
+            onFavoriteToggle={toggleFavorite}
             onMessageClick={handleMessageClick}
             onConsultationRequest={() => onConsultationRequest(expert.id, expert.name)}
           />
