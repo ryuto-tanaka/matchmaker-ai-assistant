@@ -19,11 +19,17 @@ const CalendarSection = () => {
   const [events, setEvents] = useState<EventDetails[]>([]);
   const [isReminderDialogOpen, setIsReminderDialogOpen] = useState(false);
   const [isEventDetailsOpen, setIsEventDetailsOpen] = useState(false);
+  const [isTodoDialogOpen, setIsTodoDialogOpen] = useState(false);
   const [isGoogleCalendarConnected, setIsGoogleCalendarConnected] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState<EventDetails | null>(null);
   const [reminderTime, setReminderTime] = useState<string>("");
   const [isUpcomingEventsOpen, setIsUpcomingEventsOpen] = useState(true);
   const [expandedEventIndex, setExpandedEventIndex] = useState<number | null>(null);
+  const [newTodo, setNewTodo] = useState({
+    title: '',
+    date: new Date(),
+    description: ''
+  });
 
   useEffect(() => {
     if (!user) return;
@@ -117,19 +123,61 @@ const CalendarSection = () => {
     setIsReminderDialogOpen(false);
   };
 
+  const handleAddTodo = async () => {
+    if (!user) return;
+
+    try {
+      const { error } = await supabase
+        .from('calendar_events')
+        .insert({
+          title: newTodo.title,
+          event_date: newTodo.date.toISOString(),
+          description: newTodo.description,
+          event_type: 'todo',
+          user_id: user.id
+        });
+
+      if (error) throw error;
+
+      toast({
+        title: "TODO追加完了",
+        description: "新しいTODOを追加しました。",
+      });
+
+      setNewTodo({ title: '', date: new Date(), description: '' });
+      setIsTodoDialogOpen(false);
+    } catch (error) {
+      console.error('Error adding todo:', error);
+      toast({
+        title: "エラー",
+        description: "TODOの追加に失敗しました。",
+        variant: "destructive"
+      });
+    }
+  };
+
   return (
     <Card className="w-full max-w-[1200px] mx-auto bg-white shadow-lg">
       <CardHeader className="flex flex-row items-center justify-between border-b pb-4">
         <CardTitle className="text-2xl font-bold text-gray-800">スケジュール管理</CardTitle>
-        <Button
-          variant="outline"
-          size="default"
-          onClick={handleGoogleCalendarConnect}
-          className="flex items-center gap-2 hover:bg-gray-50 transition-colors"
-        >
-          <CalendarDays className="h-4 w-4" />
-          <span>{isGoogleCalendarConnected ? 'Google Calendar連携済み' : 'Google Calendar連携'}</span>
-        </Button>
+        <div className="flex gap-2">
+          <Button
+            variant="outline"
+            onClick={() => setIsTodoDialogOpen(true)}
+            className="flex items-center gap-2"
+          >
+            TODOを追加
+          </Button>
+          <Button
+            variant="outline"
+            size="default"
+            onClick={handleGoogleCalendarConnect}
+            className="flex items-center gap-2 hover:bg-gray-50 transition-colors"
+          >
+            <CalendarDays className="h-4 w-4" />
+            <span>{isGoogleCalendarConnected ? 'Google Calendar連携済み' : 'Google Calendar連携'}</span>
+          </Button>
+        </div>
       </CardHeader>
 
       <CardContent className="p-6 space-y-6">
@@ -142,6 +190,8 @@ const CalendarSection = () => {
                 onSelect={setDate}
                 locale={ja}
                 className="w-full"
+                events={events}
+                onEventClick={handleEventClick}
               />
             </div>
           </div>
@@ -168,6 +218,11 @@ const CalendarSection = () => {
         reminderTime={reminderTime}
         setReminderTime={setReminderTime}
         onReminderSave={handleReminderSave}
+        isTodoDialogOpen={isTodoDialogOpen}
+        setIsTodoDialogOpen={setIsTodoDialogOpen}
+        newTodo={newTodo}
+        setNewTodo={setNewTodo}
+        onTodoSave={handleAddTodo}
       />
     </Card>
   );
