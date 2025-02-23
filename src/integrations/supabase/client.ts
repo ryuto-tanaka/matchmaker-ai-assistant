@@ -4,12 +4,8 @@ import type { Database } from './types';
 import * as Sentry from "@sentry/react";
 
 // プロジェクトURLとアノンキーは環境に応じて適切に設定する必要があります
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || "";
-const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || "";
-
-if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
-  console.error('Required Supabase environment variables are missing');
-}
+const SUPABASE_URL = "https://vdsepoeswhkkpyayrqhc.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZkc2Vwb2Vzd2hra3B5YXlycWhjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzkzNjg0OTQsImV4cCI6MjA1NDk0NDQ5NH0.ufnxszavYxVol9_X7gM5DZcJygN69MPLsSrEpjuep-A";
 
 export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_ANON_KEY, {
   auth: {
@@ -70,13 +66,14 @@ supabase.from = function(table: keyof Database['public']['Tables']) {
   return result;
 } as typeof supabase.from;
 
-// グローバルエラーハンドラの設定
-supabase.auth.onError((error) => {
-  console.error('Supabase auth error:', error);
-  Sentry.captureException(error, {
-    tags: {
-      source: 'supabase_auth'
-    }
-  });
+// エラーハンドリングの設定
+supabase.auth.onAuthStateChange((event) => {
+  if (event === 'SIGNED_OUT' || event === 'USER_DELETED') {
+    console.error('Supabase auth error:', event);
+    Sentry.captureMessage('Supabase auth error', {
+      level: 'error',
+      extra: { event }
+    });
+  }
 });
 
