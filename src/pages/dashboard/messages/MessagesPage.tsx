@@ -14,7 +14,7 @@ import { useMessages } from '@/hooks/useMessages';
 const MessagesPage = () => {
   const [showDetails, setShowDetails] = React.useState(false);
   const [showFavorites, setShowFavorites] = React.useState(false);
-  const [selectedConversation, setSelectedConversation] = React.useState<string | null>(null);  // Changed from number to string
+  const [selectedConversation, setSelectedConversation] = React.useState<string | null>(null);
   const [searchQuery, setSearchQuery] = React.useState('');
   const location = useLocation();
   const { user } = useAuth();
@@ -35,6 +35,12 @@ const MessagesPage = () => {
 
   const handleCreateNew = () => {
     setShowFavorites(true);
+  };
+
+  const handleStartConversation = (expertId: string) => {
+    setShowFavorites(false);
+    // Navigate to the chat with the selected expert
+    window.location.href = `/dashboard/${userType}/messages/${expertId}`;
   };
 
   const userName = user?.email || '';
@@ -86,6 +92,7 @@ const MessagesPage = () => {
         <FavoriteExpertsDialog
           open={showFavorites}
           onOpenChange={setShowFavorites}
+          onSelectExpert={handleStartConversation}
         />
       </div>
     </DashboardLayout>

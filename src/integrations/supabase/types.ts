@@ -336,6 +336,35 @@ export type Database = {
           },
         ]
       }
+      favorite_services: {
+        Row: {
+          created_at: string
+          id: string
+          service_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          service_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          service_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "favorite_services_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "services"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       grant_applications: {
         Row: {
           created_at: string
@@ -499,6 +528,42 @@ export type Database = {
         }
         Relationships: []
       }
+      services: {
+        Row: {
+          category: string
+          created_at: string
+          description: string
+          id: string
+          name: string
+          price_range: string | null
+          status: Database["public"]["Enums"]["service_status"] | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          description: string
+          id?: string
+          name: string
+          price_range?: string | null
+          status?: Database["public"]["Enums"]["service_status"] | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          description?: string
+          id?: string
+          name?: string
+          price_range?: string | null
+          status?: Database["public"]["Enums"]["service_status"] | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_secondary_types: {
         Row: {
           created_at: string
@@ -570,6 +635,7 @@ export type Database = {
     }
     Enums: {
       expert_status: "active" | "inactive"
+      service_status: "active" | "inactive"
       user_type: "applicant" | "provider" | "expert"
     }
     CompositeTypes: {
