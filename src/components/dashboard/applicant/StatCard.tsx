@@ -10,7 +10,7 @@ import { cn } from "@/lib/utils";
 
 interface StatCardProps {
   stat: {
-    icon: LucideIcon;
+    icon: LucideIcon | null;
     label: string;
     value: string;
     color: string;
@@ -50,7 +50,7 @@ export const StatCard = ({
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-4">
                 <div className={`p-2 rounded-lg ${stat.color}`}>
-                  <Icon className={`h-6 w-6 ${stat.iconColor}`} />
+                  {Icon && <Icon className={`h-6 w-6 ${stat.iconColor}`} />}
                 </div>
                 <div>
                   <p className="text-sm text-gray-500">{stat.label}</p>
