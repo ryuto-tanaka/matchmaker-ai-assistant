@@ -8,9 +8,11 @@ import CalendarHeader from './calendar/components/CalendarHeader';
 import CalendarContent from './calendar/components/CalendarContent';
 import { useCalendarState } from './calendar/hooks/useCalendarState';
 import { EventDetails } from './calendar/types';
+import { useAuthContext } from '@/contexts/AuthContext';
 
 const CalendarSection = () => {
   const { toast } = useToast();
+  const { user } = useAuthContext();
   const {
     date,
     setDate,
@@ -74,6 +76,15 @@ const CalendarSection = () => {
   };
 
   const handleAddTodo = async () => {
+    if (!user) {
+      toast({
+        title: "エラー",
+        description: "ユーザー情報の取得に失敗しました。",
+        variant: "destructive"
+      });
+      return;
+    }
+
     try {
       const { error } = await supabase
         .from('calendar_events')
@@ -81,7 +92,8 @@ const CalendarSection = () => {
           title: newTodo.title,
           event_date: newTodo.date.toISOString(),
           description: newTodo.description,
-          event_type: 'todo'
+          event_type: 'todo',
+          user_id: user.id
         });
 
       if (error) throw error;
