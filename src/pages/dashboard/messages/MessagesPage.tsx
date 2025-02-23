@@ -124,12 +124,13 @@ const MessagesPage = () => {
         <div className="flex justify-between items-center">
           <div className="flex items-center gap-4">
             <h1 className="text-2xl font-bold">メッセージ</h1>
-            {unreadCount > 0 && (
-              <Badge variant="destructive" className="flex items-center gap-1">
-                <Mail className="h-4 w-4" />
-                <span>{unreadCount}</span>
-              </Badge>
-            )}
+            <Badge 
+              variant={unreadCount > 0 ? "destructive" : "secondary"} 
+              className="flex items-center gap-1"
+            >
+              <Mail className="h-4 w-4" />
+              <span>{unreadCount}</span>
+            </Badge>
           </div>
         </div>
 
