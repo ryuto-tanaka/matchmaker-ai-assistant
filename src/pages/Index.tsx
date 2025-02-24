@@ -16,23 +16,14 @@ const Index = () => {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        // ログイン済みユーザーは適切なダッシュボードにリダイレクト
-        if (user) {
-          switch (user.role) {
-            case UserRole.APPLICANT:
-              navigate("/dashboard/applicant");
-              break;
-            case UserRole.PROVIDER:
-              navigate("/dashboard/provider");
-              break;
-            case UserRole.EXPERT:
-              navigate("/dashboard/expert");
-              break;
-          }
+        if (user && user.role) {
+          // ログイン済みユーザーは適切なダッシュボードにリダイレクト
+          const dashboardPath = `/dashboard/${user.role}`;
+          navigate(dashboardPath, { replace: true });
         }
-        setIsLoading(false);
       } catch (error) {
         console.error("Error checking auth:", error);
+      } finally {
         setIsLoading(false);
       }
     };
@@ -45,7 +36,7 @@ const Index = () => {
     return <LoadingTimeoutAlert isLoading={isLoading} timeout={60000} />;
   }
 
-  // 未ログインユーザーにはトップページコンテンツを表示
+  // 未ログインユーザー（userがnull）の場合はLPを表示
   return (
     <div className="min-h-screen">
       <HeroSection />
