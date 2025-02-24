@@ -5,6 +5,7 @@ import { toast } from '@/components/ui/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { AuthContextType } from '@/types/auth-context';
 import { useAuthState } from '@/hooks/useAuthState';
+import { UserRole } from '@/types/user';
 
 const MOCK_USER_ID = 'f47ac10b-58cc-4372-a567-0e02b2c3d479';
 
@@ -20,7 +21,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
 
     // For demo purposes, accept any non-empty email/password
-    const mockUser = { id: MOCK_USER_ID, email, role: 'applicant' as const };
+    const mockUser = { id: MOCK_USER_ID, email, role: UserRole.APPLICANT };
     setUser(mockUser);
     setProfile({
       id: mockUser.id,
@@ -36,7 +37,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setLoading(true);
     try {
       if (email && password) {
-        const mockUser = { id: MOCK_USER_ID, email, role: 'applicant' as const };
+        const mockUser = { id: MOCK_USER_ID, email, role: UserRole.APPLICANT };
         setUser(mockUser);
         setProfile({
           id: mockUser.id,
@@ -101,4 +102,3 @@ export const useAuthContext = () => {
   }
   return context;
 };
-
