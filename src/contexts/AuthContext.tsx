@@ -9,6 +9,7 @@ import { UserRole } from '@/types/user';
 
 const MOCK_USER_ID = 'f47ac10b-58cc-4372-a567-0e02b2c3d479';
 
+// Initialize context with undefined
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
@@ -93,13 +94,17 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     signOut,
   };
 
+  // Ensure value is properly typed
+  const contextValue: AuthContextType = value;
+
   return (
-    <AuthContext.Provider value={value}>
+    <AuthContext.Provider value={contextValue}>
       {children}
     </AuthContext.Provider>
   );
 };
 
+// Export the hook with proper type checking
 export const useAuthContext = () => {
   const context = useContext(AuthContext);
   if (context === undefined) {
