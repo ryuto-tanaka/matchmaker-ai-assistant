@@ -60,15 +60,21 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const signOut = async () => {
     setLoading(true);
     try {
-      await supabase.auth.signOut();
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+
       setUser(null);
       setProfile(null);
+      
       toast({
         title: "ログアウト完了",
         description: "ログアウトしました",
       });
-      navigate('/');
+      
+      // 明示的にトップページへリダイレクト
+      navigate('/', { replace: true });
     } catch (error: any) {
+      console.error('Logout error:', error);
       toast({
         title: "エラー",
         description: "ログアウトに失敗しました",
