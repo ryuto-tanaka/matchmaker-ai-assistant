@@ -14,8 +14,9 @@ const Index = () => {
   const { user } = useAuthContext();
   
   useEffect(() => {
-    const fetchData = async () => {
+    const checkAuth = async () => {
       try {
+        // ログイン済みユーザーは適切なダッシュボードにリダイレクト
         if (user) {
           switch (user.role) {
             case UserRole.APPLICANT:
@@ -31,20 +32,25 @@ const Index = () => {
         }
         setIsLoading(false);
       } catch (error) {
-        console.error("Error fetching data:", error);
+        console.error("Error checking auth:", error);
         setIsLoading(false);
       }
     };
 
-    fetchData();
+    checkAuth();
   }, [user, navigate]);
 
+  // ローディング中はローディングアラートを表示
+  if (isLoading) {
+    return <LoadingTimeoutAlert isLoading={isLoading} timeout={60000} />;
+  }
+
+  // 未ログインユーザーにはトップページコンテンツを表示
   return (
     <div className="min-h-screen">
       <HeroSection />
       <IndustriesSection />
       <MetricsSection />
-      <LoadingTimeoutAlert isLoading={isLoading} timeout={60000} />
     </div>
   );
 };
