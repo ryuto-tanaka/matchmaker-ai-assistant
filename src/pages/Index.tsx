@@ -3,7 +3,6 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuthContext } from "@/contexts/AuthContext";
 import { LoadingTimeoutAlert } from "@/components/ui/loading-timeout-alert";
-import { UserRole } from "@/types/user";
 import { HeroSection } from "@/components/sections/HeroSection";
 import { IndustriesSection } from "@/components/sections/IndustriesSection";
 import { MetricsSection } from "@/components/sections/MetricsSection";
@@ -16,7 +15,7 @@ const Index = () => {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        if (user && user.role) {
+        if (user) {
           // ログイン済みユーザーは適切なダッシュボードにリダイレクト
           const dashboardPath = `/dashboard/${user.role}`;
           navigate(dashboardPath, { replace: true });
@@ -38,12 +37,13 @@ const Index = () => {
 
   // 未ログインユーザー（userがnull）の場合はLPを表示
   return (
-    <div className="min-h-screen">
+    <main className="min-h-screen bg-white">
       <HeroSection />
       <IndustriesSection />
       <MetricsSection />
-    </div>
+    </main>
   );
 };
 
 export default Index;
+
