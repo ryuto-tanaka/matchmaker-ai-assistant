@@ -15,10 +15,10 @@ const Index = () => {
   useEffect(() => {
     const checkAuth = async () => {
       try {
+        // ユーザーがログイン済みの場合は、適切なダッシュボードにリダイレクト
         if (user) {
-          // ログイン済みユーザーは適切なダッシュボードにリダイレクト
           const dashboardPath = `/dashboard/${user.role}`;
-          navigate(dashboardPath, { replace: true });
+          await navigate(dashboardPath, { replace: true });
         }
       } catch (error) {
         console.error("Error checking auth:", error);
@@ -30,14 +30,14 @@ const Index = () => {
     checkAuth();
   }, [user, navigate]);
 
-  // ローディング中はローディングアラートを表示
+  // ローディング中の表示
   if (isLoading) {
     return <LoadingTimeoutAlert isLoading={isLoading} timeout={60000} />;
   }
 
-  // 未ログインユーザー（userがnull）の場合はLPを表示
+  // 未ログインユーザー向けのランディングページを表示
   return (
-    <main className="min-h-screen bg-white">
+    <main className="min-h-screen w-full bg-white">
       <HeroSection />
       <IndustriesSection />
       <MetricsSection />
@@ -46,4 +46,3 @@ const Index = () => {
 };
 
 export default Index;
-
