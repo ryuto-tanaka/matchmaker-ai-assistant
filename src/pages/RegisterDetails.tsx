@@ -83,8 +83,8 @@ const RegisterDetails = () => {
 
     setLoading(true);
     try {
-      const result = await signUp(email, password);
-      if (result) {
+      const success = await signUp(email, password);
+      if (success) {
         toast({
           title: "登録完了",
           description: "アカウントが正常に作成されました",

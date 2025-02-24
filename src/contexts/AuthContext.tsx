@@ -13,7 +13,7 @@ type AuthContextType = {
   profile: UserProfile | null;
   loading: boolean;
   signIn: (email: string, password: string) => Promise<void>;
-  signUp: (email: string, password: string) => Promise<void>;
+  signUp: (email: string, password: string) => Promise<boolean>;
   signOut: () => Promise<void>;
 };
 
@@ -126,7 +126,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     });
   };
 
-  const signUp = async (email: string, password: string) => {
+  const signUp = async (email: string, password: string): Promise<boolean> => {
     setLoading(true);
     try {
       if (email && password) {
@@ -140,20 +140,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           address: null,
           primary_type: 'applicant'
         });
-        toast({
-          title: "登録完了",
-          description: "登録が完了しました",
-        });
-        navigate('/profile-setup');
-      } else {
-        throw new Error('Invalid credentials');
+        return true;
       }
+      return false;
     } catch (error: any) {
-      toast({
-        title: "登録エラー",
-        description: "登録に失敗しました",
-        variant: "destructive",
-      });
       throw error;
     } finally {
       setLoading(false);
