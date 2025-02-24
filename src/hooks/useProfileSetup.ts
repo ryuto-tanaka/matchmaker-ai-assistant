@@ -23,19 +23,34 @@ export const useProfileSetup = () => {
 
   useEffect(() => {
     const checkAuth = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
+      try {
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+        if (sessionError) {
+          console.error('Session error:', sessionError);
+          throw sessionError;
+        }
+
+        if (!session) {
+          toast({
+            title: "セッションエラー",
+            description: "ログインが必要です",
+            variant: "destructive",
+          });
+          navigate('/login');
+          return;
+        }
+        
+        if (profile?.company_name && profile?.primary_type) {
+          navigate(`/dashboard/${profile.primary_type}`);
+        }
+      } catch (error) {
+        console.error('Auth check error:', error);
         toast({
-          title: "セッションエラー",
-          description: "ログインが必要です",
+          title: "エラー",
+          description: "認証の確認中にエラーが発生しました",
           variant: "destructive",
         });
         navigate('/login');
-        return;
-      }
-      
-      if (profile?.company_name && profile?.primary_type) {
-        navigate(`/dashboard/${profile.primary_type}`);
       }
     };
 
@@ -70,10 +85,16 @@ export const useProfileSetup = () => {
     }
 
     try {
+      setIsSubmitting(true);
+      console.log('Validating form data:', formData);
       const validatedData = profileSchema.parse(formData);
       
-      setIsSubmitting(true);
-      const { error } = await supabase
+      console.log('Updating profile with data:', {
+        ...validatedData,
+        primary_type: location.state?.userType || profile?.primary_type,
+      });
+
+      const { error: updateError } = await supabase
         .from('profiles')
         .update({
           ...validatedData,
@@ -82,8 +103,12 @@ export const useProfileSetup = () => {
         })
         .eq('id', user.id);
 
-      if (error) throw error;
+      if (updateError) {
+        console.error('Profile update error:', updateError);
+        throw updateError;
+      }
 
+      console.log('Profile update successful');
       toast({
         title: "保存完了",
         description: "プロフィール情報を保存しました",
@@ -103,6 +128,11 @@ export const useProfileSetup = () => {
           }
         });
         setValidationErrors(errors);
+        toast({
+          title: "入力エラー",
+          description: "入力内容を確認してください",
+          variant: "destructive",
+        });
       } else {
         toast({
           title: "エラー",
