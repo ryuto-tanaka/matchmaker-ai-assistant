@@ -56,37 +56,24 @@ const ProfileSetup = () => {
     checkAuth();
   }, [user, profile, navigate]);
 
-  const validateForm = () => {
-    try {
-      profileSchema.parse(formData);
-      setValidationErrors({});
-      return true;
-    } catch (error) {
-      if (error instanceof z.ZodError) {
-        const errors: Record<string, string> = {};
-        error.errors.forEach((err) => {
-          if (err.path[0]) {
-            errors[err.path[0] as string] = err.message;
-          }
-        });
-        setValidationErrors(errors);
-      }
-      return false;
-    }
-  };
-
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
     setFormData(prev => ({
       ...prev,
       [id]: value
     }));
+    // 入力時にそのフィールドのバリデーションエラーをクリア
+    if (validationErrors[id]) {
+      setValidationErrors(prev => {
+        const updated = { ...prev };
+        delete updated[id];
+        return updated;
+      });
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!validateForm()) return;
-
     if (!user) {
       toast({
         title: "エラー",
@@ -97,12 +84,15 @@ const ProfileSetup = () => {
       return;
     }
 
-    setIsSubmitting(true);
     try {
+      // バリデーションチェック
+      const validatedData = profileSchema.parse(formData);
+      
+      setIsSubmitting(true);
       const { error } = await supabase
         .from('profiles')
         .update({
-          ...formData,
+          ...validatedData,
           primary_type: location.state?.userType || profile?.primary_type,
           updated_at: new Date().toISOString(),
         })
@@ -119,13 +109,24 @@ const ProfileSetup = () => {
       if (userType) {
         navigate(`/dashboard/${userType}`);
       }
-    } catch (error: any) {
+    } catch (error) {
       console.error('Profile update error:', error);
-      toast({
-        title: "エラー",
-        description: error.message || "プロフィールの保存に失敗しました",
-        variant: "destructive",
-      });
+      if (error instanceof z.ZodError) {
+        // Zodバリデーションエラーの処理
+        const errors: Record<string, string> = {};
+        error.errors.forEach((err) => {
+          if (err.path[0]) {
+            errors[err.path[0] as string] = err.message;
+          }
+        });
+        setValidationErrors(errors);
+      } else {
+        toast({
+          title: "エラー",
+          description: "プロフィールの保存に失敗しました",
+          variant: "destructive",
+        });
+      }
     } finally {
       setIsSubmitting(false);
     }
