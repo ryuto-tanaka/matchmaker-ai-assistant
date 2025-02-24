@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate, Link } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,6 +8,7 @@ import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { ArrowLeft } from 'lucide-react';
 import { useAuthContext } from '@/contexts/AuthContext';
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { toast } from "@/components/ui/use-toast";
 
 const RegisterDetails = () => {
   const navigate = useNavigate();
@@ -20,8 +21,30 @@ const RegisterDetails = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Add timeout to prevent infinite loading state
+  useEffect(() => {
+    let timeout: NodeJS.Timeout;
+    if (loading) {
+      timeout = setTimeout(() => {
+        setLoading(false);
+        setError('登録処理がタイムアウトしました。もう一度お試しください。');
+      }, 10000); // 10秒でタイムアウト
+    }
+    return () => {
+      if (timeout) {
+        clearTimeout(timeout);
+      }
+    };
+  }, [loading]);
+
+  // Redirect if no userType is provided
+  useEffect(() => {
+    if (!userType) {
+      navigate('/register');
+    }
+  }, [userType, navigate]);
+
   if (!userType) {
-    navigate('/register');
     return null;
   }
 
@@ -32,10 +55,26 @@ const RegisterDetails = () => {
     return null;
   };
 
+  const validateEmail = (email: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return '有効なメールアドレスを入力してください';
+    }
+    return null;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
 
+    // Validate email
+    const emailError = validateEmail(email);
+    if (emailError) {
+      setError(emailError);
+      return;
+    }
+
+    // Validate password
     const passwordError = validatePassword(password);
     if (passwordError) {
       setError(passwordError);
@@ -44,13 +83,24 @@ const RegisterDetails = () => {
 
     setLoading(true);
     try {
-      await signUp(email, password);
-      navigate('/profile-setup', { state: { userType } });
+      const result = await signUp(email, password);
+      if (result) {
+        toast({
+          title: "登録完了",
+          description: "アカウントが正常に作成されました",
+        });
+        navigate('/profile-setup', { state: { userType } });
+      } else {
+        throw new Error('登録に失敗しました');
+      }
     } catch (err: any) {
+      console.error('Registration error:', err);
       if (err.message.includes('after')) {
         setError('しばらく待ってから再度お試しください');
       } else if (err.message.includes('Password')) {
         setError('パスワードは6文字以上で入力してください');
+      } else if (err.message.includes('Email')) {
+        setError('このメールアドレスは既に登録されています');
       } else {
         setError(err.message || '登録中にエラーが発生しました');
       }
@@ -95,6 +145,7 @@ const RegisterDetails = () => {
                   placeholder="example@company.com"
                   required
                   disabled={loading}
+                  className="bg-white"
                 />
               </div>
               <div className="space-y-2">
@@ -108,12 +159,17 @@ const RegisterDetails = () => {
                   required
                   disabled={loading}
                   minLength={6}
+                  className="bg-white"
                 />
                 <p className="text-sm text-gray-500">
                   パスワードは6文字以上で入力してください
                 </p>
               </div>
-              <Button type="submit" className="w-full" disabled={loading}>
+              <Button 
+                type="submit" 
+                className="w-full" 
+                disabled={loading}
+              >
                 {loading ? '登録中...' : '次へ'}
               </Button>
             </form>
