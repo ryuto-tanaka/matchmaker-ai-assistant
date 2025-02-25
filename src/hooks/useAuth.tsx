@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from '@/components/ui/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 import { UserProfile } from '@/types/auth';
 
 export const useAuth = () => {
@@ -13,31 +14,41 @@ export const useAuth = () => {
   const signIn = async (email: string, password: string) => {
     setLoading(true);
     try {
-      // モック認証: 実際のSupabase認証の代わり
-      if (email && password) {
-        const mockUser = { id: '1', email };
-        setUser(mockUser);
-        // モックプロフィールも設定
-        setProfile({
-          id: mockUser.id,
-          company_name: null,
-          contact_name: null,
-          phone: null,
-          address: null,
-          primary_type: 'applicant'
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (error) throw error;
+
+      if (data.user) {
+        setUser({
+          id: data.user.id,
+          email: data.user.email!,
         });
+
+        // プロフィール情報を取得
+        const { data: profileData } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', data.user.id)
+          .single();
+
+        if (profileData) {
+          setProfile(profileData);
+        }
+
         toast({
           title: "ログイン成功",
-          description: "ログインに成功しました",
+          description: "ダッシュボードに移動します",
         });
         navigate('/dashboard/applicant');
-      } else {
-        throw new Error('Invalid credentials');
       }
     } catch (error: any) {
+      console.error('Login error:', error);
       toast({
         title: "ログインエラー",
-        description: "ログインに失敗しました",
+        description: error.message,
         variant: "destructive",
       });
       throw error;
@@ -46,33 +57,34 @@ export const useAuth = () => {
     }
   };
 
-  const signUp = async (email: string, password: string) => {
+  const signUp = async (email: string, password: string): Promise<boolean> => {
     setLoading(true);
     try {
-      if (email && password) {
-        const mockUser = { id: '1', email };
-        setUser(mockUser);
-        // 新規ユーザー用の空のプロフィールを設定
-        setProfile({
-          id: mockUser.id,
-          company_name: null,
-          contact_name: null,
-          phone: null,
-          address: null,
-          primary_type: 'applicant'
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+      });
+
+      if (error) throw error;
+
+      if (data.user) {
+        setUser({
+          id: data.user.id,
+          email: data.user.email!,
         });
+
         toast({
           title: "登録完了",
-          description: "登録が完了しました",
+          description: "アカウントが作成されました",
         });
-        navigate('/profile-setup');
-      } else {
-        throw new Error('Invalid credentials');
+        return true;
       }
+      return false;
     } catch (error: any) {
+      console.error('Signup error:', error);
       toast({
         title: "登録エラー",
-        description: "登録に失敗しました",
+        description: error.message,
         variant: "destructive",
       });
       throw error;
@@ -82,23 +94,25 @@ export const useAuth = () => {
   };
 
   const signOut = async () => {
-    setLoading(true);
     try {
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+
       setUser(null);
       setProfile(null);
+      
       toast({
         title: "ログアウト完了",
         description: "ログアウトしました",
       });
-      navigate('/login');
+      navigate('/');
     } catch (error: any) {
+      console.error('Logout error:', error);
       toast({
         title: "エラー",
         description: "ログアウトに失敗しました",
         variant: "destructive",
       });
-    } finally {
-      setLoading(false);
     }
   };
 
