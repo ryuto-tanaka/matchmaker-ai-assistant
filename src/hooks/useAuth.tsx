@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from '@/components/ui/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { UserProfile } from '@/types/auth';
+import { transformProfileData } from '@/utils/profile-utils';
 
 export const useAuth = () => {
   const navigate = useNavigate();
@@ -35,7 +36,8 @@ export const useAuth = () => {
           .single();
 
         if (profileData) {
-          setProfile(profileData);
+          const transformedProfile = transformProfileData(profileData);
+          setProfile(transformedProfile);
         }
 
         toast({
