@@ -4,8 +4,11 @@ import DashboardLayout from '@/components/layout/DashboardLayout';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { FileText, Users, MessageSquare, TrendingUp } from 'lucide-react';
 import { ExpertPerformanceChart } from '@/components/dashboard/expert/ExpertPerformanceChart';
+import { useAuthContext } from '@/contexts/AuthContext';
 
 const ExpertDashboard = () => {
+  const { user, profile } = useAuthContext();
+  
   const stats = [
     { icon: FileText, label: '担当案件数', value: '8件', description: '現在進行中の案件数' },
     { icon: Users, label: '相談対応数', value: '15件', description: '今月の相談対応総数' },
@@ -13,8 +16,15 @@ const ExpertDashboard = () => {
     { icon: TrendingUp, label: '評価スコア', value: '4.8', description: 'クライアントからの平均評価' },
   ];
 
+  // プロフィール情報から表示名を決定
+  const displayName = profile?.company_name || profile?.contact_name || user?.email || 'ユーザー';
+
   return (
-    <DashboardLayout userType="expert" userName="田中弁護士" secondaryTypes={['provider']}>
+    <DashboardLayout 
+      userType="expert" 
+      userName={displayName} 
+      secondaryTypes={['provider']}
+    >
       <h1 className="text-2xl font-bold mb-6">専門家ダッシュボード</h1>
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
