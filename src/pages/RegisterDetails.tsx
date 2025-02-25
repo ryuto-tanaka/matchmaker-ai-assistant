@@ -21,22 +21,6 @@ const RegisterDetails = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Add timeout to prevent infinite loading state
-  useEffect(() => {
-    let timeout: NodeJS.Timeout;
-    if (loading) {
-      timeout = setTimeout(() => {
-        setLoading(false);
-        setError('登録処理がタイムアウトしました。もう一度お試しください。');
-      }, 10000); // 10秒でタイムアウト
-    }
-    return () => {
-      if (timeout) {
-        clearTimeout(timeout);
-      }
-    };
-  }, [loading]);
-
   // Redirect if no userType is provided
   useEffect(() => {
     if (!userType) {
@@ -89,7 +73,10 @@ const RegisterDetails = () => {
           title: "登録完了",
           description: "アカウントが正常に作成されました",
         });
-        navigate('/profile-setup', { state: { userType } });
+        // profile-setupページへのリダイレクトを遅延させる
+        setTimeout(() => {
+          navigate('/profile-setup', { state: { userType } });
+        }, 1000);
       } else {
         throw new Error('登録に失敗しました');
       }
@@ -104,7 +91,7 @@ const RegisterDetails = () => {
       } else {
         setError(err.message || '登録中にエラーが発生しました');
       }
-    } finally {
+      // エラー発生時にはローディング状態を解除
       setLoading(false);
     }
   };
