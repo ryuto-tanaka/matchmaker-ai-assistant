@@ -15,8 +15,9 @@ const Index = () => {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        // ユーザーがログイン済みの場合は、適切なダッシュボードにリダイレクト
+        // ユーザーがログイン済みの場合のみ、適切なダッシュボードにリダイレクト
         if (user) {
+          console.log("User is logged in, redirecting to dashboard");
           const dashboardPath = `/dashboard/${user.role}`;
           await navigate(dashboardPath, { replace: true });
         }
@@ -36,6 +37,8 @@ const Index = () => {
   }
 
   // 未ログインユーザー向けのランディングページを表示
+  // ユーザーがログイン済みの場合は上のuseEffectでリダイレクトされるため、
+  // ここには非ログインユーザーのみが到達します
   return (
     <main className="min-h-screen w-full bg-white">
       <HeroSection />
