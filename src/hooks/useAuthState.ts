@@ -17,11 +17,7 @@ export const useAuthState = () => {
         if (error) throw error;
         
         if (session?.user) {
-          setUser({
-            id: session.user.id,
-            email: session.user.email!,
-            role: UserRole.APPLICANT
-          });
+          // プロファイルデータを取得してからユーザー情報を設定
           const { data: profileData } = await supabase
             .from('profiles')
             .select('*')
@@ -29,7 +25,18 @@ export const useAuthState = () => {
             .single();
           
           if (profileData) {
-            setProfile(transformProfileData(profileData));
+            const transformedProfile = transformProfileData(profileData);
+            setProfile(transformedProfile);
+            setUser({
+              id: session.user.id,
+              email: session.user.email!,
+              role: profileData.primary_type as UserRole
+            });
+          } else {
+            setUser({
+              id: session.user.id,
+              email: session.user.email!
+            });
           }
         }
       } catch (error) {
@@ -43,11 +50,7 @@ export const useAuthState = () => {
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (session?.user) {
-        setUser({
-          id: session.user.id,
-          email: session.user.email!,
-          role: UserRole.APPLICANT
-        });
+        // 認証状態が変更された時もプロファイルを取得
         const { data: profileData } = await supabase
           .from('profiles')
           .select('*')
@@ -55,7 +58,18 @@ export const useAuthState = () => {
           .single();
         
         if (profileData) {
-          setProfile(transformProfileData(profileData));
+          const transformedProfile = transformProfileData(profileData);
+          setProfile(transformedProfile);
+          setUser({
+            id: session.user.id,
+            email: session.user.email!,
+            role: profileData.primary_type as UserRole
+          });
+        } else {
+          setUser({
+            id: session.user.id,
+            email: session.user.email!
+          });
         }
       } else {
         setUser(null);
@@ -78,4 +92,3 @@ export const useAuthState = () => {
     setProfile
   };
 };
-
