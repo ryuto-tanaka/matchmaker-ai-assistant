@@ -21,6 +21,12 @@ const Index = () => {
         // ユーザーがログインしている場合のみダッシュボードにリダイレクト
         if (user) {
           console.log("User is logged in, redirecting to dashboard");
+          // roleがないか無効な場合はエラーページにリダイレクト
+          const validRoles = ['applicant', 'provider', 'expert'];
+          if (!user.role || !validRoles.includes(user.role)) {
+            navigate('/404', { replace: true });
+            return;
+          }
           navigate(`/dashboard/${user.role}`, { replace: true });
         }
       } catch (error) {
@@ -38,22 +44,17 @@ const Index = () => {
     return <LoadingTimeoutAlert isLoading={isLoading} timeout={60000} />;
   }
 
-  // ユーザーが未ログインの場合はLPを表示
-  if (!user) {
-    return (
-      <main className="min-h-screen w-full bg-white overflow-x-hidden">
-        <HeroSection />
-        <IndustriesSection />
-        <MetricsSection />
-        <TestimonialsSection />
-        <FAQSection />
-        <ContactSection />
-      </main>
-    );
-  }
-
-  // ユーザーがログインしている場合は空のコンポーネントを返す（useEffectでリダイレクトされるため）
-  return null;
+  // ユーザーが未ログインの場合のみLPを表示
+  return (
+    <main className="min-h-screen w-full bg-white overflow-x-hidden">
+      <HeroSection />
+      <IndustriesSection />
+      <MetricsSection />
+      <TestimonialsSection />
+      <FAQSection />
+      <ContactSection />
+    </main>
+  );
 };
 
 export default Index;
