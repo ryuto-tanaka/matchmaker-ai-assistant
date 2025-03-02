@@ -7,8 +7,6 @@ import { AuthContextType } from '@/types/auth-context';
 import { useAuthState } from '@/hooks/useAuthState';
 import { UserRole } from '@/types/user';
 
-const MOCK_USER_ID = 'f47ac10b-58cc-4372-a567-0e02b2c3d479';
-
 // Initialize context with undefined
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -21,37 +19,64 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       throw new Error('メールアドレスとパスワードを入力してください');
     }
 
-    // For demo purposes, accept any non-empty email/password
-    const mockUser = { id: MOCK_USER_ID, email, role: UserRole.APPLICANT };
-    setUser(mockUser);
-    setProfile({
-      id: mockUser.id,
-      company_name: null,
-      contact_name: null,
-      phone: null,
-      address: null,
-      primary_type: 'applicant'
-    });
+    setLoading(true);
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (error) throw error;
+
+      // プロファイル情報を取得するのはuseAuthStateが行うのでここでは何もしない
+      toast({
+        title: "ログイン成功",
+        description: "ダッシュボードに移動します",
+      });
+      
+      if (data.user && profile?.primary_type) {
+        navigate(`/dashboard/${profile.primary_type}`);
+      } else if (data.user) {
+        navigate('/profile-setup');
+      }
+    } catch (error: any) {
+      console.error('Login error:', error);
+      toast({
+        title: "ログインエラー",
+        description: error.message,
+        variant: "destructive",
+      });
+      throw error;
+    } finally {
+      setLoading(false);
+    }
   };
 
   const signUp = async (email: string, password: string): Promise<boolean> => {
     setLoading(true);
     try {
-      if (email && password) {
-        const mockUser = { id: MOCK_USER_ID, email, role: UserRole.APPLICANT };
-        setUser(mockUser);
-        setProfile({
-          id: mockUser.id,
-          company_name: null,
-          contact_name: null,
-          phone: null,
-          address: null,
-          primary_type: 'applicant'
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+      });
+
+      if (error) throw error;
+      
+      if (data.user) {
+        toast({
+          title: "登録完了",
+          description: "アカウントが作成されました",
         });
         return true;
       }
       return false;
     } catch (error: any) {
+      console.error('Signup error:', error);
+      toast({
+        title: "登録エラー",
+        description: error.message,
+        variant: "destructive",
+      });
       throw error;
     } finally {
       setLoading(false);

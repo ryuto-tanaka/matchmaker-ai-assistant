@@ -9,14 +9,14 @@ import { useNavigate } from 'react-router-dom';
 import { useAuthContext } from '@/contexts/AuthContext';
 import { UserRole } from '@/types/user';
 import { toast } from "@/components/ui/use-toast";
-import { supabase } from '@/integrations/supabase/client';
+import { LoadingTimeoutAlert } from '@/components/ui/loading-timeout-alert';
 
 const Login = () => {
   const navigate = useNavigate();
-  const { signIn } = useAuthContext();
+  const { signIn, loading } = useAuthContext();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const validateForm = () => {
     if (!email || !password) {
@@ -33,42 +33,15 @@ const Login = () => {
   const handleLoginAsType = async (userType: UserRole) => {
     if (!validateForm()) return;
     
-    setLoading(true);
+    setIsLoading(true);
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password
-      });
-
-      if (error) throw error;
-
-      if (data.user) {
-        // プロフィール情報を取得
-        const { data: profileData } = await supabase
-          .from('profiles')
-          .select('primary_type')
-          .eq('id', data.user.id)
-          .single();
-
-        if (profileData && profileData.primary_type !== userType) {
-          throw new Error('選択したユーザータイプが一致しません');
-        }
-
-        navigate(`/dashboard/${userType}`);
-        toast({
-          title: "ログイン成功",
-          description: "ダッシュボードに移動します",
-          duration: 3000,
-        });
-      }
+      await signIn(email, password);
+      // signIn内部でnavigateするため、ここでは何もしない
     } catch (error: any) {
-      toast({
-        title: "ログインエラー",
-        description: error.message || "認証に失敗しました。入力内容を確認してください。",
-        variant: "destructive",
-      });
+      console.error('Login error:', error);
+      // エラー処理はsignIn内部で行われるため、ここでは何もしない
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
 
@@ -102,6 +75,7 @@ const Login = () => {
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="example@company.com"
                   required
+                  disabled={isLoading}
                 />
               </div>
               <div className="space-y-2">
@@ -113,6 +87,7 @@ const Login = () => {
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
                   required
+                  disabled={isLoading}
                 />
               </div>
               <div className="space-y-4">
@@ -121,7 +96,7 @@ const Login = () => {
                   variant="outline"
                   className="w-full flex items-center justify-center gap-2 bg-white hover:bg-primary hover:text-white transition-colors border"
                   onClick={() => handleLoginAsType(UserRole.APPLICANT)}
-                  disabled={loading}
+                  disabled={isLoading}
                 >
                   <User className="h-4 w-4" />
                   申請者としてログイン
@@ -131,7 +106,7 @@ const Login = () => {
                   variant="outline"
                   className="w-full flex items-center justify-center gap-2 bg-white hover:bg-primary hover:text-white transition-colors border"
                   onClick={() => handleLoginAsType(UserRole.PROVIDER)}
-                  disabled={loading}
+                  disabled={isLoading}
                 >
                   <Building2 className="h-4 w-4" />
                   サービス提供者としてログイン
@@ -141,7 +116,7 @@ const Login = () => {
                   variant="outline"
                   className="w-full flex items-center justify-center gap-2 bg-white hover:bg-primary hover:text-white transition-colors border"
                   onClick={() => handleLoginAsType(UserRole.EXPERT)}
-                  disabled={loading}
+                  disabled={isLoading}
                 >
                   <GraduationCap className="h-4 w-4" />
                   専門家としてログイン
@@ -163,6 +138,7 @@ const Login = () => {
           </CardFooter>
         </Card>
       </div>
+      <LoadingTimeoutAlert isLoading={isLoading} timeout={30000} />
     </div>
   );
 };

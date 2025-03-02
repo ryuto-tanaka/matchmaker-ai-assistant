@@ -9,6 +9,7 @@ import { ArrowLeft } from 'lucide-react';
 import { useAuthContext } from '@/contexts/AuthContext';
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { toast } from "@/components/ui/use-toast";
+import { LoadingTimeoutAlert } from '@/components/ui/loading-timeout-alert';
 
 const RegisterDetails = () => {
   const navigate = useNavigate();
@@ -91,7 +92,7 @@ const RegisterDetails = () => {
       } else {
         setError(err.message || '登録中にエラーが発生しました');
       }
-      // エラー発生時にはローディング状態を解除
+    } finally {
       setLoading(false);
     }
   };
@@ -172,6 +173,7 @@ const RegisterDetails = () => {
           </CardContent>
         </Card>
       </div>
+      <LoadingTimeoutAlert isLoading={loading} timeout={30000} />
     </div>
   );
 };
